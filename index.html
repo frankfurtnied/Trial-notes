@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0055)file:///Users/martinfelkel/Desktop/Camping%20Diary.html -->
+<!-- saved from url=(0061)file:///Users/martinfelkel/Downloads/Camping_diary_fixed.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -4564,6 +4564,7 @@ function exportData() {
     entries:     state.entries,
     visited:     state.visited,
     tripEdits:   state.tripEdits,
+    upcoming:    state.upcoming,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
@@ -4605,6 +4606,11 @@ function importData(e) {
         data.entries.forEach(e => { if (!existing.includes(e.id)) state.entries.push(e); });
       }
       if (data.visited) Object.assign(state.visited, data.visited);
+      if (data.upcoming) {
+        const existingIds = state.upcoming.map(t => t.id);
+        data.upcoming.forEach(t => { if (!existingIds.includes(t.id)) state.upcoming.push(t); });
+        state.upcoming.sort((a,b) => a.startDate.localeCompare(b.startDate));
+      }
       saveState(); renderAll();
       showToast('Data imported! 🌲');
     } catch(err) { showToast('Could not read file ❌'); }
