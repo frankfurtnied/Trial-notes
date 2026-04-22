@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0061)file:///Users/martinfelkel/Downloads/Camping_diary_fixed.html -->
+<!-- saved from url=(0058)file:///Users/martinfelkel/Downloads/Camping_diary_v2.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -3475,6 +3475,10 @@ html { -webkit-overflow-scrolling: touch; }
 <div class="toast" id="toast">Trip booked! 📌</div>
 
 <script>
+// ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
+// When the HTML file is transferred to a new device, localStorage is empty.
+// Without this, renderUpcoming() wipes the static HTML and shows "No upcoming trips".
+const BAKED_UPCOMING = [{"id":1776877919141,"parkId":29,"parkName":"Kelly Park","startDate":"2026-05-10","endDate":"2026-05-14","site":"2","note":""}];
 // ═══════════════════════════════════════════════════════
 // PARK DATA — all 40 parks with full site notes
 // ═══════════════════════════════════════════════════════
@@ -3963,7 +3967,7 @@ let state = {
   entries:     JSON.parse(localStorage.getItem('cd_entries') || '[]'),
   visited:     JSON.parse(localStorage.getItem('cd_visited') || '{}'),
   tripEdits:   JSON.parse(localStorage.getItem('cd_tripedits') || '{}'),
-  upcoming:    JSON.parse(localStorage.getItem('cd_upcoming') || '[]'),
+  upcoming:    JSON.parse(localStorage.getItem('cd_upcoming') ?? JSON.stringify(BAKED_UPCOMING)),
 };
 
 function saveState() {
@@ -4607,8 +4611,8 @@ function importData(e) {
       }
       if (data.visited) Object.assign(state.visited, data.visited);
       if (data.upcoming) {
-        const existingIds = state.upcoming.map(t => t.id);
-        data.upcoming.forEach(t => { if (!existingIds.includes(t.id)) state.upcoming.push(t); });
+        const existingIds = new Set(state.upcoming.map(t => t.id));
+        data.upcoming.forEach(t => { if (!existingIds.has(t.id)) state.upcoming.push(t); });
         state.upcoming.sort((a,b) => a.startDate.localeCompare(b.startDate));
       }
       saveState(); renderAll();
