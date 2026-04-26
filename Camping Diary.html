@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0060)file:///Users/martinfelkel/Downloads/Camping-Diary-v4_2.html -->
+<!-- saved from url=(0060)file:///Users/martinfelkel/Downloads/Camping-Diary-v5_1.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -128,6 +128,22 @@ textarea{resize:vertical;min-height:76px;line-height:1.6;}
 .card-foot{padding:7px 17px;background:rgba(0,0,0,.04);border-top:1px solid var(--fog);display:flex;justify-content:flex-end;}
 .btn-sm{background:none;border:1px solid var(--fog);color:var(--smoke);font-family:-apple-system,Georgia,serif;font-size:.8rem;padding:3px 11px;border-radius:3px;cursor:pointer;transition:all .2s;}
 .btn-sm:hover{border-color:#c0392b;color:#c0392b;}
+/* ── RATINGS & FAVORITES ── */
+.star-row{display:flex;gap:2px;align-items:center;}
+.star{font-size:1.1rem;cursor:pointer;color:var(--fog);transition:color .15s;line-height:1;}
+.star.on{color:var(--amber);}
+.star:hover,.star:hover~.star{color:var(--fog);}
+.star-row:hover .star{color:var(--amber);}
+.star-row .star:hover~.star{color:var(--fog);}
+.btn-fav{background:none;border:none;font-size:1.15rem;cursor:pointer;padding:0 2px;line-height:1;transition:transform .15s;}
+.btn-fav:hover{transform:scale(1.25);}
+/* ── FILTER PILLS ── */
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.filter-pill{background:rgba(245,237,216,.1);border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:20px;padding:5px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.filter-pill:hover{border-color:var(--amber);color:var(--cream);}
+.filter-pill.active{background:var(--amber);border-color:var(--amber);color:white;font-weight:600;}
+/* ── STATS HIGHLIGHT ── */
+.stat-sub{font-size:.65rem;color:var(--fog);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .empty-state{text-align:center;padding:44px 20px;color:var(--fog);}
 .empty-state .icon{font-size:2.4rem;margin-bottom:10px;}
 .empty-state p{font-size:1rem;font-style:italic;}
@@ -182,14 +198,16 @@ html { -webkit-overflow-scrolling: touch; }
 <div class="app">
 <header>
   <div class="logo-row"><span style="font-size:1.9rem">🌲</span><h1><em>Trail Notes</em></h1><span style="font-size:1.9rem">🌲</span></div>
-  <p>Camping Diary · 2012 – 2026</p><div class="divider"></div>
+  <p>Camping Diary · 2012 – <span id="currentYear">2026</span></p><div class="divider"></div>
 </header>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-num">49</div><div class="stat-label">Parks Listed</div></div>
     <div class="stat"><div class="stat-num">151</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-num">4</div><div class="stat-label">Upcoming</div></div>
-    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Journal Entries</div></div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Journal Entries</div></div>
+    <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Wekiwa Springs State Park</div><div class="stat-sub">21 trips</div></div>
+    <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Anastasia State Park</div><div class="stat-sub" style="letter-spacing:2px">★★★★☆</div></div></div>
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab(&#39;parks&#39;)">🗺 Park Directory</div>
@@ -206,6 +224,11 @@ html { -webkit-overflow-scrolling: touch; }
     <button class="btn-amber" style="background:rgba(200,135,42,.55)" onclick="document.getElementById(&#39;importFile&#39;).click()">⬇️ Import</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
+  <div class="filter-bar">
+    <span class="filter-pill" id="fp-best" onclick="setFilter(&#39;best&#39;)">⭐ Best Parks</span>
+    <span class="filter-pill" id="fp-frequent" onclick="setFilter(&#39;frequent&#39;)">🏕 Been 5+ Times</span>
+    <span class="filter-pill" id="fp-favs" onclick="setFilter(&#39;favs&#39;)">❤️ Favorites</span>
+  </div>
   <div id="parksList"><div class="park-card" id="pc4" style="animation-delay:0s">
       <div class="park-header been " onclick="toggleCard(4)">
         <div>
@@ -213,12 +236,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 300 Anastasia Park Road, St. Augustine FL 32080 · 🚗 77 Miles · 1 hr 45 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(4,event)" title="Remove from favorites">❤️</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 9 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(4,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(4,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(4,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(4,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(4,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Sites 59–68 all good. 78, 72 (very nice and deep), 74, 76, 80, 84, 94, 96, 108, 114. Also: 40, 75, 68 (very nice), 48, 56. Best for big rig: 80, 84, 72, 74, 76, 94, 96, 78 — all very good. Also 114, 48, 56, 108.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>40, 48, 63, 68, 75, 90, 93, 108</p></div>
@@ -337,12 +367,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 223 State Park Rd, Blackville SC 29817</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(39,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(39,1,event)" title="1 star">★</span><span class="star " onclick="setRating(39,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(39,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(39,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(39,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>25 (good)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>25</p></div>
@@ -389,12 +426,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 600 Bear Den Mountain Rd, Spruce Pine NC 28777 · 🚗 578 Miles · 10+ hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(37,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(37,1,event)" title="1 star">★</span><span class="star " onclick="setRating(37,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(37,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(37,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(37,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>C23 (good site)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>C23</p></div>
@@ -441,12 +485,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 2100 West French Avenue, Orange City FL 32763 · 🚗 36 Miles · 55 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(2,event)" title="Remove from favorites">❤️</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 13 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(2,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(2,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(2,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(2,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(2,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>45 (best, large), 46 &amp; 50 (also large &amp; good). 3 (one of best — shady, flat, large, does flood a little). 9, 10, 11, 12, 20, 21, 25, 29, 34, 38, 1 &amp; 2. We like 29 and 25 the most. Buddy sites: 12 &amp; 13 together (excellent, esp 13).</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>29, 33, 36, 3</p></div>
@@ -601,12 +652,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 1010 State Park Road, Carolina Beach, NC 28428 · 🚗 557 Miles 9hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776905736791,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776905736791,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776905736791,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776905736791,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776905736791,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776905736791,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>5</p></div>
@@ -653,12 +711,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 Cary State Forest 7465 Pavilion Rd. Bryceville, FL 32009-1950 · 🚗 132 Miles 2hr 20 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(34,event)" title="Add to favorites">🤍</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Good">★★★</span>
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(34,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(34,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(34,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(34,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(34,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Good</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>6 (like this one)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>6</p></div>
@@ -705,14 +770,21 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 6222 Charlie Smith Senior Highway St. Marys, GA 31558 · 🚗 152 Miles 3hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776905257701,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
-        <div class="info-grid">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776905257701,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776905257701,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776905257701,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776905257701,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776905257701,5,event)" title="5 stars">★</span></div>
           
+        </div>
+        <div class="info-grid">
+          <div class="info-block"><label>✅ Good Sites</label><p>Site 11 was a nice site</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>11</p></div>
           
           
@@ -757,12 +829,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 5000 N Browning Bridge Rd, Gainesville GA 30506</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(31,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(31,1,event)" title="1 star">★</span><span class="star " onclick="setRating(31,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(31,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(31,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(31,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>41, 42 (best). 43, 44 not bad. 5, 6, 7 good. 3 &amp; 4 OK together. 10 good. 13, 14 (14 better). 17, 18 OK.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>32</p></div>
@@ -809,12 +888,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 8377 State Cabin Rd, Edisto Island SC 29438</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(36,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(36,1,event)" title="1 star">★</span><span class="star " onclick="setRating(36,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(36,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(36,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(36,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>93 (good)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>93</p></div>
@@ -861,12 +947,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 2959 McCormick Highway, Lincolnton GA 30817 · 🚗 404 Miles · 6 hr 40 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(15,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(15,1,event)" title="1 star">★</span><span class="star " onclick="setRating(15,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(15,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(15,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(15,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>96 (lakefront, BEAUTIFUL!!!)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>96</p></div>
@@ -913,12 +1006,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 1000 Faver-Dykes Road, Saint Augustine FL 32086 · 🚗 60 Miles · 1 hr 15 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(16,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 2 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(16,1,event)" title="1 star">★</span><span class="star " onclick="setRating(16,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(16,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(16,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(16,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>28, 14</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>14, 28</p></div>
@@ -974,12 +1074,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 3345 Caverns Road, Marianna FL 32446 · 🚗 340 Miles · 5 hr 30 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(33,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(33,1,event)" title="1 star">★</span><span class="star " onclick="setRating(33,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(33,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(33,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(33,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>24 (great)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>24</p></div>
@@ -1026,12 +1133,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 2601 Atlantic Avenue, Fernandina Beach FL 32034 · 🚗 147 Miles · 3 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(6,event)" title="Remove from favorites">❤️</button>
+          
           
           <span class="badge bv">🏕 4 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(6,1,event)" title="1 star">★</span><span class="star " onclick="setRating(6,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(6,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(6,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(6,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>40 (best), 41 (excellent), 39, 42, 43, 44, 45, 46, 22</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>40, 41, 42, 43</p></div>
@@ -1105,12 +1219,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 3500 Pinellas Bayway S, Tierra Verde FL 33715 · 🚗 3 hrs from home</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(35,event)" title="Add to favorites">🤍</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Good">★★★</span>
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(35,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(35,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(35,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(35,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(35,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Good</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>172 (very good, waterfront), 196–204 (best). Try for 198 &amp; 199.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>172</p></div>
@@ -1157,12 +1278,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 Fort McAllister State Park, 3894 Fort McAllister Rd, Richmond Hill, GA 31324 · 🚗 235 Miles 4hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776907371154,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776907371154,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776907371154,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776907371154,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776907371154,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776907371154,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>50</p></div>
@@ -1209,12 +1337,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 181 Fort Mountain State Park Rd, Chatsworth GA 30705 · 🚗 550 Miles · 9.5 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(30,event)" title="Add to favorites">🤍</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(30,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(30,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(30,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(30,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(30,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>49, 48</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>53</p></div>
@@ -1261,12 +1396,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 371 George L Smith State Park Rd, Twin City GA 30471 · 🚗 309 Miles</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(32,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(32,1,event)" title="1 star">★</span><span class="star " onclick="setRating(32,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(32,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(32,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(32,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>15</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>15</p></div>
@@ -1313,12 +1455,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 7300 NE Ginnie Spgs Rd, High Springs, FL 32643 · 🚗 155 Miles 3hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776906864399,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776906864399,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776906864399,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776906864399,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776906864399,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776906864399,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>101</p></div>
@@ -1365,12 +1514,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 4250 SW 80th Way, Bell FL 32619 · 🚗 158 Miles · 3 hr 15 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(25,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(25,1,event)" title="1 star">★</span><span class="star " onclick="setRating(25,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(25,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(25,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(25,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Best sites: 7, 8, 11, 15. Site 8 good.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>8</p></div>
@@ -1417,12 +1573,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 5931 Hammock Road, Sebring FL 33872 · 🚗 155 Miles · 3 hr 45 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(19,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(19,1,event)" title="1 star">★</span><span class="star " onclick="setRating(19,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(19,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(19,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(19,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>49</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>49</p></div>
@@ -1469,12 +1632,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 15402 US HWY 301 North, Thonotosassa FL 33592 · 🚗 143 Miles · 3 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(5,event)" title="Remove from favorites">❤️</button>
+          
           
           <span class="badge bv">🏕 7 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(5,1,event)" title="1 star">★</span><span class="star " onclick="setRating(5,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(5,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(5,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(5,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>28 (THE BEST). 50 (favorite), 56, 21, 25, 43. Want to try: 96, 99, 101, 104, 65. 106 is a pull-through.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>24, 28, 43, 48, 50</p></div>
@@ -1575,12 +1745,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 1197 Riverview Dr, Jekyll Island GA 31527 · 🚗 187 Miles 3hr 20min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(38,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(38,1,event)" title="1 star">★</span><span class="star " onclick="setRating(38,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(38,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(38,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(38,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>71 (pull through)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>71</p></div>
@@ -1627,12 +1804,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 400 E. Kelly Park Road, Apopka FL 32712 · 🚗 60 Miles · 1 hr 30 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(29,event)" title="Remove from favorites">❤️</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 2 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(29,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(29,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(29,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(29,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(29,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Best: 10, 19, 21. Good: 1, 2, 4, 6 (big!), 8, 13 (very good, big), 23. 5 good. 17 pull through (better double site). 3 &amp; 17 for 2 trailers.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>2, 5</p></div>
@@ -1688,12 +1872,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 6254 Satterwhite Point Rd, Henderson NC 27537</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(40,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(40,1,event)" title="1 star">★</span><span class="star " onclick="setRating(40,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(40,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(40,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(40,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>JC Cooper Camp site 38. Also check Bullock, Hibernia.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>38</p></div>
@@ -1740,12 +1931,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub"></div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776963732011,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776963732011,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776963732011,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776963732011,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776963732011,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776963732011,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           
@@ -1792,12 +1990,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 3089 US Highway 441-27, Fruitland Park FL 34731 · 🚗 75 Miles · 1 hr 50 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(21,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(21,1,event)" title="1 star">★</span><span class="star " onclick="setRating(21,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(21,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(21,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(21,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>21</p></div>
@@ -1844,12 +2049,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 14248 Camp Mack Road, Lake Wales FL 33898 · 🚗 136 Miles · 3 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(18,event)" title="Remove from favorites">❤️</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 7 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(18,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(18,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(18,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(18,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(18,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Best: 53, 20. Best with Keeners: 53+59 / 54+56. Very good: 46, 47. All good: 14, 20, 24, 26, 28, 39, 41, 43, 44, 45, 46, 47, 53, 54, 56, 59. Site 31 private.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>20, 31, 46, 47</p></div>
@@ -1950,12 +2162,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 7305 US HWY 27, Clermont FL 34714 · 🚗 87 Miles · 2 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(20,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(20,1,event)" title="1 star">★</span><span class="star " onclick="setRating(20,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(20,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(20,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(20,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>29</p></div>
           
@@ -2002,12 +2221,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 700 Long Point Rd Melbourne Beach, FL 32951 · 🚗 91 Miles  2 hrs</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(27,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 4 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(27,1,event)" title="1 star">★</span><span class="star " onclick="setRating(27,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(27,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(27,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(27,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Very best: 12 &amp; 30 (waterfront). Best waterfront: 46, 30, 78. Also 67 (waterfront), 104.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>46, 67,104</p></div>
@@ -2081,12 +2307,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 7275 S. US Highway 1 Titusville, FL 32780 · 🚗 35 Miles 1hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776821921700,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776821921700,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776821921700,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776821921700,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776821921700,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776821921700,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           
@@ -2133,12 +2366,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 6239 State Road 21, Keystone Heights FL 32656 · 🚗 104 Miles · 2 hr 30 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(17,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 6 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(17,1,event)" title="1 star">★</span><span class="star " onclick="setRating(17,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(17,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(17,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(17,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>71 (best, lake view), 72 (very good, lake view, hard to park). 43–49 all good. 16 (Xmas stay).</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>16, 71, 72</p></div>
@@ -2230,12 +2470,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 3725 Mistletoe Road, Appling GA 30802</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(14,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(14,1,event)" title="1 star">★</span><span class="star " onclick="setRating(14,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(14,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(14,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(14,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Best waterfront: 77, 79, 73, 76. Not as much water but nice: 80, 82, 83, 85 (80 has nice water). 83 &amp; 85 good for 2 families. 90, 92, 93 — farther from water but can see it &amp; walk. Nice woods, good for 2–3 families. 2nd loop is best.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>77</p></div>
@@ -2282,12 +2529,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 12901 Moss Park Rd, Orlando FL 32832 · 🚗 70 Miles · 1.5 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(28,event)" title="Remove from favorites">❤️</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 2 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(28,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(28,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(28,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(28,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(28,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>A FAVORITE! All outside sites from 25 and up are good. 20 very good. 26, 28 &amp; 29 most private. Site 29 excellent.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>28, 29</p></div>
@@ -2343,12 +2597,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 13208 SR 72, Sarasota FL 34241 · 🚗 204 Miles · 4 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(23,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(23,1,event)" title="1 star">★</span><span class="star " onclick="setRating(23,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(23,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(23,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(23,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>71</p></div>
@@ -2395,12 +2656,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 410 SE O'Leno Park Rd, High Springs FL 32643 · 🚗 153 Miles · almost 3 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(11,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(11,1,event)" title="1 star">★</span><span class="star " onclick="setRating(11,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(11,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(11,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(11,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>2, 3, 7, 12 &amp; 13 together, 27, 29, 30, 31 good. 41, 53, 56, 57, 58. 24 &amp; 25 good.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>55</p></div>
@@ -2447,12 +2715,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 100 Savannah Blvd, Micanopy FL 32667 · 🚗 118 Miles · 2 hr 15 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(12,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(12,1,event)" title="1 star">★</span><span class="star " onclick="setRating(12,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(12,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(12,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(12,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>41 (best), 42, 44, 46, 45 (inside but good). Almost entire far side is good. 18 and 10 very good. 36, 38 good. 37 inside also good.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>12</p></div>
@@ -2499,12 +2774,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 18185 SW 94th Street, Dunnellon FL 34432 · 🚗 116 Miles · 2 hr 45 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(10,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(10,1,event)" title="1 star">★</span><span class="star " onclick="setRating(10,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(10,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(10,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(10,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>11 (great), 13 (best), 57 (very good), 12, 10, 51</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>11</p></div>
@@ -2551,12 +2833,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 410 Rodman Dam Road, Palatka FL 32177 · 🚗 92 Miles · 1 hr 45 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(7,event)" title="Add to favorites">🤍</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Good">★★★</span>
           
           <span class="badge bv">🏕 10 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(7,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(7,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(7,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(7,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(7,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Good</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>60 (our favorite, best views), 59, 62 (excellent), 66, 12</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>12, 60, 62</p></div>
@@ -2684,12 +2973,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 Near Rodman, Marion County FL · 🚗 ~90 Miles</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(26,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bn">New</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(26,1,event)" title="1 star">★</span><span class="star " onclick="setRating(26,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(26,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(26,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(26,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>7, 8, 34, 33, 31 (very nice). Also 4, 26, 25, 35, 45, 54, 52, 39.</p></div>
           
@@ -2727,12 +3023,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 3080 SE 80th Street, Ocala FL 34480 · 🚗 98 Miles · 2 hr 15 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(22,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(22,1,event)" title="1 star">★</span><span class="star " onclick="setRating(22,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(22,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(22,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(22,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>16 &amp; 18 (best), 10, 12, 14 good</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>21</p></div>
@@ -2779,12 +3082,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 9700 South A1A, Melbourne Beach FL 32951 · 🚗 91 Miles · 2 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(9,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 3 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(9,1,event)" title="1 star">★</span><span class="star " onclick="setRating(9,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(9,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(9,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(9,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>1 (best, great view), 8 (great)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>1, 8</p></div>
@@ -2849,12 +3159,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 1425 NE 58th Avenue, Ocala FL 34470 · 🚗 90 Miles · 2 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(8,event)" title="Remove from favorites">❤️</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 10 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(8,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(8,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(8,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(8,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(8,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Very best: 22, 21, 24. 38 (excellent). 54, 55, 57 good. Also 43 (with sewer), 70.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>22, 24, 38, 43, 70</p></div>
@@ -2982,12 +3299,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 52 Diamond Causeway, Savannah GA 31411 · 🚗 252 Miles</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(24,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(24,1,event)" title="1 star">★</span><span class="star " onclick="setRating(24,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(24,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(24,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(24,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>49 (best site)</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>49</p></div>
@@ -3034,12 +3358,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 11016 Lillian Saunders Dr/Hwy 41, White Springs FL 32096 · 🚗 181 Miles · 3 hr</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(13,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(13,1,event)" title="1 star">★</span><span class="star " onclick="setRating(13,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(13,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(13,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(13,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>Very good: 24, 25, 26, 27, 28, 21, 19. Also good: 5–11 all ok.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>24</p></div>
@@ -3086,12 +3417,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 2099 North Beach Street, Ormond Beach FL 32174 · 🚗 37 Miles · 45 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1,event)" title="Add to favorites">🤍</button>
+          
           
           <span class="badge bv">🏕 18 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>7, 8, 9, 10, 26, 28, 30, 33, 34, 35, 53 (great/very nice), 88 (best), 5, 7, 11. We like sites 30 &amp; 88.</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>16, 18, 30, 43, 53, 65, 88, 96</p></div>
@@ -3291,12 +3629,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 Warrior Creek, North Carolina 28606 · 🚗 571 Miles 9.5hr+</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776945920611,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776945920611,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776945920611,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776945920611,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776945920611,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776945920611,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>50</p></div>
@@ -3343,12 +3688,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 1800 Wekiwa Circle, Apopka FL 32712 · 🚗 55 Miles · 1 hr 20 min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(3,event)" title="Remove from favorites">❤️</button>
+          <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
           <span class="badge bv">🏕 21 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star on" onclick="setRating(3,1,event)" title="1 star">★</span><span class="star on" onclick="setRating(3,2,event)" title="2 stars">★</span><span class="star on" onclick="setRating(3,3,event)" title="3 stars">★</span><span class="star on" onclick="setRating(3,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(3,5,event)" title="5 stars">★</span></div>
+          <span style="font-size:.75rem;color:var(--smoke)">Great</span>
+        </div>
         <div class="info-grid">
           <div class="info-block"><label>✅ Good Sites</label><p>45 (best, first loop), 41 (good), 15 (first loop). 44 ok but floods. Also 46, 56 (large, not private).</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>45, 46, 47, 56, 44, 37, 41</p></div>
@@ -3575,12 +3927,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 4000 Newman Rd, Williamsburg, VA 23188 · 🚗 743 Miles</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776970763557,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776970763557,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776970763557,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776970763557,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776970763557,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776970763557,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>35E</p></div>
@@ -3627,12 +3986,19 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="park-sub">📍 55 SE 503 Ave. Old Town, FL 32680 · 🚗 166 Miles 3hr 45min</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(1776961962322,event)" title="Add to favorites">🤍</button>
+          
           <span class="badge bc">★ Mine</span>
           <span class="badge bv">🏕 1 trip</span>
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row"><span class="star " onclick="setRating(1776961962322,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1776961962322,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1776961962322,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1776961962322,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1776961962322,5,event)" title="5 stars">★</span></div>
+          
+        </div>
         <div class="info-grid">
           
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>21</p></div>
@@ -3703,7 +4069,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Kelly Park</div>
           <div class="card-date">May 10, 2026 – May 14, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 17 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 14 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 2</strong></div>
@@ -3716,7 +4082,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Paynes Prairie State Park</div>
           <div class="card-date">Jun 24, 2026 – Jun 26, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 62 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 59 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 46</strong></div>
@@ -3729,7 +4095,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Anastasia State Park</div>
           <div class="card-date">Nov 4, 2026 – Nov 8, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 195 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 192 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 97</strong></div>
@@ -3742,7 +4108,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Silver Springs State Park</div>
           <div class="card-date">Dec 16, 2026 – Dec 20, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 237 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 234 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 7</strong></div>
@@ -5569,6 +5935,9 @@ let state = {
   tripEdits:   JSON.parse(localStorage.getItem('cd_tripedits') || '{}'),
   upcoming:    JSON.parse(localStorage.getItem('cd_upcoming') ?? JSON.stringify(BAKED_UPCOMING)),
   sortOrder:   localStorage.getItem('cd_sortorder') || 'name',
+  ratings:     JSON.parse(localStorage.getItem('cd_ratings')   || '{}'),
+  favorites:   JSON.parse(localStorage.getItem('cd_favorites') || '[]'),
+  activeFilter: '',
 };
 
 function saveState() {
@@ -5581,6 +5950,8 @@ function saveState() {
     localStorage.setItem('cd_tripedits',  JSON.stringify(state.tripEdits));
     localStorage.setItem('cd_upcoming',   JSON.stringify(state.upcoming));
     localStorage.setItem('cd_sortorder',  state.sortOrder);
+    localStorage.setItem('cd_ratings',    JSON.stringify(state.ratings));
+    localStorage.setItem('cd_favorites',  JSON.stringify(state.favorites));
   } catch(err) {
     showToast('Could not save: ' + err.message);
   }
@@ -5620,6 +5991,7 @@ function getAllTripsSorted() {
 let editingId = null;
 let selW = '', selM = '';
 document.getElementById('jDate').valueAsDate = new Date();
+document.getElementById('currentYear').textContent = new Date().getFullYear();
 
 // ═══════════════════════════════════════════════════════
 // TABS
@@ -5896,12 +6268,28 @@ function renderStats() {
   const parks = allParks();
   const totalTrips = getAllTripsSorted().length;
   const upcomingCount = (state.upcoming || []).length;
-  const vCount = parks.filter(p=>state.visited[p.id]||!!(BASE_TRIPS[p.id]&&BASE_TRIPS[p.id].length)||!!p.stayedSites).length;
+
+  let mostVisited = '', mostVisitedCount = 0;
+  parks.forEach(p => {
+    const c = getTrips(p.id).length;
+    if (c > mostVisitedCount) { mostVisitedCount = c; mostVisited = p.name; }
+  });
+
+  let bestRated = '', bestRating = 0;
+  parks.forEach(p => {
+    const r = state.ratings[p.id] || 0;
+    if (r > bestRating && getTrips(p.id).length > 0) { bestRating = r; bestRated = p.name; }
+  });
+
+  const stars = n => '★'.repeat(n) + '☆'.repeat(5-n);
+
   document.getElementById('statsBar').innerHTML = `
     <div class="stat"><div class="stat-num">${parks.length}</div><div class="stat-label">Parks Listed</div></div>
     <div class="stat"><div class="stat-num">${totalTrips}</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-num">${upcomingCount}</div><div class="stat-label">Upcoming</div></div>
-    <div class="stat"><div class="stat-num">${state.entries.length}</div><div class="stat-label">Journal Entries</div></div>`;
+    <div class="stat"><div class="stat-num">${state.entries.length}</div><div class="stat-label">Journal Entries</div></div>
+    ${mostVisited?`<div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(mostVisited)}</div><div class="stat-sub">${mostVisitedCount} trips</div></div>`:''}
+    ${bestRated?`<div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(bestRated)}</div><div class="stat-sub" style="letter-spacing:2px">${stars(bestRating)}</div></div>`:''}`;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -5915,6 +6303,31 @@ function toggleSort() {
   if (btn) btn.textContent = state.sortOrder === 'name' ? 'A→Z' : '#1→';
 }
 
+function setFilter(f) {
+  state.activeFilter = (state.activeFilter === f) ? '' : f;
+  ['best','frequent','favs'].forEach(id => {
+    const el = document.getElementById('fp-'+id);
+    if (el) el.classList.toggle('active', state.activeFilter === id);
+  });
+  renderParks();
+}
+
+function toggleFavorite(parkId, e) {
+  e.stopPropagation();
+  const idx = state.favorites.indexOf(parkId);
+  if (idx === -1) state.favorites.push(parkId);
+  else state.favorites.splice(idx, 1);
+  saveState(); renderParks();
+  setTimeout(() => { const c = document.getElementById('pc'+parkId); if(c && !c.classList.contains('open')) c.classList.add('open'); }, 50);
+}
+
+function setRating(parkId, rating, e) {
+  e.stopPropagation();
+  state.ratings[parkId] = (state.ratings[parkId] === rating) ? 0 : rating;
+  saveState(); renderStats(); renderParks();
+  setTimeout(() => { const c = document.getElementById('pc'+parkId); if(c && !c.classList.contains('open')) c.classList.add('open'); }, 50);
+}
+
 // ═══════════════════════════════════════════════════════
 // PARK LIST
 // ═══════════════════════════════════════════════════════
@@ -5925,6 +6338,17 @@ function renderParks() {
     (p.goodSites||'').toLowerCase().includes(q)||(p.notes||'').toLowerCase().includes(q)||
     (p.bigRig||'').toLowerCase().includes(q)
   );
+
+  // Active filter
+  if (state.activeFilter === 'best')     list = list.filter(p => (state.ratings[p.id]||0) >= 4);
+  if (state.activeFilter === 'frequent') list = list.filter(p => getTrips(p.id).length >= 5);
+  if (state.activeFilter === 'favs')     list = list.filter(p => state.favorites.includes(p.id));
+
+  // Sync pill active states
+  ['best','frequent','favs'].forEach(id => {
+    const el = document.getElementById('fp-'+id);
+    if (el) el.classList.toggle('active', state.activeFilter === id);
+  });
 
   // Sort
   const btn = document.getElementById('sortBtn');
@@ -5978,12 +6402,19 @@ function renderParks() {
           <div class="park-sub">${p.address?'📍 '+esc(p.address):''}${p.drive?' · 🚗 '+esc(p.drive):''}</div>
         </div>
         <div class="park-right">
+          <button class="btn-fav" onclick="toggleFavorite(${p.id},event)" title="${state.favorites.includes(p.id)?'Remove from favorites':'Add to favorites'}">${state.favorites.includes(p.id)?'❤️':'🤍'}</button>
+          ${state.ratings[p.id] ? `<span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="${['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]}">${'★'.repeat(state.ratings[p.id])}</span>` : ''}
           ${isC?'<span class="badge bc">★ Mine</span>':''}
           ${trips.length?`<span class="badge bv">🏕 ${trips.length} trip${trips.length>1?'s':''}</span>`:`<span class="badge bn">New</span>`}
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="park-body">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
+          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
+          <div class="star-row">${[1,2,3,4,5].map(n=>`<span class="star ${(state.ratings[p.id]||0)>=n?'on':''}" onclick="setRating(${p.id},${n},event)" title="${n} star${n>1?'s':''}">★</span>`).join('')}</div>
+          ${state.ratings[p.id]?`<span style="font-size:.75rem;color:var(--smoke)">${['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]}</span>`:''}
+        </div>
         <div class="info-grid">
           ${p.goodSites?`<div class="info-block"><label>✅ Good Sites</label><p>${esc(p.goodSites)}</p></div>`:''}
           ${p.stayedSites?`<div class="info-block"><label>🏕 Sites We've Stayed</label><p>${esc(p.stayedSites)}</p></div>`:''}
@@ -6113,10 +6544,10 @@ function renderTripLog() {
   const parkMap = {};
   allParks().forEach(p => { parkMap[p.id] = p.name; });
 
-  // Always use true sequential position — custom num overrides are for park directory only
+  // Build full list with park names, applying custom num overrides
   const allSorted = getAllTripsSorted();
   let rows = allSorted.map((t, i) => {
-    const displayNum = i + 1;
+    const displayNum = t.num != null ? t.num : i + 1;
     const parkName   = parkMap[t._pid] || 'Unknown Park';
     const dateStr    = t.depart ? fmtDateShort(t.date) + ' → ' + fmtDateShort(t.depart) : fmtDateShort(t.date);
     return { displayNum, parkName, dateStr, site: t.site || '', note: t.note || '', _pid: t._pid, _ti: t._ti };
@@ -6267,6 +6698,8 @@ function exportData() {
     visited:     state.visited,
     tripEdits:   state.tripEdits,
     upcoming:    state.upcoming,
+    ratings:     state.ratings,
+    favorites:   state.favorites,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
@@ -6312,6 +6745,11 @@ function importData(e) {
         const existingIds = new Set(state.upcoming.map(t => t.id));
         data.upcoming.forEach(t => { if (!existingIds.has(t.id)) state.upcoming.push(t); });
         state.upcoming.sort((a,b) => a.startDate.localeCompare(b.startDate));
+      }
+      if (data.ratings)   Object.assign(state.ratings, data.ratings);
+      if (data.favorites) {
+        const merged = new Set([...state.favorites, ...data.favorites]);
+        state.favorites = [...merged];
       }
       saveState(); renderAll();
       showToast('Data imported! 🌲');
