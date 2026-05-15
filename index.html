@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0053)file:///Users/martinfelkel/Desktop/Camping/index.html -->
+<!-- saved from url=(0049)file:///Users/martinfelkel/Downloads/index_7.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -203,8 +203,8 @@ html { -webkit-overflow-scrolling: touch; }
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-num">51</div><div class="stat-label">Parks Listed</div></div>
-    <div class="stat"><div class="stat-num">153</div><div class="stat-label">Trips Logged</div></div>
-    <div class="stat"><div class="stat-num">839</div><div class="stat-label">Nights Camped</div></div>
+    <div class="stat"><div class="stat-num">154</div><div class="stat-label">Trips Logged</div></div>
+    <div class="stat"><div class="stat-num">841</div><div class="stat-label">Nights Camped</div></div>
     <div class="stat"><div class="stat-num">4</div><div class="stat-label">Upcoming</div></div>
     <div class="stat"><div class="stat-num">0</div><div class="stat-label">Journal Entries</div></div>
     <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Wekiwa Springs State Park</div><div class="stat-sub">21 trips</div></div>
@@ -223,6 +223,7 @@ html { -webkit-overflow-scrolling: touch; }
     <button class="btn-amber" onclick="openAddPark()">＋ Add Park</button>
     <button class="btn-amber" style="background:rgba(200,135,42,.55)" onclick="exportData()">⬆️ Export</button>
     <button class="btn-amber" style="background:rgba(200,135,42,.55)" onclick="document.getElementById(&#39;importFile&#39;).click()">⬇️ Import</button>
+    <button class="btn-amber" style="background:rgba(100,80,60,.65)" onclick="renumberAllTrips()" title="Fix duplicate or out-of-order trip numbers">🔢 Re-number Trips</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
   <div class="filter-bar">
@@ -325,7 +326,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,4)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#70</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#71</span>
         <span class="trip-date-badge">📅 Aug 10, 2018 → Aug 12, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 48</span>
@@ -335,7 +336,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,5)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#87</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#88</span>
         <span class="trip-date-badge">📅 May 21, 2020 → May 24, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 108</span>
@@ -405,7 +406,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#139</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#140</span>
         <span class="trip-date-badge">📅 Oct 17, 2024 → Oct 21, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 25</span>
@@ -465,7 +466,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#60</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#61</span>
         <span class="trip-date-badge">📅 Oct 14, 2017 → Oct 21, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site C23</span>
@@ -595,7 +596,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,6)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#65</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#66</span>
         <span class="trip-date-badge">📅 Mar 23, 2018 → Mar 25, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
@@ -605,7 +606,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,8)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#82</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#83</span>
         <span class="trip-date-badge">📅 Oct 4, 2019 → Oct 6, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
@@ -615,7 +616,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,9)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#83</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#84</span>
         <span class="trip-date-badge">📅 Dec 3, 2019 → Dec 5, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
@@ -625,7 +626,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,10)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#91</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#92</span>
         <span class="trip-date-badge">📅 Sep 11, 2020 → Sep 13, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
@@ -635,7 +636,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,11)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#112</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#113</span>
         <span class="trip-date-badge">📅 Aug 18, 2022 → Aug 21, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 29</span>
@@ -645,7 +646,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,12)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#135</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#137</span>
         <span class="trip-date-badge">📅 Jul 2, 2024 → Jul 5, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 3</span>
@@ -705,7 +706,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#142</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#143</span>
         <span class="trip-date-badge">📅 Nov 4, 2024 → Nov 6, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
@@ -765,7 +766,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#124</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#125</span>
         <span class="trip-date-badge">📅 Jul 13, 2023 → Jul 16, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 6</span>
@@ -825,7 +826,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#143</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#144</span>
         <span class="trip-date-badge">📅 Nov 6, 2024 → Nov 7, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 11</span>
@@ -945,7 +946,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#100</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#101</span>
         <span class="trip-date-badge">📅 Jun 13, 2021 → Jun 19, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 93</span>
@@ -1005,7 +1006,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#113</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#115</span>
         <span class="trip-date-badge">📅 Oct 15, 2022 → Oct 22, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site 96</span>
@@ -1135,7 +1136,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#109</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#110</span>
         <span class="trip-date-badge">📅 Apr 12, 2022 → Apr 18, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 24</span>
@@ -1225,7 +1226,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(6,2)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#96</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#97</span>
         <span class="trip-date-badge">📅 Jan 24, 2021 → Feb 8, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 15 nights</span>
         <span class="trip-site">Site 40</span>
@@ -1285,7 +1286,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#135</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#136</span>
         <span class="trip-date-badge">📅 Jun 12, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 172</span>
@@ -1345,7 +1346,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#56</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#57</span>
         <span class="trip-date-badge">📅 Jun 17, 2017 → Jun 18, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 50</span>
@@ -1525,7 +1526,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#88</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#89</span>
         <span class="trip-date-badge">📅 Jul 23, 2020 → Jul 26, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 101</span>
@@ -1585,7 +1586,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#151</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#152</span>
         <span class="trip-date-badge">📅 Mar 12, 2026 → Mar 15, 2026</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 37</span>
@@ -1645,7 +1646,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#93</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#94</span>
         <span class="trip-date-badge">📅 Nov 19, 2020 → Nov 22, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 12</span>
@@ -1795,7 +1796,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,2)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#66</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#67</span>
         <span class="trip-date-badge">📅 Apr 11, 2018 → Apr 14, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 28</span>
@@ -1805,17 +1806,17 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,3)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#90</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#91</span>
         <span class="trip-date-badge">📅 Sep 4, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 28</span>
-        <span class="trip-note">Trip #90 — very good</span>
+        <span class="trip-note">Trip #91 — very good</span>
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,5)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#92</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#93</span>
         <span class="trip-date-badge">📅 Oct 1, 2020 → Oct 4, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 56</span>
@@ -1825,7 +1826,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,6)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#108</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#109</span>
         <span class="trip-date-badge">📅 Feb 17, 2022 → Feb 20, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 43</span>
@@ -1885,7 +1886,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#138</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#139</span>
         <span class="trip-date-badge">📅 Sep 18, 2024 → Sep 22, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 71</span>
@@ -1945,7 +1946,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">3 trips</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#137</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#138</span>
         <span class="trip-date-badge">📅 Aug 26, 2024 → Aug 29, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 2</span>
@@ -1955,7 +1956,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(29,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#149</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#150</span>
         <span class="trip-date-badge">📅 Jul 21, 2025 → Jul 25, 2025</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 5</span>
@@ -1965,7 +1966,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(29,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#153</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#154</span>
         <span class="trip-date-badge">📅 May 10, 2026 → May 14, 2026</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 2</span>
@@ -2025,7 +2026,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#140</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#141</span>
         <span class="trip-date-badge">📅 Oct 21, 2024 → Oct 27, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 38</span>
@@ -2085,7 +2086,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#102</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#103</span>
         <span class="trip-date-badge">📅 Jul 29, 2021 → Aug 1, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 20</span>
@@ -2215,7 +2216,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#86</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#87</span>
         <span class="trip-date-badge">📅 Feb 20, 2020 → Feb 23, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 47</span>
@@ -2225,7 +2226,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,2)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#105</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#106</span>
         <span class="trip-date-badge">📅 Oct 21, 2021 → Oct 24, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 47</span>
@@ -2235,7 +2236,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,3)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#110</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#111</span>
         <span class="trip-date-badge">📅 May 8, 2022 → May 11, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 46</span>
@@ -2245,7 +2246,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,4)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#130</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#132</span>
         <span class="trip-date-badge">📅 Jan 21, 2024 → Jan 26, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 31</span>
@@ -2255,7 +2256,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,5)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#145</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#146</span>
         <span class="trip-date-badge">📅 Feb 14, 2025</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 45</span>
@@ -2265,7 +2266,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,6)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#146</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#147</span>
         <span class="trip-date-badge">📅 Mar 23, 2025</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 3</span>
@@ -2385,7 +2386,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">4 trips</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#73</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#74</span>
         <span class="trip-date-badge">📅 Oct 17, 2018 → Oct 21, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 46</span>
@@ -2395,7 +2396,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteTrip(27,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#133</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#134</span>
         <span class="trip-date-badge">📅 Apr 17, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 67</span>
@@ -2405,7 +2406,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(27,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#147</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#148</span>
         <span class="trip-date-badge">📅 Apr 14, 2025 → Apr 20, 2025</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 104</span>
@@ -2415,7 +2416,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(27,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#152</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#153</span>
         <span class="trip-date-badge">📅 Apr 11, 2026 → Apr 18, 2026</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site 104</span>
@@ -2555,7 +2556,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#61</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#62</span>
         <span class="trip-date-badge">📅 Nov 17, 2017 → Nov 19, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 72</span>
@@ -2565,7 +2566,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,2)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#97</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#98</span>
         <span class="trip-date-badge">📅 Mar 5, 2021 → Mar 7, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 11</span>
@@ -2575,7 +2576,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,5)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#117</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#118</span>
         <span class="trip-date-badge">📅 Dec 22, 2022 → Dec 26, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 16</span>
@@ -2585,7 +2586,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,3)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#119</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#120</span>
         <span class="trip-date-badge">📅 Feb 20, 2023 → Feb 23, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 72</span>
@@ -2645,7 +2646,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#114</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#116</span>
         <span class="trip-date-badge">📅 Oct 22, 2022 → Oct 25, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 77</span>
@@ -2705,7 +2706,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">2 trips</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#148</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#149</span>
         <span class="trip-date-badge">📅 Jun 1, 2025 → Jun 5, 2026</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 369 nights</span>
         <span class="trip-site">Site 28</span>
@@ -2715,7 +2716,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(28,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#150</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#151</span>
         <span class="trip-date-badge">📅 Feb 19, 2026</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 29</span>
@@ -2775,7 +2776,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#59</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#60</span>
         <span class="trip-date-badge">📅 Sep 26, 2017 → Oct 1, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site best site</span>
@@ -2895,7 +2896,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#120</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#121</span>
         <span class="trip-date-badge">📅 Mar 23, 2023 → Mar 27, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 55</span>
@@ -2955,7 +2956,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#123</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#124</span>
         <span class="trip-date-badge">📅 Jun 1, 2023 → Jun 6, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 12</span>
@@ -3085,7 +3086,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#76</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#77</span>
         <span class="trip-date-badge">📅 Feb 22, 2019 → Feb 24, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 60</span>
@@ -3095,7 +3096,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#95</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#96</span>
         <span class="trip-date-badge">📅 Dec 11, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 60</span>
@@ -3105,7 +3106,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,2)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#98</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#99</span>
         <span class="trip-date-badge">📅 Apr 1, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 60</span>
@@ -3115,7 +3116,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,3)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#103</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#104</span>
         <span class="trip-date-badge">📅 Aug 27, 2021 → Aug 29, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 60</span>
@@ -3125,7 +3126,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,4)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#106</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#107</span>
         <span class="trip-date-badge">📅 Nov 12, 2021 → Nov 14, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 62</span>
@@ -3135,7 +3136,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,5)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#111</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#112</span>
         <span class="trip-date-badge">📅 Jul 14, 2022 → Apr 17, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 60</span>
@@ -3145,7 +3146,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,6)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#121</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#122</span>
         <span class="trip-date-badge">📅 Apr 9, 2023 → Apr 13, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 60</span>
@@ -3155,7 +3156,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,7)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#143</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#130</span>
         <span class="trip-date-badge">📅 Nov 8, 2023 → Nov 12, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 60</span>
@@ -3265,7 +3266,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#75</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#76</span>
         <span class="trip-date-badge">📅 Jan 25, 2019 → Jan 27, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 21</span>
@@ -3345,7 +3346,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(9,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#69</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#70</span>
         <span class="trip-date-badge">📅 Jul 6, 2018 → Jul 8, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 1</span>
@@ -3415,7 +3416,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#58</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#59</span>
         <span class="trip-date-badge">📅 Aug 2, 2017 → Aug 6, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 22</span>
@@ -3425,7 +3426,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#67</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#68</span>
         <span class="trip-date-badge">📅 May 3, 2018 → May 6, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 22</span>
@@ -3435,7 +3436,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,2)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#71</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#72</span>
         <span class="trip-date-badge">📅 Aug 30, 2018 → Sep 3, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 43</span>
@@ -3445,7 +3446,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,3)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#74</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#75</span>
         <span class="trip-date-badge">📅 Dec 5, 2018 → Dec 19, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 14 nights</span>
         <span class="trip-site">Site 22</span>
@@ -3455,7 +3456,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,4)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#81</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#82</span>
         <span class="trip-date-badge">📅 Sep 12, 2019 → Sep 15, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 24</span>
@@ -3465,7 +3466,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,5)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#94</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#95</span>
         <span class="trip-date-badge">📅 Dec 2, 2020 → Dec 6, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 38</span>
@@ -3475,7 +3476,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,6)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#107</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#108</span>
         <span class="trip-date-badge">📅 Dec 1, 2021 → Dec 5, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 36</span>
@@ -3485,7 +3486,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,7)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#116</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#117</span>
         <span class="trip-date-badge">📅 Nov 30, 2022 → Dec 4, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 7</span>
@@ -3495,7 +3496,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,8)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#143</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#145</span>
         <span class="trip-date-badge">📅 Dec 3, 2024 → Dec 7, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 12+13</span>
@@ -3555,7 +3556,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#84</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#85</span>
         <span class="trip-date-badge">📅 Dec 19, 2019 → Dec 23, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 49</span>
@@ -3615,7 +3616,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#131</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#133</span>
         <span class="trip-date-badge">📅 Mar 5, 2024 → Mar 9, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 24</span>
@@ -3795,7 +3796,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,14)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#62</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#63</span>
         <span class="trip-date-badge">📅 Dec 22, 2017 → Dec 24, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 96</span>
@@ -3805,7 +3806,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,16)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#64</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#65</span>
         <span class="trip-date-badge">📅 Feb 9, 2018 → Feb 11, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 42</span>
@@ -3815,7 +3816,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,17)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#72</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#73</span>
         <span class="trip-date-badge">📅 Sep 19, 2018 → Sep 23, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 88</span>
@@ -3825,7 +3826,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,18)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#113</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#114</span>
         <span class="trip-date-badge">📅 Sep 8, 2022 → Sep 21, 2022</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 13 nights</span>
         <span class="trip-site">Site 16</span>
@@ -3845,7 +3846,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,20)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#133</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#135</span>
         <span class="trip-date-badge">📅 May 24, 2024 → May 27, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 53</span>
@@ -3880,7 +3881,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-fav" onclick="toggleFavorite(1776945920611,event)" title="Add to favorites">🤍</button>
           
           <span class="badge bc">★ Mine</span>
-          <span class="badge bv">🏕 1 trip</span>
+          <span class="badge bv">🏕 2 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
@@ -3902,7 +3903,7 @@ html { -webkit-overflow-scrolling: touch; }
         <div class="trip-log">
           <div class="trip-log-title">
             🗓 Trip History
-            <span class="trip-count-badge">1 trip</span>
+            <span class="trip-count-badge">2 trips</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
         <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#55</span>
@@ -3913,6 +3914,16 @@ html { -webkit-overflow-scrolling: touch; }
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776945920611,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(1776945920611,0)" title="Remove">✕</button>
+        </div>
+      </div><div class="trip-entry">
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#56</span>
+        <span class="trip-date-badge">📅 Jun 15, 2017 → Jun 17, 2017</span>
+        <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
+        
+        
+        <div class="trip-actions">
+          <button class="btn-edit-trip" onclick="openET(1776945920611,1)" title="Edit">✏️</button>
+          <button class="btn-del-trip" onclick="deleteTrip(1776945920611,1)" title="Remove">✕</button>
         </div>
       </div></div>
           <div class="add-trip-row">
@@ -4045,7 +4056,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,6)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#57</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#58</span>
         <span class="trip-date-badge">📅 Jul 7, 2017 → Jul 9, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
@@ -4055,7 +4066,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,8)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#63</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#64</span>
         <span class="trip-date-badge">📅 Jan 5, 2018 → Jan 7, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 47</span>
@@ -4065,7 +4076,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,9)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#68</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#69</span>
         <span class="trip-date-badge">📅 Jun 1, 2018 → Jun 3, 2018</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
@@ -4075,7 +4086,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,10)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#77</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#78</span>
         <span class="trip-date-badge">📅 Apr 5, 2019 → Apr 7, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
@@ -4085,7 +4096,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,11)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#78</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#79</span>
         <span class="trip-date-badge">📅 May 31, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 45</span>
@@ -4095,7 +4106,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,12)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#79</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#80</span>
         <span class="trip-date-badge">📅 Jul 5, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 45</span>
@@ -4105,7 +4116,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,13)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#80</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#81</span>
         <span class="trip-date-badge">📅 Aug 2, 2019 → Aug 4, 2019</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 44</span>
@@ -4115,7 +4126,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,14)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#99</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#100</span>
         <span class="trip-date-badge">📅 May 21, 2021 → May 23, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
@@ -4125,7 +4136,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,15)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#101</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#102</span>
         <span class="trip-date-badge">📅 Jul 9, 2021 → Jul 11, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 46</span>
@@ -4135,7 +4146,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,16)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#104</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#105</span>
         <span class="trip-date-badge">📅 Sep 23, 2021 → Sep 26, 2021</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 44</span>
@@ -4145,7 +4156,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,17)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#118</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#119</span>
         <span class="trip-date-badge">📅 Jan 11, 2023 → Jan 13, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
@@ -4155,7 +4166,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,18)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#122</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#123</span>
         <span class="trip-date-badge">📅 May 2, 2023 → May 7, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 41</span>
@@ -4165,7 +4176,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,19)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#129</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#131</span>
         <span class="trip-date-badge">📅 Dec 7, 2023 → Dec 11, 2023</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 37</span>
@@ -4225,7 +4236,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#141</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#142</span>
         <span class="trip-date-badge">📅 Oct 27, 2024 → Nov 4, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 8 nights</span>
         <span class="trip-site">Site 35E</span>
@@ -4285,7 +4296,7 @@ html { -webkit-overflow-scrolling: touch; }
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#85</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#86</span>
         <span class="trip-date-badge">📅 Jan 6, 2020 → Jan 9, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 21</span>
@@ -4397,7 +4408,7 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
   <div class="entries-header">
     <span class="entries-title">All Trips</span>
-    <span class="entry-count" id="triplogCount">153 trips</span>
+    <span class="entry-count" id="triplogCount">154 trips</span>
   </div>
   <div id="triplogList">
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -4897,6 +4908,15 @@ html { -webkit-overflow-scrolling: touch; }
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#56</span>
+      <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Warrior Creek Campground</span>
+      <span class="trip-date-badge">📅 Jun 15, 2017 → Jun 17, 2017</span>
+      <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
+      
+      
+      <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776945920611,1)" title="Edit">✏️</button>
+    </div>
+    <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#57</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Fort McAllister State Historic Site</span>
       <span class="trip-date-badge">📅 Jun 17, 2017 → Jun 18, 2017</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -4905,7 +4925,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776907371154,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#57</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#58</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Jul 7, 2017 → Jul 9, 2017</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -4914,7 +4934,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,8)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#58</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#59</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Aug 2, 2017 → Aug 6, 2017</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -4923,7 +4943,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#59</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#60</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Myakka River State Park</span>
       <span class="trip-date-badge">📅 Sep 26, 2017 → Oct 1, 2017</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
@@ -4932,7 +4952,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(23,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#60</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#61</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Bear Den Family Campground</span>
       <span class="trip-date-badge">📅 Oct 14, 2017 → Oct 21, 2017</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
@@ -4941,7 +4961,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(37,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#61</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#62</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Mike Roess Gold Head Branch State Park</span>
       <span class="trip-date-badge">📅 Nov 17, 2017 → Nov 19, 2017</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -4950,7 +4970,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,2)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#62</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#63</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Tomoka State Park</span>
       <span class="trip-date-badge">📅 Dec 22, 2017 → Dec 24, 2017</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -4959,7 +4979,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,12)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#63</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#64</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Jan 5, 2018 → Jan 7, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -4968,7 +4988,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,9)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#64</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#65</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Tomoka State Park</span>
       <span class="trip-date-badge">📅 Feb 9, 2018 → Feb 11, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -4977,7 +4997,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,13)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#65</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#66</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Mar 23, 2018 → Mar 25, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -4986,7 +5006,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,7)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#66</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#67</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Hillsborough River State Park</span>
       <span class="trip-date-badge">📅 Apr 11, 2018 → Apr 14, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -4995,7 +5015,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#67</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#68</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 May 3, 2018 → May 6, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5004,7 +5024,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,2)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#68</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#69</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Jun 1, 2018 → Jun 3, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5013,7 +5033,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,10)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#69</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#70</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Sebastian Inlet State Park</span>
       <span class="trip-date-badge">📅 Jul 6, 2018 → Jul 8, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5022,7 +5042,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(9,2)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#70</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#71</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Anastasia State Park</span>
       <span class="trip-date-badge">📅 Aug 10, 2018 → Aug 12, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5031,7 +5051,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,6)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#71</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#72</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Aug 30, 2018 → Sep 3, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5040,7 +5060,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#72</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#73</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Tomoka State Park</span>
       <span class="trip-date-badge">📅 Sep 19, 2018 → Sep 23, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5049,7 +5069,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,14)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#73</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#74</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Long Point Campground</span>
       <span class="trip-date-badge">📅 Oct 17, 2018 → Oct 21, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5058,7 +5078,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#74</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#75</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Dec 5, 2018 → Dec 19, 2018</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 14 nights</span>
@@ -5067,7 +5087,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,4)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#75</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#76</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Santos Trailhead and Campground</span>
       <span class="trip-date-badge">📅 Jan 25, 2019 → Jan 27, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5076,7 +5096,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(22,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#76</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#77</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Feb 22, 2019 → Feb 24, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5085,7 +5105,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#77</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#78</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Apr 5, 2019 → Apr 7, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5094,7 +5114,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,11)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#78</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#79</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 May 31, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5103,7 +5123,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,12)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#79</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#80</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Jul 5, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5112,7 +5132,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,13)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#80</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#81</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Aug 2, 2019 → Aug 4, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5121,7 +5141,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,14)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#81</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#82</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Sep 12, 2019 → Sep 15, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5130,7 +5150,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,5)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#82</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#83</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Oct 4, 2019 → Oct 6, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5139,7 +5159,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,8)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#83</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#84</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Dec 3, 2019 → Dec 5, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5148,7 +5168,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,9)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#84</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#85</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Skidaway Island State Park</span>
       <span class="trip-date-badge">📅 Dec 19, 2019 → Dec 23, 2019</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5157,7 +5177,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(24,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#85</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#86</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Yellow Jacket Resort</span>
       <span class="trip-date-badge">📅 Jan 6, 2020 → Jan 9, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5166,7 +5186,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776961962322,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#86</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#87</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Kissimmee State Park</span>
       <span class="trip-date-badge">📅 Feb 20, 2020 → Feb 23, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5175,7 +5195,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#87</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#88</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Anastasia State Park</span>
       <span class="trip-date-badge">📅 May 21, 2020 → May 24, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5184,7 +5204,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,7)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#88</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#89</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Ginnie Springs Outdoors</span>
       <span class="trip-date-badge">📅 Jul 23, 2020 → Jul 26, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5202,16 +5222,16 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,8)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#90</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#91</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Hillsborough River State Park</span>
       <span class="trip-date-badge">📅 Sep 4, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
       <span class="trip-site">Site 28</span>
-      <span class="trip-note">Trip #90 — very good</span>
+      <span class="trip-note">Trip #91 — very good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,4)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#91</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#92</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Sep 11, 2020 → Sep 13, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5220,7 +5240,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,10)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#92</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#93</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Hillsborough River State Park</span>
       <span class="trip-date-badge">📅 Oct 1, 2020 → Oct 4, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5229,7 +5249,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,5)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#93</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#94</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Hart Springs</span>
       <span class="trip-date-badge">📅 Nov 19, 2020 → Nov 22, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5238,7 +5258,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(25,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#94</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#95</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Dec 2, 2020 → Dec 6, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5247,7 +5267,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,6)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#95</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#96</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Dec 11, 2020</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5256,7 +5276,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,2)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#96</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#97</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Fort Clinch State Park</span>
       <span class="trip-date-badge">📅 Jan 24, 2021 → Feb 8, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 15 nights</span>
@@ -5265,7 +5285,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(6,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#97</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#98</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Mike Roess Gold Head Branch State Park</span>
       <span class="trip-date-badge">📅 Mar 5, 2021 → Mar 7, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5274,7 +5294,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#98</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#99</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Apr 1, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5283,7 +5303,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#99</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#100</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 May 21, 2021 → May 23, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5292,7 +5312,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,15)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#100</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#101</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Edisto Beach State Park</span>
       <span class="trip-date-badge">📅 Jun 13, 2021 → Jun 19, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
@@ -5301,7 +5321,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(36,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#101</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#102</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Jul 9, 2021 → Jul 11, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5310,7 +5330,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,16)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#102</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#103</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Kissimmee Prairie Preserve State Park</span>
       <span class="trip-date-badge">📅 Jul 29, 2021 → Aug 1, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5319,7 +5339,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776963732011,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#103</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#104</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Aug 27, 2021 → Aug 29, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5328,7 +5348,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,4)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#104</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#105</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Sep 23, 2021 → Sep 26, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5337,7 +5357,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,17)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#105</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#106</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Kissimmee State Park</span>
       <span class="trip-date-badge">📅 Oct 21, 2021 → Oct 24, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5346,7 +5366,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,2)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#106</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#107</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Nov 12, 2021 → Nov 14, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5355,7 +5375,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,5)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#107</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#108</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Dec 1, 2021 → Dec 5, 2021</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5364,7 +5384,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,7)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#108</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#109</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Hillsborough River State Park</span>
       <span class="trip-date-badge">📅 Feb 17, 2022 → Feb 20, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5373,7 +5393,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,6)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#109</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#110</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Florida Caverns State Park</span>
       <span class="trip-date-badge">📅 Apr 12, 2022 → Apr 18, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
@@ -5382,7 +5402,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(33,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#110</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#111</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Kissimmee State Park</span>
       <span class="trip-date-badge">📅 May 8, 2022 → May 11, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5391,7 +5411,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#111</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#112</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Jul 14, 2022 → Apr 17, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5400,7 +5420,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,6)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#112</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#113</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Aug 18, 2022 → Aug 21, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5409,7 +5429,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,11)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#113</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#114</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Tomoka State Park</span>
       <span class="trip-date-badge">📅 Sep 8, 2022 → Sep 21, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 13 nights</span>
@@ -5418,7 +5438,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,15)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#113</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#115</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Elijah Clark State Park</span>
       <span class="trip-date-badge">📅 Oct 15, 2022 → Oct 22, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
@@ -5427,7 +5447,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(15,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#114</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#116</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Mistletoe State Park</span>
       <span class="trip-date-badge">📅 Oct 22, 2022 → Oct 25, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5436,7 +5456,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(14,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#116</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#117</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Nov 30, 2022 → Dec 4, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5445,7 +5465,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,8)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#117</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#118</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Mike Roess Gold Head Branch State Park</span>
       <span class="trip-date-badge">📅 Dec 22, 2022 → Dec 26, 2022</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5454,7 +5474,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,4)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#118</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#119</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Jan 11, 2023 → Jan 13, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5463,7 +5483,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,18)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#119</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#120</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Mike Roess Gold Head Branch State Park</span>
       <span class="trip-date-badge">📅 Feb 20, 2023 → Feb 23, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5472,7 +5492,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,5)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#120</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#121</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">O'Leno State Park</span>
       <span class="trip-date-badge">📅 Mar 23, 2023 → Mar 27, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5481,7 +5501,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(11,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#121</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#122</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Apr 9, 2023 → Apr 13, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5490,7 +5510,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,7)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#122</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#123</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 May 2, 2023 → May 7, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
@@ -5499,7 +5519,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,19)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#123</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#124</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Paynes Prairie State Park</span>
       <span class="trip-date-badge">📅 Jun 1, 2023 → Jun 6, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
@@ -5508,7 +5528,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(12,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#124</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#125</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Cary State Forest</span>
       <span class="trip-date-badge">📅 Jul 13, 2023 → Jul 16, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5553,7 +5573,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(32,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#143</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#130</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Rodman Campground</span>
       <span class="trip-date-badge">📅 Nov 8, 2023 → Nov 12, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5562,7 +5582,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,8)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#129</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#131</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Wekiwa Springs State Park</span>
       <span class="trip-date-badge">📅 Dec 7, 2023 → Dec 11, 2023</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5571,7 +5591,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,20)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#130</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#132</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Kissimmee State Park</span>
       <span class="trip-date-badge">📅 Jan 21, 2024 → Jan 26, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
@@ -5580,7 +5600,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,4)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#131</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#133</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Stephen Foster Folk Culture State Park</span>
       <span class="trip-date-badge">📅 Mar 5, 2024 → Mar 9, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5589,7 +5609,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(13,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#133</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#134</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Long Point Campground</span>
       <span class="trip-date-badge">📅 Apr 17, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5598,7 +5618,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#133</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#135</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Tomoka State Park</span>
       <span class="trip-date-badge">📅 May 24, 2024 → May 27, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5607,7 +5627,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,17)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#135</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#136</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Fort De Soto</span>
       <span class="trip-date-badge">📅 Jun 12, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5616,7 +5636,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(35,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#135</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#137</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Jul 2, 2024 → Jul 5, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5625,7 +5645,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,12)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#137</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#138</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Kelly Park</span>
       <span class="trip-date-badge">📅 Aug 26, 2024 → Aug 29, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5634,7 +5654,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(29,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#138</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#139</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Jekyll Island Campground</span>
       <span class="trip-date-badge">📅 Sep 18, 2024 → Sep 22, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5643,7 +5663,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(38,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#139</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#140</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Barnwell State Park</span>
       <span class="trip-date-badge">📅 Oct 17, 2024 → Oct 21, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5652,7 +5672,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(39,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#140</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#141</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Kerr Lake Recreation Area — Satterwhite Point</span>
       <span class="trip-date-badge">📅 Oct 21, 2024 → Oct 27, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
@@ -5661,7 +5681,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(40,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#141</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#142</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Williamsburg campground</span>
       <span class="trip-date-badge">📅 Oct 27, 2024 → Nov 4, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 8 nights</span>
@@ -5670,7 +5690,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776970763557,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#142</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#143</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Carolina Beach State Park</span>
       <span class="trip-date-badge">📅 Nov 4, 2024 → Nov 6, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
@@ -5679,7 +5699,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776905736791,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#143</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#144</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Crooked River State Park</span>
       <span class="trip-date-badge">📅 Nov 6, 2024 → Nov 7, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5688,7 +5708,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776905257701,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#143</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#145</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Dec 3, 2024 → Dec 7, 2024</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5697,7 +5717,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,9)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#145</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#146</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Kissimmee State Park</span>
       <span class="trip-date-badge">📅 Feb 14, 2025</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5706,7 +5726,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,5)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#146</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#147</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Kissimmee State Park</span>
       <span class="trip-date-badge">📅 Mar 23, 2025</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5715,7 +5735,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,6)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#147</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#148</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Long Point Campground</span>
       <span class="trip-date-badge">📅 Apr 14, 2025 → Apr 20, 2025</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
@@ -5724,7 +5744,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,2)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#148</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#149</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Moss Park</span>
       <span class="trip-date-badge">📅 Jun 1, 2025 → Jun 5, 2026</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 369 nights</span>
@@ -5733,7 +5753,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(28,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#149</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#150</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Kelly Park</span>
       <span class="trip-date-badge">📅 Jul 21, 2025 → Jul 25, 2025</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5742,7 +5762,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(29,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#150</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#151</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Moss Park</span>
       <span class="trip-date-badge">📅 Feb 19, 2026</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
@@ -5751,7 +5771,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(28,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#151</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#152</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Harddee Lakes Park</span>
       <span class="trip-date-badge">📅 Mar 12, 2026 → Mar 15, 2026</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
@@ -5760,7 +5780,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1777632922321,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#152</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#153</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Long Point Campground</span>
       <span class="trip-date-badge">📅 Apr 11, 2026 → Apr 18, 2026</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
@@ -5769,7 +5789,7 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#153</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#154</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Kelly Park</span>
       <span class="trip-date-badge">📅 May 10, 2026 → May 14, 2026</span>
       <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
@@ -5847,7 +5867,7 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
-<div class="toast" id="toast">Park updated ✓</div>
+<div class="toast" id="toast">All trips re-numbered chronologically ✓</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -7108,7 +7128,14 @@ function saveET() {
     note: document.getElementById('et-note').value.trim()
   };
   if (depart) updated.depart = depart;
-  if (numVal !== '') updated.num = parseInt(numVal, 10);
+  // Only persist a manual trip number if the user explicitly changed it
+  // from the auto-computed value. This prevents stale numbers after edits.
+  if (numVal !== '') {
+    const computedNum = getAllTripsSorted().findIndex(x => x._pid === _etp && x._ti === _eti) + 1;
+    if (parseInt(numVal, 10) !== computedNum) {
+      updated.num = parseInt(numVal, 10);
+    }
+  }
   if (_etph)  updated.photo  = _etph;
   if (_etIsBase) {
     if (!state.tripEdits[_etp]) state.tripEdits[_etp] = {};
@@ -7126,6 +7153,25 @@ function saveET() {
 function openLB(src) {
   document.getElementById('lb-img').src = src;
   document.getElementById('lightbox').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════
+// RE-NUMBER ALL TRIPS
+// ═══════════════════════════════════════════════════════
+function renumberAllTrips() {
+  if (!confirm('This will clear all manual trip-number overrides and re-number every trip in strict chronological order. Continue?')) return;
+  // Remove any manually-pinned num from tripEdits (base-trip overrides)
+  Object.keys(state.tripEdits).forEach(pid => {
+    Object.keys(state.tripEdits[pid]).forEach(idx => {
+      delete state.tripEdits[pid][idx].num;
+    });
+  });
+  // Remove any manually-pinned num from user-added trips
+  Object.keys(state.tripLogs).forEach(pid => {
+    (state.tripLogs[pid] || []).forEach(t => { delete t.num; });
+  });
+  saveState(); renderAll();
+  showToast('All trips re-numbered chronologically ✓');
 }
 
 // ═══════════════════════════════════════════════════════
