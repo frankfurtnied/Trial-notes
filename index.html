@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/martinfelkel/Downloads/index_19.html -->
+<!-- saved from url=(0050)file:///Users/martinfelkel/Downloads/index_20.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -4448,7 +4448,7 @@ html { -webkit-overflow-scrolling: touch; }
 <div class="panel" id="panel-wishlist">
   <div class="entries-header">
     <span class="entries-title">Wish List</span>
-    <span class="entry-count" id="wlCount">1 park</span>
+    <span class="entry-count" id="wlCount">2 parks</span>
   </div>
   <div id="wishlistCards" style="margin-bottom:24px">
     <div class="entry-card" style="margin-bottom:10px">
@@ -4468,11 +4468,33 @@ html { -webkit-overflow-scrolling: touch; }
       </div>
       <div class="card-foot">
         <button class="btn-sm btn-primary" onclick="migrateWishlist(1779154399784)" style="background:var(--bark);color:var(--cream)">➕ Add to Park Directory</button>
+        <button class="btn-sm" onclick="editWishlist(1779154399784)">✏️ Edit</button>
         <button class="btn-sm" onclick="deleteWishlist(1779154399784)">Remove</button>
+      </div>
+    </div>
+    <div class="entry-card" style="margin-bottom:10px">
+      <div class="card-top">
+        <div>
+          <div style="font-weight:700;color:var(--bark);font-size:1rem">Salt Springs campground</div>
+          <div style="font-size:.82rem;color:var(--smoke);margin-top:3px">📍 13851 Hwy 19N Ft. McCoy, FL 32134</div>
+          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">📞 352-685-2048</div>
+          <div style="font-size:.82rem;margin-top:2px">🌐 <a href="https://www.recreation.gov/camping/campgrounds/233920?tab=info" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--bark);text-decoration:underline dotted">www.recreation.gov/camping/campgrounds/233920?tab=info</a></div>
+          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">🚗 79 Miles 2hrs</div>
+          <div style="font-size:.82rem;color:var(--smoke);margin-top:4px">✅ <b>Good Sites:</b> 7, 8, 34, 33, 31 (very nice). Also 4, 26, 25, 35, 45, 54, 52, 39.</div>
+          
+          
+          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">🚐 <b>Big Rig:</b> Full hookups $50/night. Sites 7, 8, 34, 33, 31 very nice.</div>
+          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">📝 Near Rodman. Full hookups $50/night. Very nice sites.</div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <button class="btn-sm btn-primary" onclick="migrateWishlist(1779155563367)" style="background:var(--bark);color:var(--cream)">➕ Add to Park Directory</button>
+        <button class="btn-sm" onclick="editWishlist(1779155563367)">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteWishlist(1779155563367)">Remove</button>
       </div>
     </div></div>
   <div class="entry-form">
-    <div style="font-family:-apple-system,Georgia,serif;font-size:1.15rem;color:var(--bark);margin-bottom:14px">🌟 Add a Park to Your Wish List</div>
+    <div id="wlFormTitle" style="font-family:-apple-system,Georgia,serif;font-size:1.15rem;color:var(--bark);margin-bottom:14px">🌟 Add a Park to Your Wish List</div>
     <div class="fg2">
       <div><label>Park Name *</label><input type="text" id="wlName" placeholder="e.g. Juniper Springs"></div>
       <div><label>📞 Phone</label><input type="text" id="wlPhone" placeholder="(xxx) xxx-xxxx"></div>
@@ -4485,7 +4507,8 @@ html { -webkit-overflow-scrolling: touch; }
     <div class="fl"><label>🏕 Sites We've Stayed</label><input type="text" id="wlStayed"></div>
     <div class="fl"><label>🚐 Big Rig Notes</label><input type="text" id="wlRig"></div>
     <div class="fl"><label>📝 Notes</label><textarea id="wlNotes" placeholder="Anything else worth knowing…"></textarea></div>
-    <button class="big-save" onclick="saveWishlist()">🌟 Add to Wish List</button>
+    <button class="big-save" id="wlSaveBtn" onclick="saveWishlist()">🌟 Add to Wish List</button>
+    <button class="btn-cancel" id="wlCancelBtn" onclick="cancelEditWishlist()" style="display:none;margin-top:8px">Cancel Edit</button>
   </div>
 </div>
 
@@ -6549,19 +6572,47 @@ function renderWishlist() {
       </div>
       <div class="card-foot">
         <button class="btn-sm btn-primary" onclick="migrateWishlist(${w.id})" style="background:var(--bark);color:var(--cream)">➕ Add to Park Directory</button>
+        <button class="btn-sm" onclick="editWishlist(${w.id})">✏️ Edit</button>
         <button class="btn-sm" onclick="deleteWishlist(${w.id})">Remove</button>
       </div>
     </div>`).join('');
 }
 
+let wlEditingId = null;
+
+function editWishlist(id) {
+  const w = state.wishlist.find(x => x.id === id);
+  if (!w) return;
+  wlEditingId = id;
+  document.getElementById('wlName').value    = w.name    || '';
+  document.getElementById('wlPhone').value   = w.phone   || '';
+  document.getElementById('wlAddress').value = w.address || '';
+  document.getElementById('wlWebsite').value = w.website || '';
+  document.getElementById('wlDrive').value   = w.drive   || '';
+  document.getElementById('wlGood').value    = w.good    || '';
+  document.getElementById('wlAvoid').value   = w.avoid   || '';
+  document.getElementById('wlStayed').value  = w.stayed  || '';
+  document.getElementById('wlRig').value     = w.rig     || '';
+  document.getElementById('wlNotes').value   = w.notes   || '';
+  document.getElementById('wlFormTitle').textContent = '✏️ Edit Park';
+  document.getElementById('wlSaveBtn').textContent   = '💾 Save Changes';
+  document.getElementById('wlCancelBtn').style.display = '';
+  document.querySelector('#panel-wishlist .entry-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEditWishlist() {
+  wlEditingId = null;
+  ['wlName','wlPhone','wlAddress','wlWebsite','wlDrive','wlGood','wlAvoid','wlStayed','wlRig','wlNotes']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('wlFormTitle').textContent   = '🌟 Add a Park to Your Wish List';
+  document.getElementById('wlSaveBtn').textContent     = '🌟 Add to Wish List';
+  document.getElementById('wlCancelBtn').style.display = 'none';
+}
+
 function saveWishlist() {
   const name = document.getElementById('wlName').value.trim();
   if (!name) { showToast('Please enter a park name'); return; }
-  if (state.wishlist.find(w => w.name.toLowerCase() === name.toLowerCase())) {
-    showToast('Already on your wish list!'); return;
-  }
-  state.wishlist.push({
-    id:      Date.now(),
+  const fields = {
     name,
     phone:   document.getElementById('wlPhone').value.trim(),
     address: document.getElementById('wlAddress').value.trim(),
@@ -6572,12 +6623,25 @@ function saveWishlist() {
     stayed:  document.getElementById('wlStayed').value.trim(),
     rig:     document.getElementById('wlRig').value.trim(),
     notes:   document.getElementById('wlNotes').value.trim(),
-  });
-  saveState();
-  ['wlName','wlPhone','wlAddress','wlWebsite','wlDrive','wlGood','wlAvoid','wlStayed','wlRig','wlNotes']
-    .forEach(id => document.getElementById(id).value = '');
-  renderWishlist();
-  showToast('Added to wish list! 🌟');
+  };
+  if (wlEditingId) {
+    const idx = state.wishlist.findIndex(w => w.id === wlEditingId);
+    if (idx >= 0) state.wishlist[idx] = { ...state.wishlist[idx], ...fields };
+    saveState();
+    cancelEditWishlist();
+    renderWishlist();
+    showToast('Wish list entry updated! ✏️');
+  } else {
+    if (state.wishlist.find(w => w.name.toLowerCase() === name.toLowerCase())) {
+      showToast('Already on your wish list!'); return;
+    }
+    state.wishlist.push({ id: Date.now(), ...fields });
+    saveState();
+    ['wlName','wlPhone','wlAddress','wlWebsite','wlDrive','wlGood','wlAvoid','wlStayed','wlRig','wlNotes']
+      .forEach(id => document.getElementById(id).value = '');
+    renderWishlist();
+    showToast('Added to wish list! 🌟');
+  }
 }
 
 function deleteWishlist(id) {
