@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0071)file:///Users/martinfelkel/Downloads/Trail_Notes___Camping_Diary_1.html -->
+<!-- saved from url=(0071)file:///Users/martinfelkel/Downloads/Trail_Notes___Camping_Diary_2.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Trail Notes">
 <meta name="theme-color" content="#1E3A1F">
 <title>Trail Notes — Camping Diary</title>
+<script src="./Trail Notes — Camping Diary_files/supabase.min.js"></script>
 <style>
 /* Use system fonts — no internet needed */
 </style>
@@ -200,6 +201,13 @@ html { -webkit-overflow-scrolling: touch; }
   <div class="logo-row"><span style="font-size:1.9rem">🌲</span><h1><em>Trail Notes</em></h1><span style="font-size:1.9rem">🌲</span></div>
   <p>Camping Diary · 2012 – <span id="currentYear">2026</span></p><div class="divider"></div>
 </header>
+
+<!-- Cloud user bar -->
+<div id="userBar" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 10px; min-height: 22px; visibility: visible;">
+  <span id="syncDot" style="font-size:.72rem;color:var(--amber);opacity:0;transition:opacity .5s">☁️ Saved</span>
+  <span id="userEmail" style="font-size:.75rem;color:var(--fog);letter-spacing:.04em">frankfurtnied@gmail.com</span>
+  <button onclick="doSignOut()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sign out">Sign out</button>
+</div>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-num">50</div><div class="stat-label">Parks Listed</div></div>
@@ -4396,72 +4404,9 @@ html { -webkit-overflow-scrolling: touch; }
 <div class="panel" id="panel-wishlist">
   <div class="entries-header">
     <span class="entries-title">Wish List</span>
-    <span class="entry-count" id="wlCount">3 parks</span>
+    <span class="entry-count" id="wlCount">0 parks</span>
   </div>
-  <div id="wishlistCards" style="margin-bottom:24px">
-    <div class="entry-card" style="margin-bottom:10px">
-      <div class="card-top">
-        <div>
-          <div style="font-weight:700;color:var(--bark);font-size:1rem">Vogel Stae Park</div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:3px">📍 <a href="https://www.google.com/maps/dir/?api=1&amp;destination=405%20Vogel%20State%20Park%20Road%20Blairsville%2C%20GA%2030512%20Union%20County" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline dotted;cursor:pointer" title="Get directions">405 Vogel State Park Road Blairsville, GA 30512 Union County</a></div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">📞 706-745-2628</div>
-          <div style="font-size:.82rem;margin-top:2px">🌐 <a href="https://gastateparks.org/Vogel" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--bark);text-decoration:underline dotted">gastateparks.org/Vogel</a></div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">🚗 544 Miles 9 hrs+</div>
-          
-          
-          
-          
-          
-        </div>
-      </div>
-      <div class="card-foot">
-        <button class="btn-sm btn-primary" onclick="migrateWishlist(1779154399784)" style="background:var(--bark);color:var(--cream)">➕ Add to Park Directory</button>
-        <button class="btn-sm" onclick="editWishlist(1779154399784)">✏️ Edit</button>
-        <button class="btn-sm" onclick="deleteWishlist(1779154399784)">Remove</button>
-      </div>
-    </div>
-    <div class="entry-card" style="margin-bottom:10px">
-      <div class="card-top">
-        <div>
-          <div style="font-weight:700;color:var(--bark);font-size:1rem">Salt Springs campground</div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:3px">📍 <a href="https://www.google.com/maps/dir/?api=1&amp;destination=13851%20Hwy%2019N%20Ft.%20McCoy%2C%20FL%2032134" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline dotted;cursor:pointer" title="Get directions">13851 Hwy 19N Ft. McCoy, FL 32134</a></div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">📞 352-685-2048</div>
-          <div style="font-size:.82rem;margin-top:2px">🌐 <a href="https://www.recreation.gov/camping/campgrounds/233920?tab=info" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--bark);text-decoration:underline dotted">www.recreation.gov/camping/campgrounds/233920?tab=info</a></div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">🚗 79 Miles 2hrs</div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:4px">✅ <b>Good Sites:</b> 7, 8, 34, 33, 31 (very nice). Also 4, 26, 25, 35, 45, 54, 52, 39.</div>
-          
-          
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">🚐 <b>Big Rig:</b> Full hookups $50/night. Sites 7, 8, 34, 33, 31 very nice.</div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">📝 Near Rodman. Full hookups $50/night. Very nice sites.</div>
-        </div>
-      </div>
-      <div class="card-foot">
-        <button class="btn-sm btn-primary" onclick="migrateWishlist(1779155563367)" style="background:var(--bark);color:var(--cream)">➕ Add to Park Directory</button>
-        <button class="btn-sm" onclick="editWishlist(1779155563367)">✏️ Edit</button>
-        <button class="btn-sm" onclick="deleteWishlist(1779155563367)">Remove</button>
-      </div>
-    </div>
-    <div class="entry-card" style="margin-bottom:10px">
-      <div class="card-top">
-        <div>
-          <div style="font-weight:700;color:var(--bark);font-size:1rem">Audra State Park West Virginia</div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:3px">📍 <a href="https://www.google.com/maps/dir/?api=1&amp;destination=8397%20Audra%20Park%20Rd%2C%20Volga%2C%20WV%2026238" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline dotted;cursor:pointer" title="Get directions">8397 Audra Park Rd, Volga, WV 26238</a></div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">📞 304-457-1162</div>
-          <div style="font-size:.82rem;margin-top:2px">🌐 <a href="https://wvstateparks.com/parks/audra-state-park/" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--bark);text-decoration:underline dotted">wvstateparks.com/parks/audra-state-park/</a></div>
-          <div style="font-size:.82rem;color:var(--smoke);margin-top:2px">🚗 838 Miles 13 hrs +++</div>
-          
-          
-          
-          
-          
-        </div>
-      </div>
-      <div class="card-foot">
-        <button class="btn-sm btn-primary" onclick="migrateWishlist(1779228065343)" style="background:var(--bark);color:var(--cream)">➕ Add to Park Directory</button>
-        <button class="btn-sm" onclick="editWishlist(1779228065343)">✏️ Edit</button>
-        <button class="btn-sm" onclick="deleteWishlist(1779228065343)">Remove</button>
-      </div>
-    </div></div>
+  <div id="wishlistCards" style="margin-bottom:24px"></div>
   <div class="entry-form">
     <div id="wlFormTitle" style="font-family:-apple-system,Georgia,serif;font-size:1.15rem;color:var(--bark);margin-bottom:14px">🌟 Add a Park to Your Wish List</div>
     <div class="fg2">
@@ -5938,7 +5883,7 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
-<div class="toast" id="toast">All trips re-numbered chronologically ✓</div>
+<div class="toast" id="toast">Welcome back! 🌲</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -6459,6 +6404,7 @@ function saveState() {
   } catch(err) {
     showToast('Could not save: ' + err.message);
   }
+  scheduleSyncToCloud();
 }
 
 function allParks() {
@@ -6530,7 +6476,7 @@ function renderWishlist() {
       <div class="card-top">
         <div>
           <div style="font-weight:700;color:var(--bark);font-size:1rem">${esc(w.name)}</div>
-          ${w.address ? `<div style="font-size:.82rem;color:var(--smoke);margin-top:3px">📍 <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(w.address)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline dotted;cursor:pointer" title="Get directions">${esc(w.address)}</a></div>` : ''}
+          ${w.address ? `<div style="font-size:.82rem;color:var(--smoke);margin-top:3px">📍 ${esc(w.address)}</div>` : ''}
           ${w.phone   ? `<div style="font-size:.82rem;color:var(--smoke);margin-top:2px">📞 ${esc(w.phone)}</div>` : ''}
           ${w.website ? `<div style="font-size:.82rem;margin-top:2px">🌐 <a href="${esc(w.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--bark);text-decoration:underline dotted">${esc(w.website.replace(/^https?:\/\//,''))}</a></div>` : ''}
           ${w.drive   ? `<div style="font-size:.82rem;color:var(--smoke);margin-top:2px">🚗 ${esc(w.drive)}</div>` : ''}
@@ -7491,7 +7437,146 @@ function importData(e) {
   reader.readAsText(file);
 }
 
-document.addEventListener('DOMContentLoaded', renderAll);
+// ═══════════════════════════════════════════════════════
+// SUPABASE BACKEND
+// ═══════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://ycsoaagxojcuiavkueto.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_U7lDVjJvpZmQ6x48q-cFIw_HY-7qXQv';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let syncTimeout = null;
+
+function scheduleSyncToCloud() {
+  if (!currentUser) return;
+  clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(syncToCloud, 2000);
+}
+
+async function syncToCloud() {
+  if (!currentUser) return;
+  const payload = {
+    customParks: state.customParks,
+    overrides:   state.overrides,
+    tripLogs:    state.tripLogs,
+    entries:     state.entries,
+    visited:     state.visited,
+    tripEdits:   state.tripEdits,
+    upcoming:    state.upcoming,
+    sortOrder:   state.sortOrder,
+    ratings:     state.ratings,
+    favorites:   state.favorites,
+    hiddenParks: state.hiddenParks,
+    wishlist:    state.wishlist,
+  };
+  try {
+    const { error } = await sb.from('user_data').upsert(
+      { user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    );
+    if (!error) showSyncIndicator();
+  } catch(e) { console.error('Cloud sync failed:', e); }
+}
+
+async function loadFromCloud() {
+  try {
+    const { data, error } = await sb.from('user_data').select('data').eq('user_id', currentUser.id).single();
+    if (error && error.code !== 'PGRST116') return;
+    if (data?.data) {
+      const d = data.data;
+      if (d.customParks !== undefined) state.customParks = d.customParks;
+      if (d.overrides   !== undefined) state.overrides   = d.overrides;
+      if (d.tripLogs    !== undefined) state.tripLogs    = d.tripLogs;
+      if (d.entries     !== undefined) state.entries     = d.entries;
+      if (d.visited     !== undefined) state.visited     = d.visited;
+      if (d.tripEdits   !== undefined) state.tripEdits   = d.tripEdits;
+      if (d.upcoming    !== undefined) state.upcoming    = d.upcoming;
+      if (d.sortOrder   !== undefined) state.sortOrder   = d.sortOrder;
+      if (d.ratings     !== undefined) state.ratings     = d.ratings;
+      if (d.favorites   !== undefined) state.favorites   = d.favorites;
+      if (d.hiddenParks !== undefined) state.hiddenParks = d.hiddenParks;
+      if (d.wishlist    !== undefined) state.wishlist    = d.wishlist;
+    }
+  } catch(e) { console.error('Cloud load failed:', e); }
+}
+
+function showSyncIndicator() {
+  const el = document.getElementById('syncDot');
+  if (!el) return;
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 2500);
+}
+
+async function doSignIn() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass  = document.getElementById('authPass').value;
+  showAuthMsg('', '');
+  if (!email || !pass) { showAuthMsg('Please enter your email and password.', 'error'); return; }
+  document.getElementById('authSignInBtn').textContent = 'Signing in…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  document.getElementById('authSignInBtn').textContent = '🔑 Sign In';
+  if (error) { showAuthMsg(error.message, 'error'); return; }
+  await onSignedIn(data.user);
+}
+
+async function doSignUp() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass  = document.getElementById('authPass').value;
+  showAuthMsg('', '');
+  if (!email || !pass) { showAuthMsg('Please enter your email and password.', 'error'); return; }
+  if (pass.length < 6) { showAuthMsg('Password must be at least 6 characters.', 'error'); return; }
+  document.getElementById('authSignUpBtn').textContent = 'Creating…';
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  document.getElementById('authSignUpBtn').textContent = '✨ Create Account';
+  if (error) { showAuthMsg(error.message, 'error'); return; }
+  if (data.user && !data.session) {
+    showAuthMsg('Check your email to confirm your account, then sign in! 📬', 'success');
+  } else if (data.user) {
+    await onSignedIn(data.user);
+  }
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('authBg').style.display = 'flex';
+  document.getElementById('userBar').style.visibility = 'hidden';
+  showToast('Signed out. See you on the trail! 🌲');
+}
+
+async function onSignedIn(user) {
+  currentUser = user;
+  document.getElementById('authBg').style.display = 'none';
+  document.getElementById('userBar').style.visibility = 'visible';
+  document.getElementById('userEmail').textContent = user.email;
+  showToast('Loading your data from the cloud… ☁️');
+  await loadFromCloud();
+  renderAll();
+  showToast('Welcome back! 🌲');
+}
+
+function showAuthMsg(msg, type) {
+  const el = document.getElementById('authMsg');
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+  el.style.background = type === 'success' ? '#e8fde8' : '#fde8e8';
+  el.style.borderColor = type === 'success' ? '#c6f5c6' : '#f5c6c6';
+  el.style.color       = type === 'success' ? '#2c7a2c' : '#c0392b';
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('userBar').style.visibility = 'hidden';
+  // Allow Enter key to submit login
+  document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
+  document.getElementById('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
+  // Check for existing session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    await onSignedIn(session.user);
+  } else {
+    document.getElementById('authBg').style.display = 'flex';
+  }
+});
 </script>
 
 
@@ -7514,7 +7599,7 @@ document.addEventListener('DOMContentLoaded', renderAll);
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="./index_files/Trail_Notes___Camping_Diary.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="./Trail Notes — Camping Diary_files/Trail_Notes___Camping_Diary.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -7523,6 +7608,25 @@ document.addEventListener('DOMContentLoaded', renderAll);
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="./index_files/Trail_Notes___Camping_Diary.html">
+  <img id="lb-img" src="./Trail Notes — Camping Diary_files/Trail_Notes___Camping_Diary.html">
 </div>
-</div></body></html>
+</div>
+
+<!-- AUTH OVERLAY -->
+<div id="authBg" style="display: none; position: fixed; inset: 0px; background: rgba(30, 58, 31, 0.97); z-index: 300; align-items: center; justify-content: center; padding: 20px;">
+  <div style="background:var(--parchment);border-radius:8px;padding:36px 30px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.7);">
+    <div style="text-align:center;margin-bottom:26px;">
+      <div style="font-size:2.8rem;margin-bottom:10px">🌲</div>
+      <div style="font-family:-apple-system,Georgia,serif;font-size:1.5rem;color:var(--bark);font-weight:700">Trail Notes</div>
+      <div style="font-size:.85rem;color:var(--smoke);margin-top:5px;letter-spacing:.04em">Your camping diary, synced everywhere</div>
+    </div>
+    <div id="authMsg" style="border-radius: 4px; padding: 9px 13px; font-size: 0.85rem; margin-bottom: 14px; border: 1px solid rgb(245, 198, 198); background: rgb(253, 232, 232); color: rgb(192, 57, 43); display: none;"></div>
+    <div class="fl"><label>Email</label><input type="text" id="authEmail" placeholder="your@email.com" autocomplete="email" style="font-size:16px"></div>
+    <div class="fl"><label>Password</label><input type="password" id="authPass" placeholder="••••••••" autocomplete="current-password" style="font-size:16px"></div>
+    <button id="authSignInBtn" onclick="doSignIn()" style="width:100%;margin-top:10px;background:linear-gradient(135deg,var(--moss),var(--pine));color:var(--cream);border:none;border-radius:4px;padding:11px;font-family:-apple-system,Georgia,serif;font-size:1rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)">🔑 Sign In</button>
+    <button id="authSignUpBtn" onclick="doSignUp()" style="width:100%;margin-top:8px;background:none;border:1px solid var(--fog);color:var(--smoke);border-radius:4px;padding:11px;font-family:-apple-system,Georgia,serif;font-size:.95rem;cursor:pointer">✨ Create Account</button>
+    <div style="font-size:.73rem;color:var(--smoke);text-align:center;margin-top:18px;line-height:1.6">Your data is securely stored in the cloud<br>and syncs across all your devices for free.</div>
+  </div>
+</div>
+
+</body></html>
