@@ -7476,14 +7476,14 @@ async function syncToCloud() {
     hiddenParks: state.hiddenParks, wishlist: state.wishlist,
   };
   try {
-    const { ok, data } = await sbFetch('/rest/v1/user_data', {
+    const { ok, status, data } = await sbFetch('/rest/v1/user_data', {
       method: 'POST',
       headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
       body: JSON.stringify({ user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() })
     });
-    if (!ok) { showToast('Sync failed \u274c'); console.error('Sync error:', data); }
+    if (!ok) { showToast('Sync error ' + status + ': ' + (data?.message || data?.hint || JSON.stringify(data)).slice(0,100)); console.error('Sync error:', data); }
     else showSyncIndicator();
-  } catch(e) { showToast('Sync failed \u274c'); console.error(e); }
+  } catch(e) { showToast('Sync exception: ' + e.message); console.error(e); }
 }
 
 async function loadFromCloud() {
