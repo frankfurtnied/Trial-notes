@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0071)file:///Users/martinfelkel/Downloads/Trail_Notes___Camping_Diary_3.html -->
+<!-- saved from url=(0050)file:///Users/martinfelkel/Downloads/index_25.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-title" content="Trail Notes">
 <meta name="theme-color" content="#1E3A1F">
 <title>Trail Notes — Camping Diary</title>
-<script src="./index_files/supabase.min.js"></script>
 <style>
 /* Use system fonts — no internet needed */
 </style>
@@ -203,7 +202,7 @@ html { -webkit-overflow-scrolling: touch; }
 </header>
 
 <!-- Cloud user bar -->
-<div id="userBar" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 10px; min-height: 22px; visibility: hidden;">
+<div id="userBar" style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:10px;min-height:22px;">
   <span id="syncDot" style="font-size:.72rem;color:var(--amber);opacity:0;transition:opacity .5s">☁️ Saved</span>
   <span id="userEmail" style="font-size:.75rem;color:var(--fog);letter-spacing:.04em"></span>
   <button onclick="doSignOut()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sign out">Sign out</button>
@@ -7438,14 +7437,28 @@ function importData(e) {
 }
 
 // ═══════════════════════════════════════════════════════
-// SUPABASE BACKEND
+// SUPABASE BACKEND (direct fetch — no library needed)
 // ═══════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://ycsoaagxojcuiavkueto.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_U7lDVjJvpZmQ6x48q-cFIw_HY-7qXQv';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
-let syncTimeout = null;
+let accessToken  = localStorage.getItem('sb_access_token') || null;
+let syncTimeout  = null;
+
+async function sbFetch(path, options = {}) {
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Content-Type': 'application/json',
+    ...(accessToken ? { 'Authorization': 'Bearer ' + accessToken } : {}),
+    ...(options.headers || {})
+  };
+  const res  = await fetch(SUPABASE_URL + path, { ...options, headers });
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch(e) { json = text; }
+  return { ok: res.ok, status: res.status, data: json };
+}
 
 function scheduleSyncToCloud() {
   if (!currentUser) return;
@@ -7454,44 +7467,31 @@ function scheduleSyncToCloud() {
 }
 
 async function syncToCloud() {
-  if (!currentUser) return;
+  if (!currentUser || !accessToken) return;
   const payload = {
-    customParks: state.customParks,
-    overrides:   state.overrides,
-    tripLogs:    state.tripLogs,
-    entries:     state.entries,
-    visited:     state.visited,
-    tripEdits:   state.tripEdits,
-    upcoming:    state.upcoming,
-    sortOrder:   state.sortOrder,
-    ratings:     state.ratings,
-    favorites:   state.favorites,
-    hiddenParks: state.hiddenParks,
-    wishlist:    state.wishlist,
+    customParks: state.customParks, overrides: state.overrides,
+    tripLogs: state.tripLogs, entries: state.entries, visited: state.visited,
+    tripEdits: state.tripEdits, upcoming: state.upcoming, sortOrder: state.sortOrder,
+    ratings: state.ratings, favorites: state.favorites,
+    hiddenParks: state.hiddenParks, wishlist: state.wishlist,
   };
   try {
-    const { data: existing } = await sb.from('user_data').select('id').eq('user_id', currentUser.id).single();
-    let error;
-    if (existing) {
-      ({ error } = await sb.from('user_data').update(
-        { data: payload, updated_at: new Date().toISOString() }
-      ).eq('user_id', currentUser.id));
-    } else {
-      ({ error } = await sb.from('user_data').insert(
-        { user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() }
-      ));
-    }
-    if (error) { showToast('Sync failed — check connection ❌'); console.error('Sync error:', error); }
+    const { ok, data } = await sbFetch('/rest/v1/user_data', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() })
+    });
+    if (!ok) { showToast('Sync failed \u274c'); console.error('Sync error:', data); }
     else showSyncIndicator();
-  } catch(e) { showToast('Sync failed — check connection ❌'); console.error('Cloud sync failed:', e); }
+  } catch(e) { showToast('Sync failed \u274c'); console.error(e); }
 }
 
 async function loadFromCloud() {
+  if (!currentUser || !accessToken) return;
   try {
-    const { data, error } = await sb.from('user_data').select('data').eq('user_id', currentUser.id).single();
-    if (error && error.code !== 'PGRST116') return;
-    if (data?.data) {
-      const d = data.data;
+    const { ok, data } = await sbFetch('/rest/v1/user_data?user_id=eq.' + currentUser.id + '&select=data');
+    if (ok && Array.isArray(data) && data.length > 0 && data[0].data) {
+      const d = data[0].data;
       if (d.customParks !== undefined) state.customParks = d.customParks;
       if (d.overrides   !== undefined) state.overrides   = d.overrides;
       if (d.tripLogs    !== undefined) state.tripLogs    = d.tripLogs;
@@ -7505,7 +7505,7 @@ async function loadFromCloud() {
       if (d.hiddenParks !== undefined) state.hiddenParks = d.hiddenParks;
       if (d.wishlist    !== undefined) state.wishlist    = d.wishlist;
     }
-  } catch(e) { console.error('Cloud load failed:', e); }
+  } catch(e) { console.error('Load failed:', e); }
 }
 
 function showSyncIndicator() {
@@ -7520,11 +7520,23 @@ async function doSignIn() {
   const pass  = document.getElementById('authPass').value;
   showAuthMsg('', '');
   if (!email || !pass) { showAuthMsg('Please enter your email and password.', 'error'); return; }
-  document.getElementById('authSignInBtn').textContent = 'Signing in…';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  document.getElementById('authSignInBtn').textContent = '🔑 Sign In';
-  if (error) { showAuthMsg(error.message, 'error'); return; }
-  await onSignedIn(data.user);
+  document.getElementById('authSignInBtn').textContent = 'Signing in\u2026';
+  try {
+    const { ok, data } = await sbFetch('/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      body: JSON.stringify({ email, password: pass })
+    });
+    document.getElementById('authSignInBtn').textContent = '\uD83D\uDD11 Sign In';
+    if (!ok) { showAuthMsg(data.error_description || data.msg || 'Sign in failed.', 'error'); return; }
+    accessToken = data.access_token;
+    localStorage.setItem('sb_access_token',  accessToken);
+    localStorage.setItem('sb_refresh_token', data.refresh_token || '');
+    currentUser = data.user;
+    await onSignedIn(currentUser);
+  } catch(e) {
+    document.getElementById('authSignInBtn').textContent = '\uD83D\uDD11 Sign In';
+    showAuthMsg('Connection error. Please try again.', 'error');
+  }
 }
 
 async function doSignUp() {
@@ -7533,20 +7545,56 @@ async function doSignUp() {
   showAuthMsg('', '');
   if (!email || !pass) { showAuthMsg('Please enter your email and password.', 'error'); return; }
   if (pass.length < 6) { showAuthMsg('Password must be at least 6 characters.', 'error'); return; }
-  document.getElementById('authSignUpBtn').textContent = 'Creating…';
-  const { data, error } = await sb.auth.signUp({ email, password: pass });
-  document.getElementById('authSignUpBtn').textContent = '✨ Create Account';
-  if (error) { showAuthMsg(error.message, 'error'); return; }
-  if (data.user && !data.session) {
-    showAuthMsg('Check your email to confirm your account, then sign in! 📬', 'success');
-  } else if (data.user) {
-    await onSignedIn(data.user);
+  document.getElementById('authSignUpBtn').textContent = 'Creating\u2026';
+  try {
+    const { ok, data } = await sbFetch('/auth/v1/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password: pass })
+    });
+    document.getElementById('authSignUpBtn').textContent = '\u2728 Create Account';
+    if (!ok) { showAuthMsg(data.error_description || data.msg || 'Sign up failed.', 'error'); return; }
+    if (data.access_token) {
+      accessToken = data.access_token;
+      localStorage.setItem('sb_access_token', accessToken);
+      localStorage.setItem('sb_refresh_token', data.refresh_token || '');
+      currentUser = data.user;
+      await onSignedIn(currentUser);
+    } else {
+      showAuthMsg('Account created! Check your email to confirm, then sign in. \uD83D\uDCEC', 'success');
+    }
+  } catch(e) {
+    document.getElementById('authSignUpBtn').textContent = '\u2728 Create Account';
+    showAuthMsg('Connection error. Please try again.', 'error');
   }
 }
 
 async function doSignOut() {
-  await sb.auth.signOut();
+  try { await sbFetch('/auth/v1/logout', { method: 'POST' }); } catch(e) {}
+  accessToken = null; currentUser = null;
+  localStorage.removeItem('sb_access_token');
+  localStorage.removeItem('sb_refresh_token');
   window.location.reload();
+}
+
+async function getStoredSession() {
+  if (!accessToken) return null;
+  try {
+    const { ok, data } = await sbFetch('/auth/v1/user');
+    if (ok && data.id) return data;
+    // Try refresh
+    const rt = localStorage.getItem('sb_refresh_token');
+    if (!rt) return null;
+    const { ok: rok, data: rdata } = await sbFetch('/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST', body: JSON.stringify({ refresh_token: rt })
+    });
+    if (rok && rdata.access_token) {
+      accessToken = rdata.access_token;
+      localStorage.setItem('sb_access_token', accessToken);
+      localStorage.setItem('sb_refresh_token', rdata.refresh_token || rt);
+      return rdata.user;
+    }
+    return null;
+  } catch(e) { return null; }
 }
 
 async function onSignedIn(user) {
@@ -7554,10 +7602,10 @@ async function onSignedIn(user) {
   document.getElementById('authBg').style.display = 'none';
   document.getElementById('userBar').style.visibility = 'visible';
   document.getElementById('userEmail').textContent = user.email;
-  showToast('Loading your data from the cloud… ☁️');
+  showToast('Loading your data\u2026 \u2601\uFE0F');
   await loadFromCloud();
   renderAll();
-  showToast('Welcome back! 🌲');
+  showToast('Welcome back! \uD83C\uDF32');
 }
 
 function showAuthMsg(msg, type) {
@@ -7571,13 +7619,11 @@ function showAuthMsg(msg, type) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('userBar').style.visibility = 'hidden';
-  // Allow Enter key to submit login
   document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   document.getElementById('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
-  // Check for existing session
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) {
-    await onSignedIn(session.user);
+  const user = await getStoredSession();
+  if (user) {
+    await onSignedIn(user);
   } else {
     document.getElementById('authBg').style.display = 'flex';
   }
@@ -7604,7 +7650,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="./index_files/Trail_Notes___Camping_Diary.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes___Camping_Diary.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -7613,12 +7659,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="./index_files/Trail_Notes___Camping_Diary.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes___Camping_Diary.html">
 </div>
 </div>
 
 <!-- AUTH OVERLAY -->
-<div id="authBg" style="display: flex; position: fixed; inset: 0px; background: rgba(30, 58, 31, 0.97); z-index: 300; align-items: center; justify-content: center; padding: 20px;">
+<div id="authBg" style="display:none;position:fixed;inset:0;background:rgba(30,58,31,.97);z-index:300;align-items:center;justify-content:center;padding:20px;">
   <div style="background:var(--parchment);border-radius:8px;padding:36px 30px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.7);">
     <div style="text-align:center;margin-bottom:26px;">
       <div style="font-size:2.8rem;margin-bottom:10px">🌲</div>
