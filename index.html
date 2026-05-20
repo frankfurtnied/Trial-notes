@@ -203,6 +203,7 @@ html { -webkit-overflow-scrolling: touch; }
 
 <!-- Cloud user bar -->
 <div id="userBar" style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:10px;min-height:22px;">
+  <button onclick="manualSync()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sync now">🔄 Sync</button>
   <span id="syncDot" style="font-size:.72rem;color:var(--amber);opacity:0;transition:opacity .5s">☁️ Saved</span>
   <span id="userEmail" style="font-size:.75rem;color:var(--fog);letter-spacing:.04em"></span>
   <button onclick="doSignOut()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sign out">Sign out</button>
@@ -7460,6 +7461,14 @@ async function sbFetch(path, options = {}) {
   return { ok: res.ok, status: res.status, data: json };
 }
 
+async function manualSync() {
+  if (!currentUser) return;
+  showToast('Syncing… ☁️');
+  await loadFromCloud();
+  renderAll();
+  showToast('All up to date! 🌲');
+}
+
 function scheduleSyncToCloud() {
   if (!currentUser) return;
   clearTimeout(syncTimeout);
@@ -7684,9 +7693,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div style="font-size:.85rem;color:var(--smoke);margin-top:5px;letter-spacing:.04em">Your camping diary, synced everywhere</div>
     </div>
     <div id="authMsg" style="display:none;border-radius:4px;padding:9px 13px;font-size:.85rem;margin-bottom:14px;border:1px solid"></div>
-    <div class="fl"><label>Email</label><input type="text" id="authEmail" placeholder="your@email.com" autocomplete="email" style="font-size:16px"></div>
-    <div class="fl"><label>Password</label><input type="password" id="authPass" placeholder="••••••••" autocomplete="current-password" style="font-size:16px"></div>
-    <button id="authSignInBtn" onclick="doSignIn()" style="width:100%;margin-top:10px;background:linear-gradient(135deg,var(--moss),var(--pine));color:var(--cream);border:none;border-radius:4px;padding:11px;font-family:-apple-system,Georgia,serif;font-size:1rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)">🔑 Sign In</button>
+    <form id="authForm" onsubmit="event.preventDefault();doSignIn()" autocomplete="on">
+    <div class="fl"><label>Email</label><input type="email" id="authEmail" name="email" placeholder="your@email.com" autocomplete="username" style="font-size:16px"></div>
+    <div class="fl"><label>Password</label><input type="password" id="authPass" name="password" placeholder="••••••••" autocomplete="current-password" style="font-size:16px"></div>
+    <button id="authSignInBtn" type="submit" style="width:100%;margin-top:10px;background:linear-gradient(135deg,var(--moss),var(--pine));color:var(--cream);border:none;border-radius:4px;padding:11px;font-family:-apple-system,Georgia,serif;font-size:1rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)">🔑 Sign In</button>
+    </form>
     <button id="authSignUpBtn" onclick="doSignUp()" style="width:100%;margin-top:8px;background:none;border:1px solid var(--fog);color:var(--smoke);border-radius:4px;padding:11px;font-family:-apple-system,Georgia,serif;font-size:.95rem;cursor:pointer">✨ Create Account</button>
     <div style="font-size:.73rem;color:var(--smoke);text-align:center;margin-top:18px;line-height:1.6">Your data is securely stored in the cloud<br>and syncs across all your devices for free.</div>
   </div>
