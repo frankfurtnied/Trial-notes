@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_15.html -->
+<!-- saved from url=(0066)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7737,12 +7737,12 @@ const PL = {
 };
 
 function getKey() { try { return localStorage.getItem('tn_ant_key')||''; } catch(e) { return ''; } }
-function setKey(k) { try { localStorage.setItem('tn_ant_key',k); } catch(e) {} }
+function setKey(k) { try { const clean=k.replace(/[^\x20-\x7E]/g,'').trim(); localStorage.setItem('tn_ant_key',clean); } catch(e) {} }
 function promptForKey() {
   const current = getKey();
   const k = prompt('Paste your Anthropic API key:\n(from console.anthropic.com — stored only in this browser, never in the file)', current ? '(key already set — paste new one to replace)' : '');
   if (k && k.trim() && k !== '(key already set — paste new one to replace)') {
-    setKey(k.trim());
+    setKey(k.replace(/[^\x20-\x7E]/g,'').trim());
     renderFindPanel();
   }
 }
@@ -8070,7 +8070,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_15.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8079,7 +8079,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_15.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner.html">
 </div>
 
 <!-- AUTH OVERLAY -->
