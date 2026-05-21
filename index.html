@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_14.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_15.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -251,13 +251,13 @@ html { -webkit-overflow-scrolling: touch; }
 <!-- Cloud user bar -->
 <div id="userBar" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 10px; min-height: 22px; visibility: visible;">
   <button onclick="manualSync()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sync now">🔄 Sync</button>
-  <span id="syncDot" style="font-size:.72rem;color:var(--amber);opacity:0;transition:opacity .5s">☁️ Saved</span>
+  <span id="syncDot" style="font-size: 0.72rem; color: var(--amber); opacity: 0; transition: opacity 0.5s;">☁️ Saved</span>
   <span id="userEmail" style="font-size:.75rem;color:var(--fog);letter-spacing:.04em">frankfurtnied@gmail.com</span>
   <button onclick="doSignOut()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sign out">Sign out</button>
 </div>
 
 <div class="stats-bar" id="statsBar">
-    <div class="stat"><div class="stat-num">51</div><div class="stat-label">Parks Listed</div></div>
+    <div class="stat"><div class="stat-num">50</div><div class="stat-label">Parks Listed</div></div>
     <div class="stat"><div class="stat-num">153</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-num">855</div><div class="stat-label">Nights Camped</div></div>
     <div class="stat"><div class="stat-num">4</div><div class="stat-label">Upcoming</div></div>
@@ -288,58 +288,7 @@ html { -webkit-overflow-scrolling: touch; }
     <span class="filter-pill" id="fp-frequent" onclick="setFilter(&#39;frequent&#39;)">🏕 Been 5+ Times</span>
     <span class="filter-pill" id="fp-favs" onclick="setFilter(&#39;favs&#39;)">❤️ Favorites</span>
   </div>
-  <div id="parksList"><div class="park-card" id="pc1779404535687" style="animation-delay:0s">
-      <div class="park-header  custom-h" onclick="toggleCard(1779404535687)">
-        <div>
-          <div class="park-name">aaaaa</div>
-          <div class="park-sub"> </div>
-          
-        </div>
-        <div class="park-right">
-          <button class="btn-fav" onclick="toggleFavorite(1779404535687,event)" title="Add to favorites">🤍</button>
-          
-          <span class="badge bc">★ Mine</span>
-          <span class="badge bn">New</span>
-          <span class="chevron">▾</span>
-        </div>
-      </div>
-      <div class="park-body">
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px">
-          <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke)">Overall Rating</span>
-          <div class="star-row"><span class="star " onclick="setRating(1779404535687,1,event)" title="1 star">★</span><span class="star " onclick="setRating(1779404535687,2,event)" title="2 stars">★</span><span class="star " onclick="setRating(1779404535687,3,event)" title="3 stars">★</span><span class="star " onclick="setRating(1779404535687,4,event)" title="4 stars">★</span><span class="star " onclick="setRating(1779404535687,5,event)" title="5 stars">★</span></div>
-          
-        </div>
-        <div class="info-grid">
-          
-          
-          
-          
-          
-          
-        </div>
-
-        <div class="trip-log">
-          <div class="trip-log-title">
-            🗓 Trip History
-            <span class="trip-count-badge">0 trips</span>
-          </div>
-          <div class="trip-entries"><div style="font-size:.83rem;color:var(--smoke);font-style:italic;padding:4px 0">No trips logged yet.</div></div>
-          <div class="add-trip-row">
-            <div class="field"><label>Arrival Date</label><input type="date" id="td-date-1779404535687"></div>
-            <div class="field"><label>Departure Date</label><input type="date" id="td-depart-1779404535687"></div>
-            <div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-1779404535687" placeholder="e.g. 45"></div>
-            <div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-1779404535687" placeholder="e.g. great weather, very quiet"></div>
-            <button class="btn-add-trip" onclick="addTrip(1779404535687)">＋ Add Trip</button>
-          </div>
-        </div>
-
-        <div class="park-actions">
-          <button class="btn-g" onclick="logVisit(&#39;aaaaa&#39;)">📓 Journal Entry</button>
-          <button class="btn-o" onclick="openEditPark(1779404535687)">✏️ Edit</button>
-          <button class="btn-o danger" onclick="deleteCustomPark(1779404535687)">🗑 Remove</button>
-        </div>
-      </div>
-    </div><div class="park-card" id="pc4" style="animation-delay:0.025s">
+  <div id="parksList"><div class="park-card" id="pc4" style="animation-delay:0s">
       <div class="park-header been " onclick="toggleCard(4)">
         <div>
           <div class="park-name">Anastasia State Park</div>
@@ -480,7 +429,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(4)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc39" style="animation-delay:0.05s">
+    </div><div class="park-card" id="pc39" style="animation-delay:0.025s">
       <div class="park-header been " onclick="toggleCard(39)">
         <div>
           <div class="park-name">Barnwell State Park</div>
@@ -541,7 +490,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(39)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc37" style="animation-delay:0.07500000000000001s">
+    </div><div class="park-card" id="pc37" style="animation-delay:0.05s">
       <div class="park-header been " onclick="toggleCard(37)">
         <div>
           <div class="park-name">Bear Den Family Campground</div>
@@ -602,7 +551,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(37)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc2" style="animation-delay:0.1s">
+    </div><div class="park-card" id="pc2" style="animation-delay:0.07500000000000001s">
       <div class="park-header been " onclick="toggleCard(2)">
         <div>
           <div class="park-name">Blue Spring State Park</div>
@@ -783,7 +732,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(2)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc1776905736791" style="animation-delay:0.125s">
+    </div><div class="park-card" id="pc1776905736791" style="animation-delay:0.1s">
       <div class="park-header been custom-h" onclick="toggleCard(1776905736791)">
         <div>
           <div class="park-name">Carolina Beach State Park</div>
@@ -844,7 +793,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(1776905736791)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc34" style="animation-delay:0.15000000000000002s">
+    </div><div class="park-card" id="pc34" style="animation-delay:0.125s">
       <div class="park-header been " onclick="toggleCard(34)">
         <div>
           <div class="park-name">Cary State Forest</div>
@@ -905,7 +854,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(34)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc1776905257701" style="animation-delay:0.17500000000000002s">
+    </div><div class="park-card" id="pc1776905257701" style="animation-delay:0.15000000000000002s">
       <div class="park-header been custom-h" onclick="toggleCard(1776905257701)">
         <div>
           <div class="park-name">Crooked River State Park</div>
@@ -966,7 +915,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(1776905257701)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc31" style="animation-delay:0.2s">
+    </div><div class="park-card" id="pc31" style="animation-delay:0.17500000000000002s">
       <div class="park-header been " onclick="toggleCard(31)">
         <div>
           <div class="park-name">Don Carter State Park</div>
@@ -1027,7 +976,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(31)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc36" style="animation-delay:0.225s">
+    </div><div class="park-card" id="pc36" style="animation-delay:0.2s">
       <div class="park-header been " onclick="toggleCard(36)">
         <div>
           <div class="park-name">Edisto Beach State Park</div>
@@ -1088,7 +1037,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(36)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc15" style="animation-delay:0.25s">
+    </div><div class="park-card" id="pc15" style="animation-delay:0.225s">
       <div class="park-header been " onclick="toggleCard(15)">
         <div>
           <div class="park-name">Elijah Clark State Park</div>
@@ -1149,7 +1098,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(15)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc16" style="animation-delay:0.275s">
+    </div><div class="park-card" id="pc16" style="animation-delay:0.25s">
       <div class="park-header been " onclick="toggleCard(16)">
         <div>
           <div class="park-name">Faver-Dykes State Park</div>
@@ -1220,7 +1169,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(16)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc33" style="animation-delay:0.30000000000000004s">
+    </div><div class="park-card" id="pc33" style="animation-delay:0.275s">
       <div class="park-header been " onclick="toggleCard(33)">
         <div>
           <div class="park-name">Florida Caverns State Park</div>
@@ -1281,7 +1230,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(33)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc6" style="animation-delay:0.325s">
+    </div><div class="park-card" id="pc6" style="animation-delay:0.30000000000000004s">
       <div class="park-header been " onclick="toggleCard(6)">
         <div>
           <div class="park-name">Fort Clinch State Park</div>
@@ -1372,7 +1321,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(6)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc35" style="animation-delay:0.35000000000000003s">
+    </div><div class="park-card" id="pc35" style="animation-delay:0.325s">
       <div class="park-header been " onclick="toggleCard(35)">
         <div>
           <div class="park-name">Fort De Soto</div>
@@ -4488,7 +4437,7 @@ html { -webkit-overflow-scrolling: touch; }
       <div>
         <label>📍 Park</label>
         <input type="text" id="upSelect" list="upParksList" placeholder="Type or pick a park…" autocomplete="off">
-        <datalist id="upParksList"><option value="aaaaa"></option><option value="Anastasia State Park"></option><option value="Barnwell State Park"></option><option value="Bear Den Family Campground"></option><option value="Blue Spring State Park"></option><option value="Carolina Beach State Park"></option><option value="Cary State Forest"></option><option value="Crooked River State Park"></option><option value="Don Carter State Park"></option><option value="Edisto Beach State Park"></option><option value="Elijah Clark State Park"></option><option value="Faver-Dykes State Park"></option><option value="Florida Caverns State Park"></option><option value="Fort Clinch State Park"></option><option value="Fort De Soto"></option><option value="Fort McAllister State Historic Site"></option><option value="Fort Mountain State Park"></option><option value="George L. Smith State Park"></option><option value="Ginnie Springs Outdoors"></option><option value="Harddee Lakes Park"></option><option value="Hart Springs"></option><option value="Highlands Hammock State Park"></option><option value="Hillsborough River State Park"></option><option value="Jekyll Island Campground"></option><option value="Kelly Park"></option><option value="Kerr Lake State Recreation Area"></option><option value="Kissimmee Prairie Preserve State Park"></option><option value="Lake Griffin State Park"></option><option value="Lake Kissimmee State Park"></option><option value="Lake Louisa State Park"></option><option value="Long Point Campground"></option><option value="Manatee Hammock Campground"></option><option value="Mike Roess Gold Head Branch State Park"></option><option value="Mistletoe State Park"></option><option value="Moss Park"></option><option value="Myakka River State Park"></option><option value="New trailer"></option><option value="O&#39;Leno State Park"></option><option value="Paynes Prairie State Park"></option><option value="Rainbow Springs State Park"></option><option value="Rodman Campground"></option><option value="Santos Trailhead and Campground"></option><option value="Sebastian Inlet State Park"></option><option value="Silver Springs State Park"></option><option value="Skidaway Island State Park"></option><option value="Stephen Foster Folk Culture State Park"></option><option value="Tomoka State Park"></option><option value="Warrior Creek Campground"></option><option value="Wekiwa Springs State Park"></option><option value="Williamsburg campground"></option><option value="Yellow Jacket Resort"></option></datalist>
+        <datalist id="upParksList"><option value="Anastasia State Park"></option><option value="Barnwell State Park"></option><option value="Bear Den Family Campground"></option><option value="Blue Spring State Park"></option><option value="Carolina Beach State Park"></option><option value="Cary State Forest"></option><option value="Crooked River State Park"></option><option value="Don Carter State Park"></option><option value="Edisto Beach State Park"></option><option value="Elijah Clark State Park"></option><option value="Faver-Dykes State Park"></option><option value="Florida Caverns State Park"></option><option value="Fort Clinch State Park"></option><option value="Fort De Soto"></option><option value="Fort McAllister State Historic Site"></option><option value="Fort Mountain State Park"></option><option value="George L. Smith State Park"></option><option value="Ginnie Springs Outdoors"></option><option value="Harddee Lakes Park"></option><option value="Hart Springs"></option><option value="Highlands Hammock State Park"></option><option value="Hillsborough River State Park"></option><option value="Jekyll Island Campground"></option><option value="Kelly Park"></option><option value="Kerr Lake State Recreation Area"></option><option value="Kissimmee Prairie Preserve State Park"></option><option value="Lake Griffin State Park"></option><option value="Lake Kissimmee State Park"></option><option value="Lake Louisa State Park"></option><option value="Long Point Campground"></option><option value="Manatee Hammock Campground"></option><option value="Mike Roess Gold Head Branch State Park"></option><option value="Mistletoe State Park"></option><option value="Moss Park"></option><option value="Myakka River State Park"></option><option value="New trailer"></option><option value="O&#39;Leno State Park"></option><option value="Paynes Prairie State Park"></option><option value="Rainbow Springs State Park"></option><option value="Rodman Campground"></option><option value="Santos Trailhead and Campground"></option><option value="Sebastian Inlet State Park"></option><option value="Silver Springs State Park"></option><option value="Skidaway Island State Park"></option><option value="Stephen Foster Folk Culture State Park"></option><option value="Tomoka State Park"></option><option value="Warrior Creek Campground"></option><option value="Wekiwa Springs State Park"></option><option value="Williamsburg campground"></option><option value="Yellow Jacket Resort"></option></datalist>
       </div>
       <div><label>🏕 Site Number</label><input type="text" id="upSite" placeholder="e.g. 45"></div>
       <div><label>📅 Start Date</label><input type="date" id="upStart"></div>
@@ -5919,7 +5868,7 @@ html { -webkit-overflow-scrolling: touch; }
     <div class="fg2">
       <div>
         <label>📍 Park</label>
-        <select id="locSelect" onchange="handleLocChange()"><option value="">— Select a park —</option><option value="aaaaa">aaaaa</option><option value="Anastasia State Park">Anastasia State Park</option><option value="Barnwell State Park">Barnwell State Park</option><option value="Bear Den Family Campground">Bear Den Family Campground</option><option value="Blue Spring State Park">Blue Spring State Park</option><option value="Carolina Beach State Park">Carolina Beach State Park</option><option value="Cary State Forest">Cary State Forest</option><option value="Crooked River State Park">Crooked River State Park</option><option value="Don Carter State Park">Don Carter State Park</option><option value="Edisto Beach State Park">Edisto Beach State Park</option><option value="Elijah Clark State Park">Elijah Clark State Park</option><option value="Faver-Dykes State Park">Faver-Dykes State Park</option><option value="Florida Caverns State Park">Florida Caverns State Park</option><option value="Fort Clinch State Park">Fort Clinch State Park</option><option value="Fort De Soto">Fort De Soto</option><option value="Fort McAllister State Historic Site">Fort McAllister State Historic Site</option><option value="Fort Mountain State Park">Fort Mountain State Park</option><option value="George L. Smith State Park">George L. Smith State Park</option><option value="Ginnie Springs Outdoors">Ginnie Springs Outdoors</option><option value="Harddee Lakes Park">Harddee Lakes Park</option><option value="Hart Springs">Hart Springs</option><option value="Highlands Hammock State Park">Highlands Hammock State Park</option><option value="Hillsborough River State Park">Hillsborough River State Park</option><option value="Jekyll Island Campground">Jekyll Island Campground</option><option value="Kelly Park">Kelly Park</option><option value="Kerr Lake State Recreation Area">Kerr Lake State Recreation Area</option><option value="Kissimmee Prairie Preserve State Park">Kissimmee Prairie Preserve State Park</option><option value="Lake Griffin State Park">Lake Griffin State Park</option><option value="Lake Kissimmee State Park">Lake Kissimmee State Park</option><option value="Lake Louisa State Park">Lake Louisa State Park</option><option value="Long Point Campground">Long Point Campground</option><option value="Manatee Hammock Campground">Manatee Hammock Campground</option><option value="Mike Roess Gold Head Branch State Park">Mike Roess Gold Head Branch State Park</option><option value="Mistletoe State Park">Mistletoe State Park</option><option value="Moss Park">Moss Park</option><option value="Myakka River State Park">Myakka River State Park</option><option value="New trailer">New trailer</option><option value="O&#39;Leno State Park">O'Leno State Park</option><option value="Paynes Prairie State Park">Paynes Prairie State Park</option><option value="Rainbow Springs State Park">Rainbow Springs State Park</option><option value="Rodman Campground">Rodman Campground</option><option value="Santos Trailhead and Campground">Santos Trailhead and Campground</option><option value="Sebastian Inlet State Park">Sebastian Inlet State Park</option><option value="Silver Springs State Park">Silver Springs State Park</option><option value="Skidaway Island State Park">Skidaway Island State Park</option><option value="Stephen Foster Folk Culture State Park">Stephen Foster Folk Culture State Park</option><option value="Tomoka State Park">Tomoka State Park</option><option value="Warrior Creek Campground">Warrior Creek Campground</option><option value="Wekiwa Springs State Park">Wekiwa Springs State Park</option><option value="Williamsburg campground">Williamsburg campground</option><option value="Yellow Jacket Resort">Yellow Jacket Resort</option><option value="__custom__">Other / Custom…</option></select>
+        <select id="locSelect" onchange="handleLocChange()"><option value="">— Select a park —</option><option value="Anastasia State Park">Anastasia State Park</option><option value="Barnwell State Park">Barnwell State Park</option><option value="Bear Den Family Campground">Bear Den Family Campground</option><option value="Blue Spring State Park">Blue Spring State Park</option><option value="Carolina Beach State Park">Carolina Beach State Park</option><option value="Cary State Forest">Cary State Forest</option><option value="Crooked River State Park">Crooked River State Park</option><option value="Don Carter State Park">Don Carter State Park</option><option value="Edisto Beach State Park">Edisto Beach State Park</option><option value="Elijah Clark State Park">Elijah Clark State Park</option><option value="Faver-Dykes State Park">Faver-Dykes State Park</option><option value="Florida Caverns State Park">Florida Caverns State Park</option><option value="Fort Clinch State Park">Fort Clinch State Park</option><option value="Fort De Soto">Fort De Soto</option><option value="Fort McAllister State Historic Site">Fort McAllister State Historic Site</option><option value="Fort Mountain State Park">Fort Mountain State Park</option><option value="George L. Smith State Park">George L. Smith State Park</option><option value="Ginnie Springs Outdoors">Ginnie Springs Outdoors</option><option value="Harddee Lakes Park">Harddee Lakes Park</option><option value="Hart Springs">Hart Springs</option><option value="Highlands Hammock State Park">Highlands Hammock State Park</option><option value="Hillsborough River State Park">Hillsborough River State Park</option><option value="Jekyll Island Campground">Jekyll Island Campground</option><option value="Kelly Park">Kelly Park</option><option value="Kerr Lake State Recreation Area">Kerr Lake State Recreation Area</option><option value="Kissimmee Prairie Preserve State Park">Kissimmee Prairie Preserve State Park</option><option value="Lake Griffin State Park">Lake Griffin State Park</option><option value="Lake Kissimmee State Park">Lake Kissimmee State Park</option><option value="Lake Louisa State Park">Lake Louisa State Park</option><option value="Long Point Campground">Long Point Campground</option><option value="Manatee Hammock Campground">Manatee Hammock Campground</option><option value="Mike Roess Gold Head Branch State Park">Mike Roess Gold Head Branch State Park</option><option value="Mistletoe State Park">Mistletoe State Park</option><option value="Moss Park">Moss Park</option><option value="Myakka River State Park">Myakka River State Park</option><option value="New trailer">New trailer</option><option value="O&#39;Leno State Park">O'Leno State Park</option><option value="Paynes Prairie State Park">Paynes Prairie State Park</option><option value="Rainbow Springs State Park">Rainbow Springs State Park</option><option value="Rodman Campground">Rodman Campground</option><option value="Santos Trailhead and Campground">Santos Trailhead and Campground</option><option value="Sebastian Inlet State Park">Sebastian Inlet State Park</option><option value="Silver Springs State Park">Silver Springs State Park</option><option value="Skidaway Island State Park">Skidaway Island State Park</option><option value="Stephen Foster Folk Culture State Park">Stephen Foster Folk Culture State Park</option><option value="Tomoka State Park">Tomoka State Park</option><option value="Warrior Creek Campground">Warrior Creek Campground</option><option value="Wekiwa Springs State Park">Wekiwa Springs State Park</option><option value="Williamsburg campground">Williamsburg campground</option><option value="Yellow Jacket Resort">Yellow Jacket Resort</option><option value="__custom__">Other / Custom…</option></select>
       </div>
       <div id="customWrap" style="display:none"><label>📍 Custom Location</label><input type="text" id="customLoc" placeholder="Enter location name"></div>
       <div><label>📅 Date</label><input type="date" id="jDate"></div>
@@ -7596,9 +7545,10 @@ async function manualSync() {
   }
   showToast('Syncing… ☁️');
   try {
-    await loadFromCloud();   // pull latest from cloud only
+    await loadFromCloud();   // pull latest from cloud
+    saveState();             // persist cloud data to localStorage
     renderAll();
-    showToast('Synced! ✅');
+    showToast('Synced! ✅ All up to date.');
   } catch(e) {
     showToast('Sync failed: ' + e.message);
   }
@@ -7661,7 +7611,7 @@ async function loadFromCloud() {
       if (d.hiddenParks !== undefined) state.hiddenParks = d.hiddenParks;
       if (d.wishlist    !== undefined) state.wishlist    = d.wishlist;
     }
-  } catch(e) { console.error('Load failed:', e); }
+  } catch(e) { console.error('Load failed:', e); throw e; }
 }
 
 function showSyncIndicator() {
@@ -7760,6 +7710,7 @@ async function onSignedIn(user) {
   document.getElementById('userEmail').textContent = user.email;
   showToast('Loading your data\u2026 \u2601\uFE0F');
   await loadFromCloud();
+  saveState();          // persist cloud data to localStorage so it survives re-renders
   renderAll();
   showToast('Welcome back! \uD83C\uDF32');
 }
@@ -8087,10 +8038,6 @@ Each campground object (keep concise): {"name":"","location":"city, state","type
 }
 
 
-window.addEventListener('beforeunload', () => {
-  if (currentUser && accessToken) syncToCloud();
-});
-
 document.addEventListener('DOMContentLoaded', async () => {
   renderFindPanel();
   document.getElementById('userBar').style.visibility = 'hidden';
@@ -8123,7 +8070,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_14.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_15.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8132,7 +8079,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_14.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_15.html">
 </div>
 
 <!-- AUTH OVERLAY -->
