@@ -192,6 +192,53 @@ html { -webkit-overflow-scrolling: touch; }
 .trip-thumb{max-width:110px;max-height:80px;border-radius:3px;border:1px solid var(--fog);cursor:pointer;object-fit:cover;margin-top:4px;}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* ── PLANNER TABS ── */
+.pl-section{margin-bottom:18px;}
+.pl-label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke);margin-bottom:5px;}
+.pl-input{width:100%;background:rgba(255,255,255,.5);border:1px solid var(--fog);border-radius:3px;padding:8px 11px;font-family:-apple-system,Georgia,serif;font-size:16px;color:var(--bark);outline:none;box-sizing:border-box;transition:border-color .2s;}
+.pl-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(200,135,42,.15);}
+.pl-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:560px){.pl-row2{grid-template-columns:1fr;}}
+.pl-card{background:var(--parchment);border-radius:4px;padding:20px 22px;margin-bottom:12px;box-shadow:0 3px 16px rgba(0,0,0,.27);border-left:5px solid var(--moss);}
+.pl-card.amber-l{border-left-color:var(--amber);}
+.pl-card.ember-l{border-left-color:var(--ember);}
+.pl-card h3{font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:12px;}
+.pl-btn-main{background:linear-gradient(135deg,var(--moss),var(--pine));color:var(--cream);border:none;border-radius:3px;padding:10px 22px;font-family:-apple-system,Georgia,serif;font-size:.95rem;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.25);width:100%;}
+.pl-btn-main:hover{transform:translateY(-1px);}
+.pl-btn-main:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.pl-chip{display:inline-block;font-size:.72rem;padding:3px 9px;border-radius:12px;margin:2px;}
+.pl-chip.green{background:var(--moss);color:var(--cream);}
+.pl-chip.amber{background:var(--amber);color:white;}
+.pl-chip.smoke{background:rgba(139,125,107,.2);color:var(--smoke);}
+.pl-chip.blue{background:#1a5276;color:#d6eaf8;}
+.pl-result{background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--moss);}
+.pl-result-head{padding:13px 17px 10px;}
+.pl-result-name{font-family:-apple-system,Georgia,serif;font-size:1.02rem;color:var(--bark);margin-bottom:3px;}
+.pl-result-loc{font-size:.8rem;color:var(--smoke);}
+.pl-result-body{padding:0 17px 14px;}
+.pl-result-desc{font-size:.88rem;color:var(--bark);line-height:1.6;margin:8px 0;}
+.pl-result-note{font-size:.82rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:8px 0;}
+.pl-result-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);}
+.pl-amenity-wrap{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0;}
+.am-pill{background:rgba(61,90,42,.15);border:1px solid rgba(61,90,42,.25);color:var(--moss);font-size:.7rem;padding:2px 8px;border-radius:10px;}
+.am-pill.selected{background:var(--moss);color:var(--cream);}
+.am-toggle{display:inline-flex;align-items:center;gap:5px;font-family:-apple-system,Georgia,serif;font-size:.82rem;padding:5px 12px;border:1px solid var(--fog);border-radius:20px;cursor:pointer;color:var(--smoke);background:rgba(255,255,255,.3);transition:all .2s;}
+.am-toggle:hover{border-color:var(--amber);color:var(--bark);}
+.am-toggle.on{background:var(--amber);border-color:var(--amber);color:white;}
+.cl-cat{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--amber);margin:14px 0 6px;font-family:-apple-system,Georgia,serif;}
+.cl-item{display:flex;align-items:center;gap:10px;padding:9px 14px;background:rgba(255,255,255,.3);border:1px solid var(--fog);border-radius:3px;margin-bottom:5px;cursor:pointer;transition:background .15s;}
+.cl-item:hover{background:rgba(255,255,255,.5);}
+.cl-item.done{opacity:.55;}
+.cl-box{width:18px;height:18px;border-radius:3px;border:1px solid var(--fog);background:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.cl-box.checked{background:var(--moss);border-color:var(--moss);}
+.cl-text{font-size:.9rem;color:var(--bark);flex:1;}
+.cl-item.done .cl-text{text-decoration:line-through;color:var(--smoke);}
+.prog-bar{background:rgba(255,255,255,.2);border-radius:3px;height:7px;overflow:hidden;margin-bottom:4px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--moss),var(--amber));border-radius:3px;transition:width .4s ease;}
+.apikey-box{background:rgba(0,0,0,.2);border:1px solid rgba(245,237,216,.15);border-radius:4px;padding:14px 16px;margin-bottom:16px;}
+.apikey-box p{font-size:.78rem;color:var(--fog);line-height:1.6;margin-bottom:8px;}
+.spinning{animation:spin 1s linear infinite;display:inline-block;}
 </style>
 </head>
 <body>
@@ -224,6 +271,7 @@ html { -webkit-overflow-scrolling: touch; }
   <div class="tab" onclick="switchTab(&#39;triplog&#39;)">📋 Trip Log</div>
   <div class="tab" onclick="switchTab(&#39;wishlist&#39;)">🌟 Wish List</div>
   <div class="tab" onclick="switchTab(&#39;journal&#39;)">📓 My Journal</div>
+  <div class="tab" onclick="switchTab(&#39;findcamps&#39;)">🔍 Find Campgrounds</div>
 </div>
 
 <div class="panel active" id="panel-parks">
@@ -5883,6 +5931,10 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
+<div class="panel" id="panel-findcamps">
+  <div class="empty-state"><div class="icon">🔍</div><p>Loading…</p></div>
+</div>
+
 <div class="toast" id="toast">All trips re-numbered chronologically ✓</div>
 
 <script>
@@ -6599,11 +6651,12 @@ function migrateWishlist(id) {
 }
 
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal'][i]===t));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal','findcamps'][i]===t));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+t).classList.add('active');
   if (t === 'triplog') renderTripLog();
   if (t === 'wishlist') renderWishlist();
+  if (t === 'findcamps') renderFindPanel();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -7638,7 +7691,323 @@ function showAuthMsg(msg, type) {
   el.style.color       = type === 'success' ? '#2c7a2c' : '#c0392b';
 }
 
+// ═══════════════════════════════════════════════════════
+// FIND CAMPGROUNDS — Quick Search & Route Planner
+// ═══════════════════════════════════════════════════════
+
+const PL = {
+  mode: 'quick',
+  search: { dest: '', filterState: '', ams: [] },
+  route: { dest: '', start: '', end: '' },
+  results: [], routeData: null,
+  loading: false, done: false, err: false, errMsg: ''
+};
+
+function getKey() { try { return localStorage.getItem('tn_ant_key')||''; } catch(e) { return ''; } }
+function setKey(k) { try { localStorage.setItem('tn_ant_key',k); } catch(e) {} }
+function getHistory() { try { return JSON.parse(localStorage.getItem('tn_srch_hist')||'[]'); } catch(e) { return []; } }
+function addHistory(dest,state) {
+  const h=getHistory().filter(x=>!(x.dest===dest&&x.state===state));
+  h.unshift({dest,state,d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
+  try{localStorage.setItem('tn_srch_hist',JSON.stringify(h.slice(0,8)));}catch(e){}
+}
+function getSaved() { try{return JSON.parse(localStorage.getItem('tn_saved_cg')||'[]');}catch(e){return [];} }
+function saveCampground(cg) {
+  const s=getSaved();
+  if(s.find(x=>x.name===cg.name&&x.location===cg.location))return false;
+  s.unshift(cg);
+  try{localStorage.setItem('tn_saved_cg',JSON.stringify(s));}catch(e){}
+  return true;
+}
+function removeSaved(name,loc) {
+  try{localStorage.setItem('tn_saved_cg',JSON.stringify(getSaved().filter(x=>!(x.name===name&&x.location===loc))));}catch(e){}
+}
+function saveCampgroundAndRefresh(cg) {
+  if(!saveCampground(cg)){alert('Already saved!');return;}
+  renderFindPanel();
+}
+function esc2(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderFindPanel() {
+  const el=document.getElementById('panel-findcamps');
+  if(!el)return;
+  const hasKey=!!getKey(), history=getHistory(), saved=getSaved();
+  const states=['All','FL','GA','SC','NC','TN','VA','WV','AL','MS','TX','AR','KY'];
+  const ams=['WiFi','Pool','Pet Friendly','Pull-Through Sites','Dump Station','Laundry','Fishing','Hiking Trails','Boat Launch'];
+  const sq=PL.search;
+
+  const keySection=`<div class="apikey-box" style="margin-bottom:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="var ki=document.getElementById('keyInner');ki.style.display=ki.style.display==='none'?'block':'none'">
+      <p style="margin:0;font-size:.82rem;">&#128273; <strong>API Key</strong> &mdash; ${hasKey?'&#9989; Set and saved':'&#9888;&#65039; Required &mdash; click to add'}</p>
+      <span style="color:var(--fog);font-size:.75rem;">&#9660; show/hide</span>
+    </div>
+    <div id="keyInner" style="display:${hasKey?'none':'block'};margin-top:10px;">
+      <p style="font-size:.75rem;color:var(--fog);margin-bottom:8px;">From console.anthropic.com &mdash; saved in your browser only.</p>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="password" id="keyInput" value="${getKey()}" placeholder="Paste your API key here…" style="flex:1;background:rgba(255,255,255,.4);border:1px solid rgba(245,237,216,.25);border-radius:3px;padding:6px 10px;font-family:monospace;font-size:12px;color:var(--cream);outline:none;box-sizing:border-box;">
+        <button onclick="setKey(document.getElementById('keyInput').value);renderFindPanel();" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:6px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">Save</button>
+      </div>
+    </div>
+  </div>`;
+
+  const modeSwitch=`<div style="display:flex;margin-bottom:16px;border-radius:4px;overflow:hidden;border:1px solid var(--fog);">
+    <button onclick="PL.mode='quick';PL.done=false;PL.results=[];renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:${PL.mode==='quick'?'var(--moss)':'rgba(255,255,255,.1)'};color:${PL.mode==='quick'?'var(--cream)':'var(--fog)'};">&#128269; Quick Search</button>
+    <button onclick="PL.mode='route';PL.done=false;PL.routeData=null;renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:${PL.mode==='route'?'var(--moss)':'rgba(255,255,255,.1)'};color:${PL.mode==='route'?'var(--cream)':'var(--fog)'};">&#128506; Route Planner</button>
+  </div>`;
+
+  let formSection='';
+  if(PL.mode==='quick'){
+    formSection=`<div class="pl-card">
+      <h3>&#128269; Find Campgrounds</h3>
+      <div class="pl-section">
+        <label class="pl-label">Destination or region</label>
+        <input class="pl-input" id="sq-dest" value="${esc2(sq.dest)}" placeholder="e.g. Blue Ridge Parkway NC, Ocala National Forest FL" oninput="PL.search.dest=this.value">
+      </div>
+      <div class="pl-section">
+        <label class="pl-label">Filter by state</label>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+          ${states.map(s=>`<button onclick="PL.search.filterState='${s==='All'?'':s}';renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:${(sq.filterState===''&&s==='All')||(sq.filterState===s)?'var(--amber)':'rgba(255,255,255,.15)'};color:${(sq.filterState===''&&s==='All')||(sq.filterState===s)?'white':'var(--fog)'};border-color:${(sq.filterState===''&&s==='All')||(sq.filterState===s)?'var(--amber)':'var(--fog)'};">${s}</button>`).join('')}
+        </div>
+      </div>
+      <div class="pl-section">
+        <label class="pl-label">Amenities</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">${ams.map(a=>`<span class="am-toggle ${sq.ams.includes(a)?'on':''}" onclick="toggleAm2('${a}')">${a}</span>`).join('')}</div>
+      </div>
+      <div style="background:rgba(61,90,42,.15);border:1px solid rgba(61,90,42,.25);border-radius:3px;padding:8px 12px;font-size:.8rem;color:var(--moss);margin-bottom:12px;">
+        &#128656; 27ft &middot; 30-amp &middot; Water &amp; Electric &mdash; searching at 20ft since state parks list conservatively
+      </div>
+      <button class="pl-btn-main" onclick="doQuickSearch()" ${PL.loading?'disabled':''}>${PL.loading?'Searching…':'&#128269; Find Campgrounds'}</button>
+    </div>`;
+  } else {
+    formSection=`<div class="pl-card">
+      <h3>&#128506; Route Planner</h3>
+      <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:12px;">
+        &#128656; Start: <strong>Edgewater, FL</strong> &middot; 27ft &middot; 30-amp &middot; 380-430 miles/day &middot; 7-8 nights at destination
+      </div>
+      <div class="pl-section">
+        <label class="pl-label">Final destination <span style="font-weight:300;font-size:.75rem;opacity:.7;">(park name &amp; state works best)</span></label>
+        <input class="pl-input" id="rt-dest" value="${esc2(PL.route.dest)}" placeholder="e.g. Douthat State Park VA, Smoky Mountains TN" oninput="PL.route.dest=this.value">
+      </div>
+      <div class="pl-row2 pl-section">
+        <div>
+          <label class="pl-label">Departure date (Day 1)</label>
+          <input type="date" class="pl-input" value="${PL.route.start}" onchange="PL.route.start=this.value">
+        </div>
+        <div>
+          <label class="pl-label">Return date (optional)</label>
+          <input type="date" class="pl-input" value="${PL.route.end}" onchange="PL.route.end=this.value">
+        </div>
+      </div>
+      <button class="pl-btn-main" onclick="doRouteSearch()" ${PL.loading?'disabled':''}>${PL.loading?'Planning your route…':'&#128506; Plan My Route'}</button>
+    </div>`;
+  }
+
+  let historySection='';
+  if(history.length){
+    historySection=`<div style="margin-bottom:16px;">
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:8px;">Recent Searches</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${history.map(h=>`<button onclick="PL.search.dest='${esc2(h.dest)}';PL.search.filterState='${h.state||''}';PL.mode='quick';doQuickSearch()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.12);color:var(--fog);">${esc2(h.dest)}${h.state?' &middot; '+h.state:''} <span style="font-size:.65rem;opacity:.6;">${h.d}</span></button>`).join('')}
+        <button onclick="localStorage.removeItem('tn_srch_hist');renderFindPanel()" style="padding:4px 10px;font-size:.72rem;border:1px solid rgba(200,50,50,.3);border-radius:12px;cursor:pointer;background:transparent;color:rgba(200,100,100,.7);">clear</button>
+      </div>
+    </div>`;
+  }
+
+  let resultsSection='';
+  if(PL.loading){
+    resultsSection=`<div style="text-align:center;padding:2rem;color:var(--fog);font-family:-apple-system,Georgia,serif;"><div style="font-size:2rem;" class="spinning">&#127794;</div><p style="margin-top:.5rem;">${PL.mode==='route'?'Mapping your route and finding campgrounds at each stop…':'Scouting state parks and campgrounds…'}</p></div>`;
+  } else if(PL.err){
+    resultsSection=`<div style="background:rgba(200,50,50,.15);border:1px solid rgba(200,50,50,.3);border-radius:4px;padding:14px 16px;color:#e8a0a0;font-size:.88rem;">&#9888;&#65039; ${esc2(PL.errMsg)||'Something went wrong. Please try again.'}</div>`;
+  } else if(PL.mode==='route'&&PL.routeData){
+    resultsSection=renderRouteResults(PL.routeData);
+  } else if(PL.results.length){
+    resultsSection=renderQuickResults(PL.results);
+  } else if(PL.done){
+    resultsSection=`<div class="empty-state"><div class="icon">&#127957;</div><p>No results found. Try a different destination.</p></div>`;
+  }
+
+  let savedSection='';
+  if(saved.length){
+    savedSection=`<div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">&#11088; Saved Campgrounds (${saved.length})</div>
+        <button onclick="if(confirm('Clear all saved campgrounds?')){localStorage.removeItem('tn_saved_cg');renderFindPanel();}" style="font-size:.7rem;padding:3px 8px;background:transparent;border:1px solid rgba(200,50,50,.3);border-radius:10px;color:rgba(200,100,100,.7);cursor:pointer;">clear all</button>
+      </div>
+      ${saved.map(cg=>`<div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-weight:500;font-size:.9rem;color:var(--cream);">${esc2(cg.name)}</div>
+          <div style="font-size:.78rem;color:var(--smoke);">&#128205; ${esc2(cg.location||'')}${cg.type?' &middot; '+esc2(cg.type):''}</div>
+          ${cg.priceRange?`<div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">${esc2(cg.priceRange)}/night</div>`:''}
+          ${cg.website?`<a href="${esc2(cg.website)}" target="_blank" style="font-size:.75rem;color:var(--amber);display:inline-block;margin-top:4px;">&#127760; Website</a>`:''}
+        </div>
+        <button onclick="removeSaved('${esc2(cg.name).replace(/'/g,"\'")}','${esc2(cg.location||'').replace(/'/g,"\'")}');renderFindPanel();" style="background:transparent;border:none;color:rgba(200,100,100,.7);cursor:pointer;font-size:1.1rem;padding:0 4px;flex-shrink:0;">&times;</button>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  el.innerHTML=keySection+modeSwitch+formSection+historySection+resultsSection+savedSection;
+}
+
+function renderQuickResults(results){
+  const sp=results.filter(r=>/(state)/i.test(r.type||''));
+  const cp=results.filter(r=>/(county)/i.test(r.type||''));
+  const pr=results.filter(r=>!/(state|county)/i.test(r.type||''));
+  let html=`<div style="font-size:.75rem;color:var(--smoke);margin-bottom:12px;">AI-suggested results &mdash; verify availability directly with the park before booking.</div>`;
+  if(sp.length){html+=`<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--moss);margin-bottom:8px;">&#127794; State Parks</div>`;html+=sp.map((cg,i)=>renderCard(cg,i,'var(--moss)')).join('');}
+  if(cp.length){html+=`<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin:12px 0 8px;">&#127795; County Parks</div>`;html+=cp.map((cg,i)=>renderCard(cg,sp.length+i,'var(--amber)')).join('');}
+  if(pr.length){html+=`<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke);margin:12px 0 8px;">&#127957; Private Campgrounds</div>`;html+=pr.map((cg,i)=>renderCard(cg,sp.length+cp.length+i,'var(--fog)')).join('');}
+  return html;
+}
+
+function renderRouteResults(data){
+  let html=`<div style="font-size:.75rem;color:var(--smoke);margin-bottom:14px;">AI-planned route &mdash; verify campground availability before booking.</div>`;
+
+  // Route overview summary card
+  if(data.routeSummary){
+    const rs=data.routeSummary;
+    html+=`<div style="background:rgba(30,50,25,.5);border:1px solid rgba(61,90,42,.5);border-radius:6px;padding:16px 18px;margin-bottom:20px;">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:12px;">&#128506; Trip Overview</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <div style="text-align:center;">
+          <div style="font-size:.75rem;color:var(--smoke);">Start</div>
+          <div style="font-size:.9rem;font-weight:500;color:var(--cream);">Edgewater, FL</div>
+        </div>
+        <div style="flex:1;text-align:center;min-width:80px;">
+          <div style="font-size:.72rem;color:var(--amber);">Day 1 &middot; ~${esc2(rs.day1Miles)} mi</div>
+          <div style="border-top:2px dashed var(--amber);margin:4px 8px;position:relative;">
+            <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:.7rem;background:transparent;">&#9658;</span>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:.75rem;color:var(--smoke);">Night 1</div>
+          <div style="font-size:.85rem;font-weight:500;color:var(--cream);">${esc2(rs.overnightCity)}</div>
+        </div>
+        <div style="flex:1;text-align:center;min-width:80px;">
+          <div style="font-size:.72rem;color:var(--amber);">Day 2 &middot; ~${esc2(rs.day2Miles)} mi</div>
+          <div style="border-top:2px dashed var(--amber);margin:4px 8px;position:relative;">
+            <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:.7rem;background:transparent;">&#9658;</span>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:.75rem;color:var(--smoke);">Destination</div>
+          <div style="font-size:.85rem;font-weight:500;color:var(--cream);">${esc2(rs.destinationCity)}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.1);padding-top:10px;">
+        <div><span style="font-size:.72rem;color:var(--smoke);">Total distance: </span><span style="font-size:.82rem;color:var(--cream);font-weight:500;">${esc2(rs.totalMiles)} miles each way</span></div>
+        <div><span style="font-size:.72rem;color:var(--smoke);">Main route: </span><span style="font-size:.82rem;color:var(--cream);">${esc2(rs.mainHighways)}</span></div>
+      </div>
+      ${rs.routeNotes?`<div style="font-size:.8rem;color:var(--fog);margin-top:8px;font-style:italic;">${esc2(rs.routeNotes)}</div>`:''}
+    </div>`;
+  }
+
+  if(data.overnightStop){
+    const os=data.overnightStop;
+    html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:8px;">&#127769; Overnight Stop &mdash; Day 1 &middot; ~${esc2(os.miles)} from Edgewater</div>
+    <div style="background:rgba(200,135,42,.2);border:1px solid rgba(200,135,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os.location)}</strong> &mdash; pull off here for the night</div>`;
+    html+=(os.campgrounds||[]).map((cg,i)=>renderCard(cg,i,'var(--amber)')).join('');
+  }
+  if(data.destination){
+    const dst=data.destination;
+    html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cream);margin:20px 0 8px;">&#127957; Destination &mdash; Day 2 &middot; ~${esc2(dst.miles)} from overnight stop &middot; 7-8 night stay</div>
+    <div style="background:rgba(61,90,42,.35);border:1px solid rgba(61,90,42,.55);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(dst.location)}</strong> &mdash; your destination</div>`;
+    html+=(dst.campgrounds||[]).map((cg,i)=>renderCard(cg,(data.overnightStop?.campgrounds?.length||0)+i,'var(--moss)')).join('');
+  }
+  return html;
+}
+
+function renderCard(cg,i,accent){
+  const isState=/(state)/i.test(cg.type||''), isCounty=/(county)/i.test(cg.type||'');
+  const typeLabel=isState?'&#127794; State Park':isCounty?'&#127795; County Park':'&#127957; Private';
+  const safeJson=JSON.stringify(cg).replace(/\\/g,'\\\\').replace(/"/g,"'");
+  return`<div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid ${accent};">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">${esc2(cg.name)}</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">&#128205; ${esc2(cg.location||'')} &middot; <span style="color:${accent};">${typeLabel}</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          ${cg.rating?`<div style="color:var(--amber);font-size:.82rem;">${cg.rating} &#9733;</div>`:''}
+          ${cg.priceRange?`<div style="font-size:.75rem;color:var(--smoke);">${esc2(cg.priceRange)}/night</div>`:''}
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        ${cg.hookups?`<span class="pl-chip green">&#9889; ${esc2(cg.hookups)}</span>`:''}
+        ${cg.pullThrough?`<span class="pl-chip blue">Pull-through</span>`:''}
+        ${cg.maxLength?`<span class="pl-chip ${cg.maxLength<27?'amber':'smoke'}">Max ${cg.maxLength}ft${cg.maxLength<27?' &#10003; fits':''}</span>`:''}
+        ${cg.distanceMiles?`<span class="pl-chip smoke">&#128205; ${esc2(cg.distanceMiles)}</span>`:''}
+        ${(cg.amenities||[]).slice(0,3).map(a=>`<span class="am-pill">${esc2(a)}</span>`).join('')}
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      ${cg.description?`<p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">${esc2(cg.description)}</p>`:''}
+      ${cg.notes?`<div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">&#128295; ${esc2(cg.notes)}</div>`:''}
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        ${cg.website?`<a href="${esc2(cg.website)}" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">&#127760; Website</a>`:'<span></span>'}
+        <button onclick="saveCampgroundAndRefresh(${safeJson.replace(/'/g,'"')})" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">&#11088; Save</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleAm2(a){const idx=PL.search.ams.indexOf(a);if(idx>-1)PL.search.ams.splice(idx,1);else PL.search.ams.push(a);renderFindPanel();}
+
+async function doQuickSearch(){
+  const sq=PL.search;
+  if(!sq.dest){alert('Please enter a destination.');return;}
+  const key=getKey();if(!key){alert('Please enter your Anthropic API key first.');return;}
+  addHistory(sq.dest,sq.filterState);
+  PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
+  const stateClause=sq.filterState?` in ${sq.filterState}`:'';
+  const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
+  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+Amenities wanted: ${amStr}
+Return ONLY a valid JSON array, no markdown. Each object:
+{"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"2 sentences","website":"https://...","reservationRequired":true,"notes":"trailer-specific: entry road, tight turns, best sites for big rigs"}`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error.message);
+    let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    text=text.replace(/```json|```/g,'').trim();
+    PL.results=JSON.parse(text.slice(text.indexOf('['),text.lastIndexOf(']')+1));
+  }catch(e){PL.err=true;PL.errMsg=e.message;}
+  PL.loading=false;PL.done=true;renderFindPanel();
+}
+
+async function doRouteSearch(){
+  let dest=PL.route.dest.trim();
+  if(!dest){alert('Please enter your destination.');return;}
+  // Clean up addresses/coordinates - extract just park/place name
+  dest=dest.replace(/\d{5}(-\d{4})?/g,'').replace(/;.*$/,'').replace(/,?\s*(latitude|longitude|lat|lng|coordinates?).*$/i,'').replace(/\d+\s+[A-Za-z]+\s+(road|rd|street|st|ave|avenue|drive|dr|way|lane|ln|blvd|highway|hwy)\b.*/i,'').replace(/\s+,/g,',').trim().replace(/,\s*$/,'').trim();
+  if(!dest){alert('Please enter a destination name (e.g. Douthat State Park VA).');return;}
+  const key=getKey();if(!key){alert('Please enter your Anthropic API key first.');return;}
+  PL.loading=true;PL.routeData=null;PL.done=false;PL.err=false;renderFindPanel();
+  const dateClause=PL.route.start?` Departure: ${PL.route.start}${PL.route.end?', Return: '+PL.route.end:''}.`:'';
+  const prompt=`Plan a road trip from Edgewater FL to: ${dest}.${dateClause}
+27ft travel trailer, 30-amp water & electric. Max 380-430 miles/day. 7-8 nights at destination. Prefer state parks, county parks. Private only as fallback. Include sites listed down to 20ft that fit a 27ft rig.
+Return ONLY valid JSON, no markdown, no extra text:
+{"routeSummary":{"totalMiles":850,"day1Miles":"415","day2Miles":"435","overnightCity":"City, State","destinationCity":"Destination Name","mainHighways":"I-95 N to I-81 N","routeNotes":"one sentence trailer driving tip"},"overnightStop":{"location":"City, State","miles":"~415 miles from Edgewater","campgrounds":[2 objects]},"destination":{"location":"area name","miles":"~435 miles from overnight","campgrounds":[3 objects]}}
+Each campground object (keep concise): {"name":"","location":"city, state","type":"State Park","hookups":"30-amp W&E","pullThrough":true,"maxLength":25,"priceRange":"$25-$40","amenities":["Hiking","Fishing"],"rating":4.2,"description":"1-2 sentences.","website":"https://...","reservationRequired":true,"notes":"trailer tip"}`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error.message);
+    let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    text=text.replace(/```json|```/g,'').trim();
+    const s=text.indexOf('{'),e=text.lastIndexOf('}');
+    if(s===-1||e===-1)throw new Error('No valid response received. Try a simpler destination name.');
+    PL.routeData=JSON.parse(text.slice(s,e+1));
+  }catch(e){PL.err=true;PL.errMsg=e.message;}
+  PL.loading=false;PL.done=true;renderFindPanel();
+}
+
+
 document.addEventListener('DOMContentLoaded', async () => {
+  renderFindPanel();
   document.getElementById('userBar').style.visibility = 'hidden';
   document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   document.getElementById('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
@@ -7650,8 +8019,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 </script>
-
-
 
 <div id="editTripBg" class="hidden" onclick="if(event.target===this)closeET()">
   <div id="editTripBox">
@@ -7669,9 +8036,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="fl">
       <label>📷 Photo</label>
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
-      <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
+      <button class="btn-o" style="margin-top:5px" onclick="document.getElementById('et-file').click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes___Camping_Diary.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -7679,8 +8046,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     <button class="btn-cancel" onclick="closeET()">Cancel</button>
   </div>
 </div>
-<div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes___Camping_Diary.html">
+<div id="lightbox" class="hidden" onclick="this.classList.add('hidden')">
+  <img id="lb-img" src="">
 </div>
 </div>
 
