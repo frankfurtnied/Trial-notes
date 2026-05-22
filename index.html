@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0066)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner.html -->
+<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_1.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -5957,6 +5957,12 @@ html { -webkit-overflow-scrolling: touch; }
         🚐 27ft · 30-amp · Water &amp; Electric — searching at 20ft since state parks list conservatively
       </div>
       <button class="pl-btn-main" onclick="doQuickSearch()">🔍 Find Campgrounds</button>
+    </div><div style="margin-bottom:16px;">
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:8px;">Recent Searches</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <button onclick="PL.search.dest=&#39;north carolina&#39;;PL.search.filterState=&#39;&#39;;PL.mode=&#39;quick&#39;;doQuickSearch()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.12);color:var(--fog);">north carolina <span style="font-size:.65rem;opacity:.6;">May 21</span></button>
+        <button onclick="localStorage.removeItem(&#39;tn_srch_hist&#39;);renderFindPanel()" style="padding:4px 10px;font-size:.72rem;border:1px solid rgba(200,50,50,.3);border-radius:12px;cursor:pointer;background:transparent;color:rgba(200,100,100,.7);">clear</button>
+      </div>
     </div></div>
 
 <div class="toast" id="toast">Welcome back! 🌲</div>
@@ -7568,6 +7574,8 @@ async function syncToCloud() {
     tripEdits: state.tripEdits, upcoming: state.upcoming, sortOrder: state.sortOrder,
     ratings: state.ratings, favorites: state.favorites,
     hiddenParks: state.hiddenParks, wishlist: state.wishlist,
+    savedCampgrounds: getSaved(),
+    searchHistory: getHistory(),
   };
   try {
     // Check if a row already exists for this user
@@ -7610,6 +7618,12 @@ async function loadFromCloud() {
       if (d.favorites   !== undefined) state.favorites   = d.favorites;
       if (d.hiddenParks !== undefined) state.hiddenParks = d.hiddenParks;
       if (d.wishlist    !== undefined) state.wishlist    = d.wishlist;
+      if (d.savedCampgrounds !== undefined) {
+        try { localStorage.setItem('tn_saved_cg', JSON.stringify(d.savedCampgrounds)); } catch(e) {}
+      }
+      if (d.searchHistory !== undefined) {
+        try { localStorage.setItem('tn_srch_hist', JSON.stringify(d.searchHistory)); } catch(e) {}
+      }
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
 }
@@ -8070,7 +8084,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_1.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8079,7 +8093,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_1.html">
 </div>
 
 <!-- AUTH OVERLAY -->
