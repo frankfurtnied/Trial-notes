@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_1.html -->
+<!-- saved from url=(0050)file:///Users/martinfelkel/Downloads/index_25.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -249,10 +249,10 @@ html { -webkit-overflow-scrolling: touch; }
 </header>
 
 <!-- Cloud user bar -->
-<div id="userBar" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 10px; min-height: 22px; visibility: visible;">
+<div id="userBar" style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:10px;min-height:22px;">
   <button onclick="manualSync()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sync now">🔄 Sync</button>
-  <span id="syncDot" style="font-size: 0.72rem; color: var(--amber); opacity: 0; transition: opacity 0.5s;">☁️ Saved</span>
-  <span id="userEmail" style="font-size:.75rem;color:var(--fog);letter-spacing:.04em">frankfurtnied@gmail.com</span>
+  <span id="syncDot" style="font-size:.72rem;color:var(--amber);opacity:0;transition:opacity .5s">☁️ Saved</span>
+  <span id="userEmail" style="font-size:.75rem;color:var(--fog);letter-spacing:.04em"></span>
   <button onclick="doSignOut()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--fog);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sign out">Sign out</button>
 </div>
 
@@ -4383,7 +4383,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Paynes Prairie State Park</div>
           <div class="card-date">Jun 24, 2026 – Jun 26, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 34 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 37 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 46</strong></div>
@@ -4396,7 +4396,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Stephen Foster Folk Culture State Park</div>
           <div class="card-date">Sep 3, 2026 – Sep 7, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 105 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 108 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 4</strong></div>
@@ -4409,7 +4409,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Anastasia State Park</div>
           <div class="card-date">Nov 4, 2026 – Nov 8, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 167 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 170 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 97</strong></div>
@@ -4422,7 +4422,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Silver Springs State Park</div>
           <div class="card-date">Dec 16, 2026 – Dec 20, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 209 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 212 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 7</strong></div>
@@ -5931,41 +5931,11 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
-<div class="panel" id="panel-findcamps"><div class="apikey-box" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-    <p style="margin:0;font-size:.82rem;">🔑 <strong>API Key</strong> — ✅ Set and saved in this browser</p>
-    <button onclick="promptForKey()" style="background:rgba(255,255,255,.1);color:var(--fog);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:5px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">🔄 Update key</button>
-  </div><div style="display:flex;margin-bottom:16px;border-radius:4px;overflow:hidden;border:1px solid var(--fog);">
-    <button onclick="PL.mode=&#39;quick&#39;;PL.done=false;PL.results=[];renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:var(--moss);color:var(--cream);">🔍 Quick Search</button>
-    <button onclick="PL.mode=&#39;route&#39;;PL.done=false;PL.routeData=null;renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:rgba(255,255,255,.1);color:var(--fog);">🗺 Route Planner</button>
-  </div><div class="pl-card">
-      <h3>🔍 Find Campgrounds</h3>
-      <div class="pl-section">
-        <label class="pl-label">Destination or region</label>
-        <input class="pl-input" id="sq-dest" value="" placeholder="e.g. Blue Ridge Parkway NC, Ocala National Forest FL" oninput="PL.search.dest=this.value">
-      </div>
-      <div class="pl-section">
-        <label class="pl-label">Filter by state</label>
-        <div style="display:flex;flex-wrap:wrap;gap:5px;">
-          <button onclick="PL.search.filterState=&#39;&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:var(--amber);color:white;border-color:var(--amber);">All</button><button onclick="PL.search.filterState=&#39;FL&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">FL</button><button onclick="PL.search.filterState=&#39;GA&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">GA</button><button onclick="PL.search.filterState=&#39;SC&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">SC</button><button onclick="PL.search.filterState=&#39;NC&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">NC</button><button onclick="PL.search.filterState=&#39;TN&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">TN</button><button onclick="PL.search.filterState=&#39;VA&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">VA</button><button onclick="PL.search.filterState=&#39;WV&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">WV</button><button onclick="PL.search.filterState=&#39;AL&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">AL</button><button onclick="PL.search.filterState=&#39;MS&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">MS</button><button onclick="PL.search.filterState=&#39;TX&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">TX</button><button onclick="PL.search.filterState=&#39;AR&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">AR</button><button onclick="PL.search.filterState=&#39;KY&#39;;renderFindPanel()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--fog);border-color:var(--fog);">KY</button>
-        </div>
-      </div>
-      <div class="pl-section">
-        <label class="pl-label">Amenities</label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;"><span class="am-toggle " onclick="toggleAm2(&#39;WiFi&#39;)">WiFi</span><span class="am-toggle " onclick="toggleAm2(&#39;Pool&#39;)">Pool</span><span class="am-toggle " onclick="toggleAm2(&#39;Pet Friendly&#39;)">Pet Friendly</span><span class="am-toggle " onclick="toggleAm2(&#39;Pull-Through Sites&#39;)">Pull-Through Sites</span><span class="am-toggle " onclick="toggleAm2(&#39;Dump Station&#39;)">Dump Station</span><span class="am-toggle " onclick="toggleAm2(&#39;Laundry&#39;)">Laundry</span><span class="am-toggle " onclick="toggleAm2(&#39;Fishing&#39;)">Fishing</span><span class="am-toggle " onclick="toggleAm2(&#39;Hiking Trails&#39;)">Hiking Trails</span><span class="am-toggle " onclick="toggleAm2(&#39;Boat Launch&#39;)">Boat Launch</span></div>
-      </div>
-      <div style="background:rgba(61,90,42,.15);border:1px solid rgba(61,90,42,.25);border-radius:3px;padding:8px 12px;font-size:.8rem;color:var(--moss);margin-bottom:12px;">
-        🚐 27ft · 30-amp · Water &amp; Electric — searching at 20ft since state parks list conservatively
-      </div>
-      <button class="pl-btn-main" onclick="doQuickSearch()">🔍 Find Campgrounds</button>
-    </div><div style="margin-bottom:16px;">
-      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:8px;">Recent Searches</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;">
-        <button onclick="PL.search.dest=&#39;north carolina&#39;;PL.search.filterState=&#39;&#39;;PL.mode=&#39;quick&#39;;doQuickSearch()" style="padding:4px 12px;font-size:.78rem;font-family:-apple-system,Georgia,serif;border:1px solid var(--fog);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.12);color:var(--fog);">north carolina <span style="font-size:.65rem;opacity:.6;">May 21</span></button>
-        <button onclick="localStorage.removeItem(&#39;tn_srch_hist&#39;);renderFindPanel()" style="padding:4px 10px;font-size:.72rem;border:1px solid rgba(200,50,50,.3);border-radius:12px;cursor:pointer;background:transparent;color:rgba(200,100,100,.7);">clear</button>
-      </div>
-    </div></div>
+<div class="panel" id="panel-findcamps">
+  <div class="empty-state"><div class="icon">🔍</div><p>Loading…</p></div>
+</div>
 
-<div class="toast" id="toast">Welcome back! 🌲</div>
+<div class="toast" id="toast">All trips re-numbered chronologically ✓</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -7576,6 +7546,7 @@ async function syncToCloud() {
     hiddenParks: state.hiddenParks, wishlist: state.wishlist,
     savedCampgrounds: getSaved(),
     searchHistory: getHistory(),
+    savedRoutes: getSavedRoutes(),
   };
   try {
     // Check if a row already exists for this user
@@ -7623,6 +7594,9 @@ async function loadFromCloud() {
       }
       if (d.searchHistory !== undefined) {
         try { localStorage.setItem('tn_srch_hist', JSON.stringify(d.searchHistory)); } catch(e) {}
+      }
+      if (d.savedRoutes !== undefined) {
+        try { localStorage.setItem('tn_saved_routes', JSON.stringify(d.savedRoutes)); } catch(e) {}
       }
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
@@ -7781,6 +7755,35 @@ function saveCampgroundAndRefresh(cg) {
   if(!saveCampground(cg)){alert('Already saved!');return;}
   renderFindPanel();
 }
+function getSavedRoutes(){try{return JSON.parse(localStorage.getItem('tn_saved_routes')||'[]');}catch(e){return[];}}
+function saveRoute(route){
+  const routes=getSavedRoutes().filter(r=>r.id!==route.id);
+  routes.unshift(route);
+  try{localStorage.setItem('tn_saved_routes',JSON.stringify(routes));}catch(e){}
+  scheduleSyncToCloud();
+}
+function removeRoute(id){
+  try{localStorage.setItem('tn_saved_routes',JSON.stringify(getSavedRoutes().filter(r=>r.id!==id)));}catch(e){}
+  scheduleSyncToCloud();
+  renderFindPanel();
+}
+function saveCurrentRoute(){
+  if(!PL.routeData){return;}
+  const name=prompt('Name this route plan:',PL.route.dest||'My Route');
+  if(!name||!name.trim())return;
+  const route={
+    id:Date.now(),
+    name:name.trim(),
+    destination:PL.route.dest,
+    dates:{start:PL.route.start,end:PL.route.end},
+    savedDate:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    routeData:PL.routeData
+  };
+  saveRoute(route);
+  renderFindPanel();
+  alert('Route saved! It will sync to your other devices.');
+}
+
 function esc2(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 function renderFindPanel() {
@@ -7891,7 +7894,37 @@ function renderFindPanel() {
     </div>`;
   }
 
-  el.innerHTML=keySection+modeSwitch+formSection+historySection+resultsSection+savedSection;
+  // Saved Routes section
+  const savedRoutes=getSavedRoutes();
+  let savedRoutesSection='';
+  if(savedRoutes.length){
+    savedRoutesSection=`<div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">&#128190; Saved Routes (${savedRoutes.length})</div>
+      </div>
+      ${savedRoutes.map(r=>`
+        <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+            <div>
+              <div style="font-weight:500;font-size:.95rem;color:var(--cream);">${esc2(r.name)}</div>
+              <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">&#128205; ${esc2(r.destination||'')} &middot; Saved ${esc2(r.savedDate)}</div>
+              ${r.dates&&r.dates.start?`<div style="font-size:.75rem;color:var(--smoke);">&#128197; ${esc2(r.dates.start)}${r.dates.end?' &rarr; '+esc2(r.dates.end):''}</div>`:''}
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
+              <button onclick="loadSavedRoute(${r.id})" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">&#128260; Load</button>
+              <button onclick="removeRoute(${r.id})" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">&#10005;</button>
+            </div>
+          </div>
+          ${r.routeData&&r.routeData.routeSummary?`<div style="font-size:.75rem;color:var(--fog);">
+            &#128506; ${esc2(r.routeData.routeSummary.mainHighways||'')} &middot; ${esc2(r.routeData.routeSummary.totalMiles||'')} mi total &middot;
+            Day 1: ~${esc2(r.routeData.routeSummary.day1Miles||'')} mi to ${esc2(r.routeData.routeSummary.overnightCity||'')} &middot;
+            Day 2: ~${esc2(r.routeData.routeSummary.day2Miles||'')} mi to ${esc2(r.routeData.routeSummary.destinationCity||'')}
+          </div>`:''}
+        </div>`).join('')}
+    </div>`;
+  }
+
+  el.innerHTML=keySection+modeSwitch+formSection+historySection+resultsSection+savedSection+savedRoutesSection;
 }
 
 function renderQuickResults(results){
@@ -7906,7 +7939,10 @@ function renderQuickResults(results){
 }
 
 function renderRouteResults(data){
-  let html=`<div style="font-size:.75rem;color:var(--smoke);margin-bottom:14px;">AI-planned route &mdash; verify campground availability before booking.</div>`;
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+    <div style="font-size:.75rem;color:var(--smoke);">AI-planned route &mdash; verify availability before booking.</div>
+    <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">&#128190; Save this route</button>
+  </div>`;
 
   // Route overview summary card
   if(data.routeSummary){
@@ -7997,6 +8033,18 @@ function renderCard(cg,i,accent){
   </div>`;
 }
 
+function loadSavedRoute(id){
+  const r=getSavedRoutes().find(x=>x.id===id);
+  if(!r)return;
+  PL.mode='route';
+  PL.route.dest=r.destination||'';
+  PL.route.start=r.dates&&r.dates.start?r.dates.start:'';
+  PL.route.end=r.dates&&r.dates.end?r.dates.end:'';
+  PL.routeData=r.routeData;
+  PL.done=true;PL.err=false;PL.loading=false;
+  renderFindPanel();
+}
+
 function toggleAm2(a){const idx=PL.search.ams.indexOf(a);if(idx>-1)PL.search.ams.splice(idx,1);else PL.search.ams.push(a);renderFindPanel();}
 
 async function doQuickSearch(){
@@ -8082,9 +8130,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="fl">
       <label>📷 Photo</label>
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
-      <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
+      <button class="btn-o" style="margin-top:5px" onclick="document.getElementById('et-file').click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_1.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8092,8 +8140,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     <button class="btn-cancel" onclick="closeET()">Cancel</button>
   </div>
 </div>
-<div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_1.html">
+<div id="lightbox" class="hidden" onclick="this.classList.add('hidden')">
+  <img id="lb-img" src="">
 </div>
 
 <!-- AUTH OVERLAY -->
@@ -8115,5 +8163,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 
-
-</div></body></html>
+</body></html>
