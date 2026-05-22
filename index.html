@@ -7719,7 +7719,7 @@ function showAuthMsg(msg, type) {
 const PL = {
   mode: 'quick',
   search: { dest: '', filterState: '', ams: [] },
-  route: { dest: '', start: '', end: '' },
+  route: { dest: '', start: '', end: '', from: localStorage.getItem('tn_route_from')||'Edgewater, FL' },
   results: [], routeData: null,
   loading: false, done: false, err: false, errMsg: ''
 };
@@ -7830,8 +7830,12 @@ function renderFindPanel() {
   } else {
     formSection=`<div class="pl-card">
       <h3>&#128506; Route Planner</h3>
+      <div class="pl-section">
+        <label class="pl-label">Starting location <span style="font-weight:300;opacity:.7;">(defaults to your home base)</span></label>
+        <input class="pl-input" id="rt-from" value="${esc2(PL.route.from)}" placeholder="Edgewater, FL" oninput="PL.route.from=this.value;localStorage.setItem('tn_route_from',this.value)">
+      </div>
       <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:12px;">
-        &#128656; Start: <strong>Edgewater, FL</strong> &middot; 27ft &middot; 30-amp &middot; 380-430 miles/day &middot; 7-8 nights at destination
+        &#128656; 27ft &middot; 30-amp &middot; 380-430 miles/day &middot; 7-8 nights at destination
       </div>
       <div class="pl-section">
         <label class="pl-label">Final destination <span style="font-weight:300;font-size:.75rem;opacity:.7;">(park name &amp; state works best)</span></label>
@@ -7952,7 +7956,7 @@ function renderRouteResults(data){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
         <div style="text-align:center;">
           <div style="font-size:.75rem;color:var(--smoke);">Start</div>
-          <div style="font-size:.9rem;font-weight:500;color:var(--cream);">Edgewater, FL</div>
+          <div style="font-size:.9rem;font-weight:500;color:var(--cream);">${esc2(PL.route.from||'Edgewater, FL')}</div>
         </div>
         <div style="flex:1;text-align:center;min-width:80px;">
           <div style="font-size:.72rem;color:var(--amber);">Day 1 &middot; ~${esc2(rs.day1Miles)} mi</div>
@@ -8084,7 +8088,7 @@ async function doRouteSearch(){
   const prompt=`Plan a road trip from Edgewater FL to: ${dest}.${dateClause}
 27ft travel trailer, 30-amp water & electric. Max 380-430 miles/day. 7-8 nights at destination. Prefer state parks, county parks. Private only as fallback. Include sites listed down to 20ft that fit a 27ft rig.
 Return ONLY valid JSON, no markdown, no extra text:
-{"routeSummary":{"totalMiles":850,"day1Miles":"415","day2Miles":"435","overnightCity":"City, State","destinationCity":"Destination Name","mainHighways":"I-95 N to I-81 N","routeNotes":"one sentence trailer driving tip"},"overnightStop":{"location":"City, State","miles":"~415 miles from Edgewater","campgrounds":[2 objects]},"destination":{"location":"area name","miles":"~435 miles from overnight","campgrounds":[3 objects]}}
+{"routeSummary":{"totalMiles":850,"day1Miles":"415","day2Miles":"435","overnightCity":"City, State","destinationCity":"Destination Name","mainHighways":"I-95 N to I-81 N","routeNotes":"one sentence trailer driving tip"},"overnightStop":{"location":"City, State","miles":"~415 miles from ${from}","campgrounds":[2 objects]},"destination":{"location":"area name","miles":"~435 miles from overnight","campgrounds":[3 objects]}}
 Each campground object (keep concise): {"name":"","location":"city, state","type":"State Park","hookups":"30-amp W&E","pullThrough":true,"maxLength":25,"priceRange":"$25-$40","amenities":["Hiking","Fishing"],"rating":4.2,"description":"1-2 sentences.","website":"https://...","reservationRequired":true,"notes":"trailer tip"}`;
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
