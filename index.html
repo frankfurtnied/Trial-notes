@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_8.html -->
+<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_9.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8263,10 +8263,10 @@ async function doQuickSearch(){
 Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
 PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
 Amenities wanted: ${amStr}
-Return ONLY a valid JSON array, no markdown. Each object:
-{"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"2 sentences","website":"https://...","reservationRequired":true,"notes":"trailer-specific: entry road, tight turns, best sites for big rigs"}`;
+Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
+{"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     if(data.error)throw new Error(data.error.message);
     let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
@@ -8374,7 +8374,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_8.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_9.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8383,7 +8383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_8.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_9.html">
 </div>
 
 <!-- AUTH OVERLAY -->
