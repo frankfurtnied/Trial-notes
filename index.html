@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_12.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_13.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8128,70 +8128,83 @@ function renderQuickResults(results){
 }
 
 function renderRouteResults(data){
+  // Lite format - route overview with search buttons
+  if(data.type==='lite'){
+    const numStops=data.numStops||1;
+    const stops=[];
+    if(data.stop1)stops.push({...data.stop1,label:'Night 1 Stop',color:'var(--amber)',dayNum:1});
+    if(numStops>=2&&data.stop2)stops.push({...data.stop2,label:'Night 2 Stop',color:'#e8a030',dayNum:2});
+    if(data.destination)stops.push({...data.destination,label:'Destination',color:'var(--moss)',dayNum:numStops+1,isDestination:true});
+
+    let html=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div style="font-size:.75rem;color:var(--smoke);">AI-planned route &mdash; click Search to find campgrounds at each stop.</div>
+      <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">&#128190; Save this route</button>
+    </div>`;
+
+    // Route overview strip
+    html+=`<div style="background:rgba(30,50,25,.5);border:1px solid rgba(61,90,42,.5);border-radius:6px;padding:14px 16px;margin-bottom:20px;">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:10px;">&#128506; Trip Overview &mdash; ${numStops+1} driving days &middot; ~${esc2(String(data.totalMiles||'?'))} miles each way</div>
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:10px;">
+        <div style="text-align:center;padding:0 6px;">
+          <div style="font-size:.65rem;color:var(--smoke);">Start</div>
+          <div style="font-size:.8rem;font-weight:500;color:var(--cream);">${esc2(PL.route.from||'Edgewater, FL')}</div>
+        </div>
+        ${stops.map(s=>`
+          <div style="font-size:.7rem;color:${s.color};padding:0 3px;">&#9658;&#9658;</div>
+          <div style="text-align:center;padding:0 6px;">
+            <div style="font-size:.65rem;color:var(--smoke);">${s.label}</div>
+            <div style="font-size:.8rem;font-weight:500;color:var(--cream);">${esc2(s.city||'')}</div>
+            <div style="font-size:.65rem;color:var(--fog);">${esc2(s.miles||'')}</div>
+          </div>`).join('')}
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:8px;">
+        <span style="font-size:.72rem;color:var(--smoke);">Route: </span>
+        <span style="font-size:.78rem;color:var(--cream);">${esc2(data.mainHighways||'')}</span>
+        ${data.routeNotes?`<div style="font-size:.75rem;color:var(--fog);margin-top:4px;font-style:italic;">${esc2(data.routeNotes)}</div>`:''}
+      </div>
+    </div>`;
+
+    // Search button for each stop
+    stops.forEach(s=>{
+      const searchLabel=s.isDestination?`Campgrounds near ${s.city} (destination ${s.miles})`:`Overnight campgrounds near ${s.city} (${s.miles})`;
+      html+=`<div style="background:rgba(30,50,25,.4);border:1px solid ${s.color.replace('var(--amber)','rgba(200,135,42,.4)').replace('var(--moss)','rgba(61,90,42,.4)').replace('#e8a030','rgba(232,160,48,.4)')};border-radius:6px;padding:14px 16px;margin-bottom:12px;">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:${s.color};margin-bottom:6px;">
+          ${s.isDestination?'&#127957;':'&#127769;'} ${s.label} &mdash; Day ${s.dayNum}
+        </div>
+        <div style="font-size:.88rem;color:var(--cream);margin-bottom:10px;">
+          &#128205; <strong>${esc2(s.city||'')}, ${esc2(s.state||'')}</strong> &mdash; ${esc2(s.miles||'')}
+        </div>
+        <button onclick="searchForStop('${esc2(s.city||'')}','${esc2(s.state||'')}')" style="width:100%;background:${s.color==='var(--moss)'?'var(--moss)':s.color==='#e8a030'?'#e8a030':'var(--amber)'};color:${s.color==='var(--moss)'?'var(--cream)':'white'};border:none;border-radius:3px;padding:9px;font-family:-apple-system,Georgia,serif;font-size:.88rem;cursor:pointer;font-weight:500;">
+          &#128269; Search campgrounds near ${esc2(s.city||'')}
+        </button>
+      </div>`;
+    });
+
+    return html;
+  }
+
+  // Legacy full format fallback
   const numStops=(data.routeSummary&&data.routeSummary.numStops)||1;
   let html=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
     <div style="font-size:.75rem;color:var(--smoke);">AI-planned route &mdash; verify availability before booking.</div>
     <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">&#128190; Save this route</button>
   </div>`;
-  if(data.routeSummary){
-    const rs=data.routeSummary;
-    const stops=numStops===2?[
-      {label:'Night 1',city:rs.overnightCity,color:'var(--amber)'},
-      {label:'Night 2',city:rs.secondOvernightCity||'',color:'#e8a030'},
-      {label:'Destination',city:rs.destinationCity,color:'var(--moss)'}
-    ]:[
-      {label:'Night 1',city:rs.overnightCity,color:'var(--amber)'},
-      {label:'Destination',city:rs.destinationCity,color:'var(--moss)'}
-    ];
-    html+=`<div style="background:rgba(30,50,25,.5);border:1px solid rgba(61,90,42,.5);border-radius:6px;padding:16px 18px;margin-bottom:20px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:10px;">&#128506; Trip Overview &mdash; ${numStops+1} driving days &middot; ${esc2(String(rs.totalMiles))} miles each way</div>
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:12px;">
-        <div style="text-align:center;padding:0 6px;">
-          <div style="font-size:.68rem;color:var(--smoke);">Start</div>
-          <div style="font-size:.82rem;font-weight:500;color:var(--cream);">${esc2(PL.route.from||'Edgewater, FL')}</div>
-        </div>
-        ${stops.map(s=>`<div style="font-size:.7rem;color:${s.color};padding:0 2px;">&#9658;&#9658;</div><div style="text-align:center;padding:0 6px;"><div style="font-size:.68rem;color:var(--smoke);">${s.label}</div><div style="font-size:.82rem;font-weight:500;color:var(--cream);">${esc2(s.city||"")}</div></div>`).join("")}
-      </div>
-      <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:8px;display:flex;gap:12px;flex-wrap:wrap;">
-        <div><span style="font-size:.72rem;color:var(--smoke);">Route: </span><span style="font-size:.8rem;color:var(--cream);">${esc2(rs.mainHighways||"")}</span></div>
-      </div>
-      ${rs.routeNotes?`<div style="font-size:.78rem;color:var(--fog);margin-top:6px;font-style:italic;">${esc2(rs.routeNotes)}</div>`:""}
-    </div>`;
-  }
   const os1=data.overnightStop1||data.overnightStop;
-  if(os1){
-    const c1=os1.campgrounds||[];
-    html+=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">&#127769; Night 1 Stop &mdash; ~${esc2(os1.miles)}</div>
-      <button onclick="saveAllCampgrounds(${JSON.stringify(c1).replace(/"/g,'&quot;')})" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all</button>
-    </div>
-    <div style="background:rgba(200,135,42,.2);border:1px solid rgba(200,135,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os1.location||"")}</strong></div>`;
-    html+=c1.map((cg,i)=>renderCard(cg,i,"var(--amber)")).join("");
-  }
-  if(data.overnightStop2){
-    const os2=data.overnightStop2;
-    const c2=os2.campgrounds||[];
-    html+=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:20px 0 8px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#e8a030;">&#127769; Night 2 Stop &mdash; ~${esc2(os2.miles)}</div>
-      <button onclick="saveAllCampgrounds(${JSON.stringify(c2).replace(/"/g,'&quot;')})" style="background:#e8a030;color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all</button>
-    </div>
-    <div style="background:rgba(232,160,48,.15);border:1px solid rgba(232,160,48,.35);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os2.location||"")}</strong></div>`;
-    html+=c2.map((cg,i)=>renderCard(cg,(c1?.length||0)+i,"#e8a030")).join("");
-  }
-  if(data.destination){
-    const dst=data.destination;
-    const dc=dst.campgrounds||[];
-    const dayNum=dst.dayNum||(numStops+1);
-    const prevCount=(os1?.campgrounds?.length||0)+(data.overnightStop2?.campgrounds?.length||0);
-    html+=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:20px 0 8px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cream);">&#127957; Destination &mdash; Day ${dayNum} arrival &middot; ~${esc2(dst.miles)} &middot; 7-8 night stay</div>
-      <button onclick="saveAllCampgrounds(${JSON.stringify(dc).replace(/"/g,'&quot;')})" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all</button>
-    </div>
-    <div style="background:rgba(61,90,42,.35);border:1px solid rgba(61,90,42,.55);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(dst.location||"")}</strong> &mdash; your destination</div>`;
-    html+=dc.map((cg,i)=>renderCard(cg,prevCount+i,"var(--moss)")).join("");
-  }
+  if(os1){const c1=os1.campgrounds||[];html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:8px;">&#127769; Night 1 &mdash; ~${esc2(os1.miles)}</div><div style="background:rgba(200,135,42,.2);border:1px solid rgba(200,135,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os1.location||'')}</strong></div>`;html+=c1.map((cg,i)=>renderCard(cg,i,'var(--amber)')).join('');}
+  if(data.overnightStop2){const os2=data.overnightStop2;const c2=os2.campgrounds||[];html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#e8a030;margin:16px 0 8px;">&#127769; Night 2 &mdash; ~${esc2(os2.miles)}</div><div style="background:rgba(232,160,48,.15);border:1px solid rgba(232,160,48,.35);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os2.location||'')}</strong></div>`;html+=c2.map((cg,i)=>renderCard(cg,i,'#e8a030')).join('');}
+  if(data.destination){const dst=data.destination;const dc=dst.campgrounds||[];html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cream);margin:16px 0 8px;">&#127957; Destination &mdash; Day ${dst.dayNum||numStops+1}</div><div style="background:rgba(61,90,42,.35);border:1px solid rgba(61,90,42,.55);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(dst.location||'')}</strong></div>`;html+=dc.map((cg,i)=>renderCard(cg,i,'var(--moss)')).join('');}
   return html;
 }
+
+function searchForStop(city, state){
+  PL.mode='quick';
+  PL.search.dest=city+(state?', '+state:'');
+  PL.search.filterState=state||'';
+  PL.results=[];PL.done=false;PL.err=false;
+  renderFindPanel();
+  setTimeout(()=>doQuickSearch(),100);
+}
+
 
 function renderCard(cg,i,accent){
   const isState=/(state)/i.test(cg.type||''), isCounty=/(county)/i.test(cg.type||'');
@@ -8250,6 +8263,90 @@ function cancelSearch(){
 }
 
 function toggleAm2(a){const idx=PL.search.ams.indexOf(a);if(idx>-1)PL.search.ams.splice(idx,1);else PL.search.ams.push(a);renderFindPanel();}
+
+async function doQuickSearch(){
+  const sq=PL.search;
+  if(!sq.dest){alert('Please enter a destination.');return;}
+  const key=getKey();if(!key){alert('Please enter your Anthropic API key first.');return;}
+  PL.fromCache=false;
+  PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
+  const stateClause=sq.filterState?` in ${sq.filterState}`:'';
+  const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
+  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+Amenities wanted: ${amStr}
+Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
+{"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error.message);
+    let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    text=text.replace(/```json|```/g,'').trim();
+    PL.results=JSON.parse(text.slice(text.indexOf('['),text.lastIndexOf(']')+1));
+    addHistory(sq.dest,sq.filterState,PL.results);
+  }catch(e){PL.err=true;PL.errMsg=e.message;}
+  PL.loading=false;PL.done=true;renderFindPanel();
+}
+
+async function doRouteSearch(){
+  let dest=PL.route.dest.trim();
+  if(!dest){alert('Please enter your destination.');return;}
+  dest=dest.replace(/^\d+,\s*/,'').replace(/\d{5}(-\d{4})?/g,'').replace(/;.*$/,'')
+    .replace(/,?\s*(latitude|longitude|lat|lng|coordinates?).*$/i,'')
+    .replace(/\d+\s+[A-Za-z]+\s+(road|rd|street|st|ave|avenue|drive|dr|way|lane|ln|blvd|highway|hwy)\b.*/i,'')
+    .replace(/\s+,/g,',').trim().replace(/,\s*$/,'').trim();
+  if(!dest){alert('Please enter a destination name.');return;}
+  const key=getKey();
+  if(!key){alert('Please enter your Anthropic API key first.');return;}
+  const from=(PL.route.from&&PL.route.from.trim())?PL.route.from.trim():'Edgewater, FL';
+  PL.loading=true;PL.routeData=null;PL.done=false;PL.err=false;
+  renderFindPanel();
+
+  const forceStop=setTimeout(()=>{
+    if(PL.loading){PL.loading=false;PL.err=true;PL.errMsg='Search timed out. Please try again.';try{renderFindPanel();}catch(ex){}}
+  },45000);
+
+  try{
+    const dateClause=PL.route.start?` Departure: ${PL.route.start}${PL.route.end?', Return: '+PL.route.end:''}.`:'';
+
+    // Lightweight prompt - route info only, no campground lists
+    const prompt=`Plan a road trip from ${from} to ${dest}.${dateClause}
+27ft travel trailer. Max 430 miles per day. Prefer state parks. Under 820mi total = 1 overnight stop. 820mi+ = 2 overnight stops.
+
+Return ONLY this compact JSON, no markdown, no extra text:
+{"totalMiles":1350,"numStops":2,"mainHighways":"I-95 N to I-95 N","routeNotes":"brief trailer tip",
+"stop1":{"city":"Columbia, SC","state":"SC","miles":"~420mi from ${from}"},
+"stop2":{"city":"Richmond, VA","state":"VA","miles":"~400mi from stop 1"},
+"destination":{"city":"Franconia, NH","state":"NH","miles":"~530mi from last stop"}}
+If 1 stop: set numStops to 1 and stop2 to null.`;
+
+    const resp=await Promise.race([
+      fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:prompt}]})
+      }),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Request timed out')),40000))
+    ]);
+
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error.message);
+    let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').replace(/```json|```/g,'').trim();
+    const s=text.indexOf('{'),e=text.lastIndexOf('}');
+    if(s===-1||e===-1)throw new Error('Could not parse route. Please try again.');
+    PL.routeData={type:'lite',...JSON.parse(text.slice(s,e+1))};
+
+  }catch(e){
+    PL.err=true;
+    PL.errMsg=e.message.includes('timed out')||e.message.includes('Request')?'Search timed out — please try again.':e.message;
+  }
+  clearTimeout(forceStop);
+  PL.loading=false;PL.done=true;
+  try{renderFindPanel();}catch(ex){console.error(ex);}
+}
+
 
 async function doQuickSearch(){
   const sq=PL.search;
@@ -8573,7 +8670,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_12.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_13.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8582,7 +8679,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_12.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_13.html">
 </div>
 
 <!-- AUTH OVERLAY -->
