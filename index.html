@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_5.html -->
+<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_6.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -4383,52 +4383,64 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Paynes Prairie State Park</div>
           <div class="card-date">Jun 24, 2026 – Jun 26, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 33 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 32 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 46</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
-      <div class="card-foot"><button class="btn-sm" onclick="deleteUpcoming(1776893028104)">Cancel Trip</button></div>
+      <div class="card-foot">
+        <button class="btn-sm" onclick="startEditUpcoming(1776893028104)">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteUpcoming(1776893028104)">Cancel Trip</button>
+      </div>
     </div><div class="entry-card">
       <div class="card-top">
         <div>
           <div class="card-loc">📍 Stephen Foster Folk Culture State Park</div>
           <div class="card-date">Sep 3, 2026 – Sep 7, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 104 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 103 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 4</strong></div>
         
       </div>
-      <div class="card-foot"><button class="btn-sm" onclick="deleteUpcoming(1777250533170)">Cancel Trip</button></div>
+      <div class="card-foot">
+        <button class="btn-sm" onclick="startEditUpcoming(1777250533170)">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteUpcoming(1777250533170)">Cancel Trip</button>
+      </div>
     </div><div class="entry-card">
       <div class="card-top">
         <div>
           <div class="card-loc">📍 Anastasia State Park</div>
           <div class="card-date">Nov 4, 2026 – Nov 8, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 166 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 165 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 97</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
-      <div class="card-foot"><button class="btn-sm" onclick="deleteUpcoming(1776894047340)">Cancel Trip</button></div>
+      <div class="card-foot">
+        <button class="btn-sm" onclick="startEditUpcoming(1776894047340)">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteUpcoming(1776894047340)">Cancel Trip</button>
+      </div>
     </div><div class="entry-card">
       <div class="card-top">
         <div>
           <div class="card-loc">📍 Silver Springs State Park</div>
           <div class="card-date">Dec 16, 2026 – Dec 20, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 208 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 207 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 7</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
-      <div class="card-foot"><button class="btn-sm" onclick="deleteUpcoming(1776893176171)">Cancel Trip</button></div>
+      <div class="card-foot">
+        <button class="btn-sm" onclick="startEditUpcoming(1776893176171)">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteUpcoming(1776893176171)">Cancel Trip</button>
+      </div>
     </div></div>
   <div class="entry-form" style="margin-top:24px">
     <div style="font-family:-apple-system,Georgia,serif;font-size:1.15rem;color:var(--bark);margin-bottom:14px">📅 Book a Future Trip</div>
@@ -6969,9 +6981,40 @@ function renderUpcoming() {
         ${t.site ? `<div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site ${esc(t.site)}</strong></div>` : ''}
         ${t.note ? `<div class="card-note">${esc(t.note)}</div>` : ''}
       </div>
-      <div class="card-foot"><button class="btn-sm" onclick="deleteUpcoming(${t.id})">Cancel Trip</button></div>
+      <div class="card-foot">
+        <button class="btn-sm" onclick="startEditUpcoming(${t.id})">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteUpcoming(${t.id})">Cancel Trip</button>
+      </div>
     </div>`;
   }).join('');
+}
+
+function startEditUpcoming(id) {
+  editingUpcomingId = id;
+  const t = (state.upcoming||[]).find(x=>x.id===id);
+  if (!t) return;
+  const name = prompt('Park name:', t.parkName);
+  if (name === null) { editingUpcomingId=null; return; }
+  const start = prompt('Arrival date (YYYY-MM-DD):', t.startDate);
+  if (start === null) { editingUpcomingId=null; return; }
+  const end = prompt('Departure date (YYYY-MM-DD):', t.endDate||t.startDate);
+  const site = prompt('Site number (optional):', t.site||'');
+  const note = prompt('Note (optional):', t.note||'');
+  const idx = state.upcoming.findIndex(x=>x.id===id);
+  if (idx >= 0) {
+    state.upcoming[idx] = {
+      ...state.upcoming[idx],
+      parkName: name.trim()||t.parkName,
+      startDate: start.trim()||t.startDate,
+      endDate: (end&&end.trim())||t.startDate,
+      site: (site||'').trim(),
+      note: (note||'').trim()
+    };
+    saveState();
+    renderUpcoming();
+    showToast('Trip updated ✓');
+  }
+  editingUpcomingId = null;
 }
 
 function refreshUpcomingDropdown() {
@@ -7546,6 +7589,7 @@ const SUPABASE_KEY = 'sb_publishable_U7lDVjJvpZmQ6x48q-cFIw_HY-7qXQv';
 let currentUser = null;
 let accessToken  = localStorage.getItem('sb_access_token') || null;
 let syncTimeout  = null;
+let editingUpcomingId = null;
 
 async function sbFetch(path, options = {}) {
   const headers = {
@@ -7899,7 +7943,7 @@ function renderFindPanel() {
         <input class="pl-input" id="rt-from" value="${esc2(PL.route.from)}" placeholder="Edgewater, FL" oninput="PL.route.from=this.value;localStorage.setItem('tn_route_from',this.value)">
       </div>
       <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:12px;">
-        &#128656; 27ft &middot; 30-amp &middot; 380-430 miles/day &middot; 7-8 nights at destination
+        &#128656; 27ft &middot; 30-amp &middot; 380-430 miles/day max &middot; 7-8 nights at destination
       </div>
       <div class="pl-section">
         <label class="pl-label">Final destination <span style="font-weight:300;font-size:.75rem;opacity:.7;">(park name &amp; state works best)</span></label>
@@ -8022,71 +8066,67 @@ function renderQuickResults(results){
 }
 
 function renderRouteResults(data){
+  const numStops=(data.routeSummary&&data.routeSummary.numStops)||1;
   let html=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
     <div style="font-size:.75rem;color:var(--smoke);">AI-planned route &mdash; verify availability before booking.</div>
-    <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:8px 18px;font-family:-apple-system,Georgia,serif;font-size:.88rem;cursor:pointer;font-weight:500;">&#128190; Save this route plan</button>
+    <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">&#128190; Save this route</button>
   </div>`;
-
-  // Route overview summary card
   if(data.routeSummary){
     const rs=data.routeSummary;
+    const stops=numStops===2?[
+      {label:'Night 1',city:rs.overnightCity,color:'var(--amber)'},
+      {label:'Night 2',city:rs.secondOvernightCity||'',color:'#e8a030'},
+      {label:'Destination',city:rs.destinationCity,color:'var(--moss)'}
+    ]:[
+      {label:'Night 1',city:rs.overnightCity,color:'var(--amber)'},
+      {label:'Destination',city:rs.destinationCity,color:'var(--moss)'}
+    ];
     html+=`<div style="background:rgba(30,50,25,.5);border:1px solid rgba(61,90,42,.5);border-radius:6px;padding:16px 18px;margin-bottom:20px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:12px;">&#128506; Trip Overview</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-        <div style="text-align:center;">
-          <div style="font-size:.75rem;color:var(--smoke);">Start</div>
-          <div style="font-size:.9rem;font-weight:500;color:var(--cream);">${esc2(PL.route.from||'Edgewater, FL')}</div>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:10px;">&#128506; Trip Overview &mdash; ${numStops+1} driving days &middot; ${esc2(String(rs.totalMiles))} miles each way</div>
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:12px;">
+        <div style="text-align:center;padding:0 6px;">
+          <div style="font-size:.68rem;color:var(--smoke);">Start</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--cream);">${esc2(PL.route.from||'Edgewater, FL')}</div>
         </div>
-        <div style="flex:1;text-align:center;min-width:80px;">
-          <div style="font-size:.72rem;color:var(--amber);">Day 1 &middot; ~${esc2(rs.day1Miles)} mi</div>
-          <div style="border-top:2px dashed var(--amber);margin:4px 8px;position:relative;">
-            <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:.7rem;background:transparent;">&#9658;</span>
-          </div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:.75rem;color:var(--smoke);">Night 1</div>
-          <div style="font-size:.85rem;font-weight:500;color:var(--cream);">${esc2(rs.overnightCity)}</div>
-        </div>
-        <div style="flex:1;text-align:center;min-width:80px;">
-          <div style="font-size:.72rem;color:var(--amber);">Day 2 &middot; ~${esc2(rs.day2Miles)} mi</div>
-          <div style="border-top:2px dashed var(--amber);margin:4px 8px;position:relative;">
-            <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:.7rem;background:transparent;">&#9658;</span>
-          </div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:.75rem;color:var(--smoke);">Destination</div>
-          <div style="font-size:.85rem;font-weight:500;color:var(--cream);">${esc2(rs.destinationCity)}</div>
-        </div>
+        ${stops.map(s=>`<div style="font-size:.7rem;color:${s.color};padding:0 2px;">&#9658;&#9658;</div><div style="text-align:center;padding:0 6px;"><div style="font-size:.68rem;color:var(--smoke);">${s.label}</div><div style="font-size:.82rem;font-weight:500;color:var(--cream);">${esc2(s.city||"")}</div></div>`).join("")}
       </div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.1);padding-top:10px;">
-        <div><span style="font-size:.72rem;color:var(--smoke);">Total distance: </span><span style="font-size:.82rem;color:var(--cream);font-weight:500;">${esc2(rs.totalMiles)} miles each way</span></div>
-        <div><span style="font-size:.72rem;color:var(--smoke);">Main route: </span><span style="font-size:.82rem;color:var(--cream);">${esc2(rs.mainHighways)}</span></div>
+      <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:8px;display:flex;gap:12px;flex-wrap:wrap;">
+        <div><span style="font-size:.72rem;color:var(--smoke);">Route: </span><span style="font-size:.8rem;color:var(--cream);">${esc2(rs.mainHighways||"")}</span></div>
       </div>
-      ${rs.routeNotes?`<div style="font-size:.8rem;color:var(--fog);margin-top:8px;font-style:italic;">${esc2(rs.routeNotes)}</div>`:''}
+      ${rs.routeNotes?`<div style="font-size:.78rem;color:var(--fog);margin-top:6px;font-style:italic;">${esc2(rs.routeNotes)}</div>`:""}
     </div>`;
   }
-
-  if(data.overnightStop){
-    const os=data.overnightStop;
-    const osCamps=os.campgrounds||[];
-    const osCampsJson=JSON.stringify(osCamps).replace(/"/g,'&quot;');
+  const os1=data.overnightStop1||data.overnightStop;
+  if(os1){
+    const c1=os1.campgrounds||[];
     html+=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">&#127769; Overnight Stop &mdash; Day 1 &middot; ~${esc2(os.miles)}</div>
-      <button onclick="saveAllCampgrounds(${osCampsJson})" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all stops</button>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">&#127769; Night 1 Stop &mdash; ~${esc2(os1.miles)}</div>
+      <button onclick="saveAllCampgrounds(${JSON.stringify(c1).replace(/"/g,'&quot;')})" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all</button>
     </div>
-    <div style="background:rgba(200,135,42,.2);border:1px solid rgba(200,135,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os.location)}</strong> &mdash; pull off here for the night</div>`;
-    html+=(os.campgrounds||[]).map((cg,i)=>renderCard(cg,i,'var(--amber)')).join('');
+    <div style="background:rgba(200,135,42,.2);border:1px solid rgba(200,135,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os1.location||"")}</strong></div>`;
+    html+=c1.map((cg,i)=>renderCard(cg,i,"var(--amber)")).join("");
+  }
+  if(data.overnightStop2){
+    const os2=data.overnightStop2;
+    const c2=os2.campgrounds||[];
+    html+=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:20px 0 8px;">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#e8a030;">&#127769; Night 2 Stop &mdash; ~${esc2(os2.miles)}</div>
+      <button onclick="saveAllCampgrounds(${JSON.stringify(c2).replace(/"/g,'&quot;')})" style="background:#e8a030;color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all</button>
+    </div>
+    <div style="background:rgba(232,160,48,.15);border:1px solid rgba(232,160,48,.35);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os2.location||"")}</strong></div>`;
+    html+=c2.map((cg,i)=>renderCard(cg,(c1?.length||0)+i,"#e8a030")).join("");
   }
   if(data.destination){
     const dst=data.destination;
-    const dstCamps=dst.campgrounds||[];
-    const dstCampsJson=JSON.stringify(dstCamps).replace(/"/g,'&quot;');
+    const dc=dst.campgrounds||[];
+    const dayNum=dst.dayNum||(numStops+1);
+    const prevCount=(os1?.campgrounds?.length||0)+(data.overnightStop2?.campgrounds?.length||0);
     html+=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:20px 0 8px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cream);">&#127957; Destination &mdash; Day 2 &middot; ~${esc2(dst.miles)} &middot; 7-8 night stay</div>
-      <button onclick="saveAllCampgrounds(${dstCampsJson})" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all destinations</button>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cream);">&#127957; Destination &mdash; Day ${dayNum} arrival &middot; ~${esc2(dst.miles)} &middot; 7-8 night stay</div>
+      <button onclick="saveAllCampgrounds(${JSON.stringify(dc).replace(/"/g,'&quot;')})" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all</button>
     </div>
-    <div style="background:rgba(61,90,42,.35);border:1px solid rgba(61,90,42,.55);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(dst.location)}</strong> &mdash; your destination</div>`;
-    html+=(dst.campgrounds||[]).map((cg,i)=>renderCard(cg,(data.overnightStop?.campgrounds?.length||0)+i,'var(--moss)')).join('');
+    <div style="background:rgba(61,90,42,.35);border:1px solid rgba(61,90,42,.55);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(dst.location||"")}</strong> &mdash; your destination</div>`;
+    html+=dc.map((cg,i)=>renderCard(cg,prevCount+i,"var(--moss)")).join("");
   }
   return html;
 }
@@ -8184,10 +8224,39 @@ async function doRouteSearch(){
   try{
     const dateClause=PL.route.start?` Departure: ${PL.route.start}${PL.route.end?', Return: '+PL.route.end:''}.`:'';
     const prompt=`Plan a road trip from ${from} to: ${dest}.${dateClause}
-27ft travel trailer, 30-amp water & electric. Max 380-430 miles/day. 7-8 nights at destination. Prefer state parks, county parks. Private only as fallback. Include sites listed down to 20ft that fit a 27ft rig.
-Return ONLY valid JSON, no markdown, no extra text:
-{"routeSummary":{"totalMiles":850,"day1Miles":"415","day2Miles":"435","overnightCity":"City, State","destinationCity":"Destination Name","mainHighways":"I-95 N to I-81 N","routeNotes":"one sentence trailer driving tip"},"overnightStop":{"location":"City, State","miles":"~415 miles from ${from}","campgrounds":[2 objects]},"destination":{"location":"area name","miles":"~435 miles from overnight","campgrounds":[3 objects]}}
-Each campground object (keep concise): {"name":"","location":"city, state","type":"State Park","hookups":"30-amp W&E","pullThrough":true,"maxLength":25,"priceRange":"$25-$40","amenities":["Hiking","Fishing"],"rating":4.2,"description":"1-2 sentences.","website":"https://...","reservationRequired":true,"notes":"trailer tip"}`;
+27ft travel trailer, 30-amp water & electric. Max driving per day: 380-430 miles absolute maximum — never exceed 430 miles in a single day. 7-8 nights at destination. Prefer state parks and county parks. Private campgrounds only as last resort. Include sites listed down to 20ft that fit a 27ft rig.
+
+IMPORTANT: Calculate the total distance. Each driving day must be 380-430 miles MAXIMUM — never plan a day over 430 miles. If total distance is under 820 miles, plan ONE overnight stop. If total is 820 miles or more, plan TWO overnight stops. Space stops so no single day exceeds 430 miles.
+
+Return ONLY valid JSON, no markdown:
+{
+  "routeSummary": {
+    "totalMiles": 850,
+    "numStops": 1,
+    "overnightCity": "City, State",
+    "secondOvernightCity": null,
+    "destinationCity": "Destination Name",
+    "mainHighways": "I-95 N to I-81 N",
+    "routeNotes": "one sentence driving tip for a travel trailer"
+  },
+  "overnightStop1": {
+    "location": "City, State",
+    "miles": "~415 miles from ${from}",
+    "dayNum": 1,
+    "campgrounds": [2 campground objects]
+  },
+  "overnightStop2": null,
+  "destination": {
+    "location": "area name",
+    "miles": "~435 miles from last overnight stop",
+    "dayNum": 2,
+    "campgrounds": [3 campground objects]
+  }
+}
+
+If TWO overnight stops needed, set numStops to 2, fill both overnightStop1 and overnightStop2 with campgrounds, set destination.dayNum to 3, and set secondOvernightCity.
+
+Each campground: {"name":"","location":"city, state","type":"State Park","hookups":"30-amp W&E","pullThrough":true,"maxLength":25,"priceRange":"$25-$40","amenities":["Hiking","Fishing"],"rating":4.2,"description":"1-2 sentences.","website":"https://...","reservationRequired":true,"notes":"trailer tip"}`;
     const controller=new AbortController();
     PL.abortController=controller;
     const timer=setTimeout(()=>controller.abort(),35000);
@@ -8240,7 +8309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_5.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_6.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8249,7 +8318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_5.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_6.html">
 </div>
 
 <!-- AUTH OVERLAY -->
