@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_6.html -->
+<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_7.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -4381,7 +4381,7 @@ html { -webkit-overflow-scrolling: touch; }
       <div class="card-top">
         <div>
           <div class="card-loc">📍 Paynes Prairie State Park</div>
-          <div class="card-date">Jun 24, 2026 – Jun 26, 2026</div>
+          <div class="card-date">Jun 24, 2026 – Jun 28, 2026</div>
         </div>
         <div class="card-badges"><span class="badge bn">In 32 days</span></div>
       </div>
@@ -5971,9 +5971,27 @@ html { -webkit-overflow-scrolling: touch; }
       <button class="pl-btn-main" onclick="doQuickSearch()">🔍 Find Campgrounds</button>
     </div><div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Routes (1)</div>
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Routes (2)</div>
       </div>
       
+        <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+            <div>
+              <div style="font-weight:500;font-size:.95rem;color:var(--cream);">Clayton, NY</div>
+              <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">📍 Clayton, NY · Saved May 22, 2026</div>
+              
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
+              <button onclick="loadSavedRoute(1779455782429)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="removeRoute(1779455782429)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
+            </div>
+          </div>
+          <div style="font-size:.75rem;color:var(--fog);">
+            🗺 I-95 N to I-81 N to I-90 W to NY-12 N · 850 mi total ·
+            Day 1: ~415 mi to Emporia, VA ·
+            Day 2: ~435 mi to Clayton, NY
+          </div>
+        </div>
         <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
             <div>
@@ -5994,7 +6012,7 @@ html { -webkit-overflow-scrolling: touch; }
         </div>
     </div></div>
 
-<div class="toast" id="toast">Welcome back! 🌲</div>
+<div class="toast" id="toast">Trip updated ✓</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -6969,6 +6987,43 @@ function renderUpcoming() {
       ? fmtDate(t.startDate)
       : `${fmtDateShort(t.startDate)} – ${fmtDateShort(t.endDate)}`;
 
+    // Show inline edit form if this trip is being edited
+    if (editingUpcomingId === t.id) {
+      return `<div class="entry-card" style="border:2px solid var(--amber);">
+        <div style="font-size:.8rem;font-weight:500;color:var(--amber);margin-bottom:10px;">✏️ Editing trip</div>
+        <div style="display:grid;gap:8px;">
+          <div>
+            <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--smoke);display:block;margin-bottom:3px;">Park name</label>
+            <input id="eu-name" value="${esc(t.parkName)}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:3px;padding:7px 10px;font-family:-apple-system,Georgia,serif;font-size:.95rem;color:var(--bark);">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--smoke);display:block;margin-bottom:3px;">Arrival date</label>
+              <input type="date" id="eu-start" value="${t.startDate}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:3px;padding:7px 8px;font-family:-apple-system,Georgia,serif;color:var(--bark);">
+            </div>
+            <div>
+              <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--smoke);display:block;margin-bottom:3px;">Departure date</label>
+              <input type="date" id="eu-end" value="${t.endDate||t.startDate}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:3px;padding:7px 8px;font-family:-apple-system,Georgia,serif;color:var(--bark);">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--smoke);display:block;margin-bottom:3px;">Site number</label>
+              <input id="eu-site" value="${esc(t.site||'')}" placeholder="e.g. 46" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:3px;padding:7px 10px;font-family:-apple-system,Georgia,serif;color:var(--bark);">
+            </div>
+            <div>
+              <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--smoke);display:block;margin-bottom:3px;">Note</label>
+              <input id="eu-note" value="${esc(t.note||'')}" placeholder="e.g. Booked with Keeners" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:3px;padding:7px 10px;font-family:-apple-system,Georgia,serif;color:var(--bark);">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
+            <button class="btn-sm" onclick="cancelUpcomingEdit()">Cancel</button>
+            <button onclick="saveUpcomingEdit(${t.id})" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:7px 16px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;">💾 Save changes</button>
+          </div>
+        </div>
+      </div>`;
+    }
+
     return `<div class="entry-card">
       <div class="card-top">
         <div>
@@ -6991,30 +7046,37 @@ function renderUpcoming() {
 
 function startEditUpcoming(id) {
   editingUpcomingId = id;
+  renderUpcoming();
+}
+
+function saveUpcomingEdit(id) {
   const t = (state.upcoming||[]).find(x=>x.id===id);
   if (!t) return;
-  const name = prompt('Park name:', t.parkName);
-  if (name === null) { editingUpcomingId=null; return; }
-  const start = prompt('Arrival date (YYYY-MM-DD):', t.startDate);
-  if (start === null) { editingUpcomingId=null; return; }
-  const end = prompt('Departure date (YYYY-MM-DD):', t.endDate||t.startDate);
-  const site = prompt('Site number (optional):', t.site||'');
-  const note = prompt('Note (optional):', t.note||'');
+  const name = document.getElementById('eu-name').value.trim();
+  const start = document.getElementById('eu-start').value;
+  const end = document.getElementById('eu-end').value;
+  const site = document.getElementById('eu-site').value.trim();
+  const note = document.getElementById('eu-note').value.trim();
   const idx = state.upcoming.findIndex(x=>x.id===id);
   if (idx >= 0) {
     state.upcoming[idx] = {
       ...state.upcoming[idx],
-      parkName: name.trim()||t.parkName,
-      startDate: start.trim()||t.startDate,
-      endDate: (end&&end.trim())||t.startDate,
-      site: (site||'').trim(),
-      note: (note||'').trim()
+      parkName: name||t.parkName,
+      startDate: start||t.startDate,
+      endDate: end||start||t.startDate,
+      site: site,
+      note: note
     };
     saveState();
-    renderUpcoming();
     showToast('Trip updated ✓');
   }
   editingUpcomingId = null;
+  renderUpcoming();
+}
+
+function cancelUpcomingEdit() {
+  editingUpcomingId = null;
+  renderUpcoming();
 }
 
 function refreshUpcomingDropdown() {
@@ -8309,7 +8371,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_6.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_7.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8318,7 +8380,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_6.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_7.html">
 </div>
 
 <!-- AUTH OVERLAY -->
