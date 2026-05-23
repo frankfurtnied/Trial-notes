@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_11.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_12.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8288,6 +8288,100 @@ async function doRouteSearch(){
     .replace(/\d+\s+[A-Za-z]+\s+(road|rd|street|st|ave|avenue|drive|dr|way|lane|ln|blvd|highway|hwy)\b.*/i,'')
     .replace(/\s+,/g,',').trim().replace(/,\s*$/,'').trim();
   if(!dest){alert('Please enter a destination name.');return;}
+  const key=getKey();
+  if(!key){alert('Please enter your Anthropic API key first.');return;}
+  const from=(PL.route.from&&PL.route.from.trim())?PL.route.from.trim():'Edgewater, FL';
+  PL.loading=true;PL.routeData=null;PL.done=false;PL.err=false;
+  renderFindPanel();
+
+  // Force-stop loading after 90 seconds no matter what
+  const forceStop=setTimeout(()=>{
+    if(PL.loading){PL.loading=false;PL.err=true;PL.errMsg='Search timed out. Please try again.';renderFindPanel();}
+  },90000);
+
+  const fetchWithTimeout=(url,opts,ms)=>Promise.race([
+    fetch(url,opts),
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error('Request timed out')),ms))
+  ]);
+
+  try{
+    const dateClause=PL.route.start?` Departure: ${PL.route.start}${PL.route.end?', Return: '+PL.route.end:''}.`:'';
+
+    // Single focused call - route plan + stops
+    const prompt=`Plan a road trip from ${from} to ${dest}.${dateClause}
+27ft travel trailer. Max 380-430 miles per day, never over 430. Prefer state parks and county parks. Sites down to 20ft that fit a 27ft rig.
+Calculate total miles. Under 820: 1 overnight stop. 820+: 2 overnight stops. Each day max 430 miles.
+
+Return ONLY compact JSON, no markdown:
+{"routeSummary":{"totalMiles":1350,"numStops":2,"overnightCity":"City, ST","secondOvernightCity":"City, ST","destinationCity":"Dest Name","mainHighways":"I-95 N","routeNotes":"short tip"},
+"overnightStop1":{"location":"City, ST","miles":"~420mi from ${from}","campgrounds":[
+{"name":"Park Name","location":"city, st","type":"State Park","hookups":"30-amp W&E","pullThrough":true,"maxLength":30,"priceRange":"$25-$35","rating":4.2,"website":"https://...","notes":"tip"},
+{"name":"Park Name 2","location":"city, st","type":"State Park","hookups":"30-amp W&E","pullThrough":false,"maxLength":25,"priceRange":"$20-$30","rating":4.0,"website":"https://...","notes":"tip"}]},
+"overnightStop2":null,
+"destination":{"location":"Dest area","miles":"~430mi from last stop","campgrounds":[
+{"name":"Park Name","location":"city, st","type":"State Park","hookups":"30-amp W&E","pullThrough":true,"maxLength":35,"priceRange":"$25-$40","rating":4.3,"website":"https://...","notes":"tip"},
+{"name":"Park Name 2","location":"city, st","type":"State Park","hookups":"30-amp W&E","pullThrough":false,"maxLength":25,"priceRange":"$20-$35","rating":4.1,"website":"https://...","notes":"tip"}]}}
+If 2 stops: fill overnightStop2 same as overnightStop1. Be concise — short names, short notes.`;
+
+    const resp=await fetchWithTimeout('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})
+    },75000);
+
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error.message);
+    let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').replace(/```json|```/g,'').trim();
+    const s=text.indexOf('{'),e=text.lastIndexOf('}');
+    if(s===-1||e===-1)throw new Error('No valid response. Try again or simplify the destination name.');
+    PL.routeData=JSON.parse(text.slice(s,e+1));
+
+  }catch(e){
+    PL.err=true;
+    PL.errMsg=e.message.includes('timed out')?'Search timed out — please try again.':e.message;
+  }
+  clearTimeout(forceStop);
+  PL.loading=false;PL.done=true;renderFindPanel();
+}
+
+
+async function doQuickSearch(){
+  const sq=PL.search;
+  if(!sq.dest){alert('Please enter a destination.');return;}
+  const key=getKey();if(!key){alert('Please enter your Anthropic API key first.');return;}
+  PL.fromCache=false;
+  PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
+  const stateClause=sq.filterState?` in ${sq.filterState}`:'';
+  const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
+  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+Amenities wanted: ${amStr}
+Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
+{"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error.message);
+    let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    text=text.replace(/```json|```/g,'').trim();
+    PL.results=JSON.parse(text.slice(text.indexOf('['),text.lastIndexOf(']')+1));
+    addHistory(sq.dest,sq.filterState,PL.results);
+  }catch(e){PL.err=true;PL.errMsg=e.message;}
+  PL.loading=false;PL.done=true;renderFindPanel();
+}
+
+async function doRouteSearch(){
+  let dest=PL.route.dest.trim();
+  if(!dest){alert('Please enter your destination.');return;}
+  dest=dest
+    .replace(/^\d+,\s*/,'')
+    .replace(/\d{5}(-\d{4})?/g,'')
+    .replace(/;.*$/,'')
+    .replace(/,?\s*(latitude|longitude|lat|lng|coordinates?).*$/i,'')
+    .replace(/\d+\s+[A-Za-z]+\s+(road|rd|street|st|ave|avenue|drive|dr|way|lane|ln|blvd|highway|hwy)\b.*/i,'')
+    .replace(/\s+,/g,',').trim().replace(/,\s*$/,'').trim();
+  if(!dest){alert('Please enter a destination name.');return;}
   const key=getKey();if(!key){alert('Please enter your Anthropic API key first.');return;}
   const from=(PL.route.from&&PL.route.from.trim())?PL.route.from.trim():'Edgewater, FL';
   PL.loading=true;PL.routeData=null;PL.done=false;PL.err=false;PL.abortController=null;
@@ -8479,7 +8573,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_11.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_12.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8488,7 +8582,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_11.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_12.html">
 </div>
 
 <!-- AUTH OVERLAY -->
