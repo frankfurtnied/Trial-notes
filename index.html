@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_7.html -->
+<!-- saved from url=(0068)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_8.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -4403,7 +4403,7 @@ html { -webkit-overflow-scrolling: touch; }
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 4</strong></div>
-        
+        <div class="card-note">Booked with Keeners</div>
       </div>
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1777250533170)">✏️ Edit</button>
@@ -6012,7 +6012,7 @@ html { -webkit-overflow-scrolling: touch; }
         </div>
     </div></div>
 
-<div class="toast" id="toast">Trip updated ✓</div>
+<div class="toast" id="toast">Welcome back! 🌲</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -8221,7 +8221,10 @@ function renderCard(cg,i,accent){
       ${cg.description?`<p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">${esc2(cg.description)}</p>`:''}
       ${cg.notes?`<div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">&#128295; ${esc2(cg.notes)}</div>`:''}
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
-        ${cg.website?`<a href="${esc2(cg.website)}" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">&#127760; Website</a>`:'<span></span>'}
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          ${cg.website?`<a href="${esc2(cg.website)}" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">&#127760; Website</a>`:''}
+          <a href="https://www.google.com/search?q=${encodeURIComponent((cg.name||'')+' '+(cg.location||''))}" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">&#128269; Google search</a>
+        </div>
         <button onclick="saveCampgroundAndRefresh(${safeJson.replace(/'/g,'"')})" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">&#11088; Save</button>
       </div>
     </div>
@@ -8371,7 +8374,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_7.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_8.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8380,7 +8383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_7.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_8.html">
 </div>
 
 <!-- AUTH OVERLAY -->
