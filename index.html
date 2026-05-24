@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_30.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_31.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -5984,6 +5984,20 @@ html { -webkit-overflow-scrolling: touch; }
         <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
             <div>
+              <div style="font-weight:500;font-size:.95rem;color:var(--cream);">Clayton ,ny</div>
+              <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">📍 clayton ,ny · Saved May 24, 2026</div>
+              
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
+              <button onclick="loadSavedRoute(1779658736775)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="removeRoute(1779658736775)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
+            </div>
+          </div>
+          
+        </div>
+        <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+            <div>
               <div style="font-weight:500;font-size:.95rem;color:var(--cream);">Franconia Notch State Park</div>
               <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">📍 Franconia Notch State Park · Saved May 23, 2026</div>
               <div style="font-size:.75rem;color:var(--smoke);">📅 2026-09-15 → 2026-10-20</div>
@@ -5994,24 +6008,6 @@ html { -webkit-overflow-scrolling: touch; }
             </div>
           </div>
           
-        </div>
-        <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
-            <div>
-              <div style="font-weight:500;font-size:.95rem;color:var(--cream);">Clayton, NY</div>
-              <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">📍 Clayton, NY · Saved May 22, 2026</div>
-              
-            </div>
-            <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(1779455782429)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
-              <button onclick="removeRoute(1779455782429)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
-            </div>
-          </div>
-          <div style="font-size:.75rem;color:var(--fog);">
-            🗺 I-95 N to I-81 N to I-90 W to NY-12 N · 850 mi total ·
-            Day 1: ~415 mi to Emporia, VA ·
-            Day 2: ~435 mi to Clayton, NY
-          </div>
         </div>
         <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
@@ -8191,13 +8187,14 @@ function renderFindPanel() {
         &#128656; 27ft &middot; 30-amp W&amp;E &middot; Enter stops manually or use Auto-plan below
       </div>
       <div class="pl-section">
-        <label class="pl-label">How many overnight stops do you want?</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          ${[1,2,3].map(n=>`<button onclick="PL.route.numStops=${n};localStorage.setItem('tn_route_stops','${n}');renderFindPanel()" style="flex:1;padding:8px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:1px solid ${PL.route.numStops===n?'var(--amber)':'var(--fog)'};border-radius:4px;cursor:pointer;background:${PL.route.numStops===n?'var(--amber)':'rgba(255,255,255,.1)'};color:${PL.route.numStops===n?'white':'var(--fog)'};">
-            ${n} stop${n!==1?'s':''}<br><span style="font-size:.68rem;opacity:.8;">${n===1?'1 driving day':n===2?'2 driving days':'3 driving days'}</span>
-          </button>`).join('')}
+        <label class="pl-label">Number of overnight stops</label>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <input type="number" min="1" max="10" value="${PL.route.numStops||2}"
+            oninput="const v=parseInt(this.value)||1;PL.route.numStops=v;localStorage.setItem('tn_route_stops',v);document.getElementById('stops-hint').textContent='Auto-plan will divide the route into '+(v+1)+' equal driving days';"
+            style="width:80px;font-size:1.1rem;padding:8px 10px;text-align:center;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:4px;color:var(--bark);font-family:-apple-system,Georgia,serif;">
+          <span style="font-size:.85rem;color:var(--fog);">overnight stop${(PL.route.numStops||2)!==1?'s':''} &rarr; ${(PL.route.numStops||2)+1} driving days</span>
         </div>
-        <div style="font-size:.72rem;color:var(--fog);margin-top:6px;">Auto-plan will space stops equally — e.g. 1050 miles ÷ ${PL.route.numStops+1} days = ~${Math.round(1050/(PL.route.numStops+1))} miles/day</div>
+        <div id="stops-hint" style="font-size:.72rem;color:var(--fog);margin-top:6px;">Auto-plan will divide the route into ${(PL.route.numStops||2)+1} equal driving days</div>
       </div>
 
       <div class="pl-section">
@@ -9006,7 +9003,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_30.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_31.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -9015,7 +9012,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_30.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_31.html">
 </div>
 
 <!-- AUTH OVERLAY -->
