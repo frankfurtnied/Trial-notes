@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_26.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_29.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8071,6 +8071,7 @@ function addHistory(dest,state,results) {
   const h=getHistory().filter(x=>!(x.dest===dest&&x.state===state));
   h.unshift({dest,state,results:results||[],d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
   try{localStorage.setItem('tn_srch_hist',JSON.stringify(h.slice(0,8)));}catch(e){}
+  scheduleSyncToCloud(); // push to Supabase so it persists across sessions
 }
 function loadHistoryResult(idx){
   const h=getHistory();
@@ -8989,7 +8990,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_26.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_29.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8998,7 +8999,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_26.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_29.html">
 </div>
 
 <!-- AUTH OVERLAY -->
