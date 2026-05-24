@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_19.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_25.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -266,15 +266,15 @@ html { -webkit-overflow-scrolling: touch; }
     <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Kissimmee Prairie Preserve State Park</div><div class="stat-sub" style="letter-spacing:2px">★★★★★</div></div></div>
 
 <div class="tabs">
-  <div class="tab" onclick="switchTab(&#39;parks&#39;)">🗺 Park Directory</div>
+  <div class="tab active" onclick="switchTab(&#39;parks&#39;)">🗺 Park Directory</div>
   <div class="tab" onclick="switchTab(&#39;upcoming&#39;)">📅 Upcoming Trips</div>
   <div class="tab" onclick="switchTab(&#39;triplog&#39;)">📋 Trip Log</div>
   <div class="tab" onclick="switchTab(&#39;wishlist&#39;)">🌟 Wish List</div>
   <div class="tab" onclick="switchTab(&#39;journal&#39;)">📓 My Journal</div>
-  <div class="tab active" onclick="switchTab(&#39;findcamps&#39;)">🔍 Find Campgrounds</div>
+  <div class="tab" onclick="switchTab(&#39;findcamps&#39;)">🔍 Find Campgrounds</div>
 </div>
 
-<div class="panel" id="panel-parks">
+<div class="panel active" id="panel-parks">
   <div class="top-bar">
     <input type="text" id="parkSearch" placeholder="🔍  Search parks, sites, notes…" oninput="renderParks()">
     <button class="btn-amber" onclick="openAddPark()">＋ Add Park</button>
@@ -5943,7 +5943,7 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
-<div class="panel active" id="panel-findcamps"><div class="apikey-box" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+<div class="panel" id="panel-findcamps"><div class="apikey-box" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <p style="margin:0;font-size:.82rem;">🔑 <strong>API Key</strong> — ✅ Set and saved in this browser</p>
     <button onclick="promptForKey()" style="background:rgba(255,255,255,.1);color:var(--fog);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:5px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">🔄 Update key</button>
   </div><div style="display:flex;margin-bottom:16px;border-radius:4px;overflow:hidden;border:1px solid var(--fog);">
@@ -5951,20 +5951,35 @@ html { -webkit-overflow-scrolling: touch; }
     <button onclick="PL.mode=&#39;route&#39;;PL.done=false;PL.routeData=null;renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:var(--moss);color:var(--cream);">🗺 Route Planner</button>
   </div><div class="pl-card">
       <h3>🗺 Route Planner</h3>
+      <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:14px;">
+        🚐 27ft · 30-amp W&amp;E · 300-420 miles/day · Enter stops manually or auto-plan
+      </div>
+
       <div class="pl-section">
-        <label class="pl-label">Starting location <span style="font-weight:300;opacity:.7;">(defaults to your home base)</span></label>
+        <label class="pl-label">Starting from</label>
         <input class="pl-input" id="rt-from" value="Edgewater, FL" placeholder="Edgewater, FL" oninput="PL.route.from=this.value;localStorage.setItem(&#39;tn_route_from&#39;,this.value)">
       </div>
-      <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:12px;">
-        🚐 27ft · 30-amp · 300-420 miles/day · 7-8 nights at destination
+
+      <div style="background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.25);border-radius:4px;padding:10px 12px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <div style="font-size:.78rem;color:var(--amber);">🗺 <strong>Auto-plan</strong> — uses OpenRouteService to calculate real driving distances</div>
+          <button onclick="promptOrsKey()" style="font-size:.72rem;padding:3px 10px;background:transparent;border:1px solid rgba(61,90,42,.4);color:var(--moss);border-radius:3px;cursor:pointer;">✅ ORS key set</button>
+        </div>
+        <div style="font-size:.75rem;color:var(--fog);margin-bottom:8px;">Enter destination below, then click Auto-plan to fill in stop cities automatically.</div>
+        <button id="autoplan-btn" onclick="autoplanRoute()" style="width:100%;background:var(--amber);color:white;border:none;border-radius:3px;padding:8px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;">🗺 Auto-plan my route</button>
+        <div id="autoplan-instr" style="display:none;margin-top:8px;font-size:.78rem;color:var(--moss);padding:6px 10px;background:rgba(61,90,42,.15);border-radius:3px;"></div>
       </div>
-      <div class="pl-section">
-        <label class="pl-label">Final destination <span style="font-weight:300;font-size:.75rem;opacity:.7;">(park name &amp; state works best)</span></label>
-        <input class="pl-input" id="rt-dest" value="Franconia Notch State Park" placeholder="e.g. Douthat State Park VA, Smoky Mountains TN" oninput="PL.route.dest=this.value">
+
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--moss);margin:14px 0 8px;">🏕 Final Destination</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;align-items:center;">
+        <input id="ri-city-dest" placeholder="City (e.g. Franconia Notch)" class="pl-input" style="flex:1;margin:0;" oninput="PL.route.dest=this.value">
+        <input id="ri-state-dest" placeholder="ST" class="pl-input" style="width:50px;margin:0;text-align:center;padding-left:4px;padding-right:4px;">
       </div>
+      <div style="font-size:.75rem;color:var(--fog);margin-bottom:10px;">ORS calculates the real driving distance, finds overnight stop cities, then automatically searches campgrounds at each stop.</div>
+
       <div class="pl-row2 pl-section">
         <div>
-          <label class="pl-label">Departure date (Day 1)</label>
+          <label class="pl-label">Departure date</label>
           <input type="date" class="pl-input" value="2026-09-15" onchange="PL.route.start=this.value">
         </div>
         <div>
@@ -5972,113 +5987,93 @@ html { -webkit-overflow-scrolling: touch; }
           <input type="date" class="pl-input" value="2026-10-20" onchange="PL.route.end=this.value">
         </div>
       </div>
-      <button class="pl-btn-main" onclick="doRouteSearch()">🗺 Plan My Route</button>
-    </div><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
-    <div style="font-size:.75rem;color:var(--smoke);">AI-planned route — verify availability before booking.</div>
-    <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">💾 Save this route</button>
-  </div><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:8px;">🌙 Night 1 — ~~370 miles from Edgewater, FL</div><div style="background:rgba(200,135,42,.2);border:1px solid rgba(200,135,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">📍 Near <strong>Emporia, VA</strong></div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--amber);">
+    </div><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div style="font-size:.75rem;color:var(--smoke);">Route planned with real driving distances — verify campground availability before booking.</div>
+      <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">💾 Save this route</button>
+    </div><div style="background:rgba(30,50,25,.5);border:1px solid rgba(61,90,42,.5);border-radius:6px;padding:14px 16px;margin-bottom:20px;">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:10px;">🗺 Trip Overview — 1398 real driving miles · 4 days · ~350 mi/day</div>
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+        <div style="text-align:center;padding:0 6px;">
+          <div style="font-size:.65rem;color:var(--smoke);">Start</div>
+          <div style="font-size:.8rem;font-weight:500;color:var(--cream);">Edgewater, FL</div>
+        </div>
+        
+          <div style="font-size:.7rem;color:var(--amber);padding:0 3px;">►►</div>
+          <div style="text-align:center;padding:0 6px;">
+            <div style="font-size:.65rem;color:var(--smoke);">Night 1 Stop</div>
+            <div style="font-size:.8rem;font-weight:500;color:var(--cream);">Orangeburg County, SC</div>
+            <div style="font-size:.65rem;color:var(--fog);">~350 mi</div>
+          </div>
+          <div style="font-size:.7rem;color:#e8a030;padding:0 3px;">►►</div>
+          <div style="text-align:center;padding:0 6px;">
+            <div style="font-size:.65rem;color:var(--smoke);">Night 2 Stop</div>
+            <div style="font-size:.8rem;font-weight:500;color:var(--cream);">Henrico County, VA</div>
+            <div style="font-size:.65rem;color:var(--fog);">~700 mi</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--amber);padding:0 3px;">►►</div>
+          <div style="text-align:center;padding:0 6px;">
+            <div style="font-size:.65rem;color:var(--smoke);">Night 3 Stop</div>
+            <div style="font-size:.8rem;font-weight:500;color:var(--cream);">Secaucus, NJ</div>
+            <div style="font-size:.65rem;color:var(--fog);">~1050 mi</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--moss);padding:0 3px;">►►</div>
+          <div style="text-align:center;padding:0 6px;">
+            <div style="font-size:.65rem;color:var(--smoke);">Destination</div>
+            <div style="font-size:.8rem;font-weight:500;color:var(--cream);">Franconia, NH</div>
+            <div style="font-size:.65rem;color:var(--fog);">~1398 mi</div>
+          </div>
+      </div>
+    </div><div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">🌙 Night 1 Stop — Day 1 · ~350 miles from Edgewater, FL</div>
+          <button onclick="saveAllCampgrounds([{&quot;name&quot;:&quot;Santee State Park&quot;,&quot;location&quot;:&quot;Santee, SC&quot;,&quot;type&quot;:&quot;State Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:40,&quot;priceRange&quot;:&quot;$25-$35&quot;,&quot;amenities&quot;:[&quot;Fishing&quot;,&quot;Boating&quot;,&quot;Swimming&quot;,&quot;Hiking&quot;,&quot;Playground&quot;],&quot;rating&quot;:4.5,&quot;description&quot;:&quot;Scenic state park on Lake Marion offering well-maintained lakeside RV sites with full hookup options, about 20 miles west of Orangeburg.&quot;,&quot;website&quot;:&quot;https://southcarolinaparks.com/santee&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Back-in sites accommodate 27ft easily despite 40ft max; book ahead as lakeside sites fill fast on weekends.&quot;},{&quot;name&quot;:&quot;Rocks Pond Campground and Marina&quot;,&quot;location&quot;:&quot;Eutawville, SC&quot;,&quot;type&quot;:&quot;Private&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:true,&quot;maxLength&quot;:45,&quot;priceRange&quot;:&quot;$35-$45&quot;,&quot;amenities&quot;:[&quot;Fishing&quot;,&quot;Boating&quot;,&quot;Swimming&quot;,&quot;Marina&quot;,&quot;Laundry&quot;],&quot;rating&quot;:4.2,&quot;description&quot;:&quot;Family-friendly campground on Lake Marion roughly 30 miles northwest of Orangeburg with pull-through sites suitable for larger rigs.&quot;,&quot;website&quot;:&quot;https://rockspond.com&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Pull-through sites make arrival easy for a 27ft trailer; confirm 30-amp availability when booking as some sites are 50-amp only.&quot;},{&quot;name&quot;:&quot;Lake Warren State Park&quot;,&quot;location&quot;:&quot;Hampton, SC&quot;,&quot;type&quot;:&quot;State Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:35,&quot;priceRange&quot;:&quot;$25-$30&quot;,&quot;amenities&quot;:[&quot;Fishing&quot;,&quot;Boating&quot;,&quot;Hiking&quot;,&quot;Picnic Areas&quot;],&quot;rating&quot;:4,&quot;description&quot;:&quot;Quiet and less-crowded SC state park about 40 miles south of Orangeburg offering affordable lakeside hookup sites ideal for an overnight stop.&quot;,&quot;website&quot;:&quot;https://southcarolinaparks.com/lake-warren&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Sites listed at 35ft max comfortably fit a 27ft trailer; a peaceful low-traffic stop well-positioned on the I-95 corridor route north.&quot;}])" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">⭐ Save all</button>
+        </div>
+        <div style="background:rgba(200,135,42,.15);border:1px solid rgba(200,135,42,.3);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">
+          📍 Near <strong>Orangeburg County, SC</strong>
+        </div>
+        
+        
+        <div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--amber);">
     <div style="padding:13px 17px 10px;">
       <div style="display:flex;justify-content:space-between;align-items:start;">
         <div>
-          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Emporia/Tidewater KOA Journey</div>
-          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Emporia, VA · <span style="color:var(--amber);">🏕 Private</span></div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Santee State Park</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Santee, SC · <span style="color:var(--amber);">🌲 State Park</span></div>
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          <div style="color:var(--amber);font-size:.82rem;">4.1 ★</div>
-          <div style="font-size:.75rem;color:var(--smoke);">$45-$60/night</div>
+          <div style="color:var(--amber);font-size:.82rem;">4.5 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$25-$35/night</div>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
         <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
-        <span class="pl-chip blue">Pull-through</span>
-        <span class="pl-chip smoke">Max 70ft</span>
         
-        <span class="am-pill">Full Hookups</span><span class="am-pill">WiFi</span><span class="am-pill">Pool</span>
+        <span class="pl-chip smoke">Max 40ft</span>
+        
+        <span class="am-pill">Fishing</span><span class="am-pill">Boating</span><span class="am-pill">Swimming</span>
       </div>
     </div>
     <div style="padding:0 17px 14px;">
-      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Convenient I-95 corridor stop with large pull-through sites well-suited for travel trailers continuing north.</p>
-      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Pull-through sites are long and level; request a back row site for more privacy and easier access.</div>
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Scenic state park on Lake Marion offering well-maintained lakeside RV sites with full hookup options, about 20 miles west of Orangeburg.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Back-in sites accommodate 27ft easily despite 40ft max; book ahead as lakeside sites fill fast on weekends.</div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <a href="https://koa.com/campgrounds/emporia" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
-          <a href="https://www.google.com/search?q=Emporia%2FTidewater%20KOA%20Journey%20Emporia%2C%20VA" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+          <a href="https://southcarolinaparks.com/santee" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Santee%20State%20Park%20Santee%2C%20SC" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
         </div>
-        <button onclick="saveCampgroundAndRefresh({" name":"emporia="" tidewater="" koa="" journey","location":"emporia,="" va","type":"private","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":70,"pricerange":"$45-$60","amenities":["full="" hookups","wifi","pool","dog="" park","laundry"],"rating":4.1,"description":"convenient="" i-95="" corridor="" stop="" with="" large="" pull-through="" sites="" well-suited="" for="" travel="" trailers="" continuing="" north.","website":"https:="" koa.com="" campgrounds="" emporia","reservationrequired":true,"notes":"pull-through="" are="" long="" and="" level;="" request="" a="" back="" row="" site="" more="" privacy="" easier="" access."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+        <button onclick="saveCampgroundAndRefresh({" name":"santee="" state="" park","location":"santee,="" sc","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":40,"pricerange":"$25-$35","amenities":["fishing","boating","swimming","hiking","playground"],"rating":4.5,"description":"scenic="" park="" on="" lake="" marion="" offering="" well-maintained="" lakeside="" rv="" sites="" with="" full="" hookup="" options,="" about="" 20="" miles="" west="" of="" orangeburg.","website":"https:="" southcarolinaparks.com="" santee","reservationrequired":true,"notes":"back-in="" accommodate="" 27ft="" easily="" despite="" 40ft="" max;="" book="" ahead="" as="" fill="" fast="" weekends."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
       </div>
     </div>
   </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--amber);">
     <div style="padding:13px 17px 10px;">
       <div style="display:flex;justify-content:space-between;align-items:start;">
         <div>
-          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Lake Gaston / Henrico KOA</div>
-          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Bracey, VA · <span style="color:var(--amber);">🏕 Private</span></div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Rocks Pond Campground and Marina</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Eutawville, SC · <span style="color:var(--amber);">🏕 Private</span></div>
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          <div style="color:var(--amber);font-size:.82rem;">4 ★</div>
-          <div style="font-size:.75rem;color:var(--smoke);">$42-$58/night</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
-        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
-        <span class="pl-chip blue">Pull-through</span>
-        <span class="pl-chip smoke">Max 60ft</span>
-        
-        <span class="am-pill">Water Access</span><span class="am-pill">Fishing</span><span class="am-pill">Pool</span>
-      </div>
-    </div>
-    <div style="padding:0 17px 14px;">
-      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Lakeside private campground about 20 miles west of I-95 offering a more scenic overnight alternative to highway-side stops.</p>
-      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 The access road is manageable for a 27ft trailer but take the turn onto Campground Road slowly as it is sharp.</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <a href="https://koa.com/campgrounds/lake-gaston" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
-          <a href="https://www.google.com/search?q=Lake%20Gaston%20%2F%20Henrico%20KOA%20Bracey%2C%20VA" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
-        </div>
-        <button onclick="saveCampgroundAndRefresh({" name":"lake="" gaston="" henrico="" koa","location":"bracey,="" va","type":"private","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":60,"pricerange":"$42-$58","amenities":["water="" access","fishing","pool","laundry","wifi"],"rating":4,"description":"lakeside="" private="" campground="" about="" 20="" miles="" west="" of="" i-95="" offering="" a="" more="" scenic="" overnight="" alternative="" to="" highway-side="" stops.","website":"https:="" koa.com="" campgrounds="" lake-gaston","reservationrequired":true,"notes":"the="" access="" road="" is="" manageable="" for="" 27ft="" trailer="" but="" take="" the="" turn="" onto="" slowly="" as="" it="" sharp."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
-      </div>
-    </div>
-  </div><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#e8a030;margin:16px 0 8px;">🌙 Night 2 — ~~395 miles from Emporia, VA</div><div style="background:rgba(232,160,48,.15);border:1px solid rgba(232,160,48,.35);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">📍 Near <strong>Sturbridge, MA</strong></div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid #e8a030;">
-    <div style="padding:13px 17px 10px;">
-      <div style="display:flex;justify-content:space-between;align-items:start;">
-        <div>
-          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Wells State Park</div>
-          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Sturbridge, MA · <span style="color:#e8a030;">🌲 State Park</span></div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          <div style="color:var(--amber);font-size:.82rem;">4.3 ★</div>
-          <div style="font-size:.75rem;color:var(--smoke);">$27-$40/night</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
-        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
-        
-        <span class="pl-chip smoke">Max 35ft</span>
-        
-        <span class="am-pill">Hiking</span><span class="am-pill">Fishing</span><span class="am-pill">Pond Swimming</span>
-      </div>
-    </div>
-    <div style="padding:0 17px 14px;">
-      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">A beautiful Massachusetts state park campground set among hardwoods on Walker Pond, perfect for a night before entering New England foliage country.</p>
-      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Sites are back-in only but several are wide enough for a 27ft trailer; reserve site 50-70 range for the most level and spacious options.</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <a href="https://www.mass.gov/locations/wells-state-park" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
-          <a href="https://www.google.com/search?q=Wells%20State%20Park%20Sturbridge%2C%20MA" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
-        </div>
-        <button onclick="saveCampgroundAndRefresh({" name":"wells="" state="" park","location":"sturbridge,="" ma","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":35,"pricerange":"$27-$40","amenities":["hiking","fishing","pond="" swimming","flush="" toilets","showers"],"rating":4.3,"description":"a="" beautiful="" massachusetts="" park="" campground="" set="" among="" hardwoods="" on="" walker="" pond,="" perfect="" for="" a="" night="" before="" entering="" new="" england="" foliage="" country.","website":"https:="" www.mass.gov="" locations="" wells-state-park","reservationrequired":true,"notes":"sites="" are="" back-in="" only="" but="" several="" wide="" enough="" 27ft="" trailer;="" reserve="" site="" 50-70="" range="" the="" most="" level="" and="" spacious="" options."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
-      </div>
-    </div>
-  </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid #e8a030;">
-    <div style="padding:13px 17px 10px;">
-      <div style="display:flex;justify-content:space-between;align-items:start;">
-        <div>
-          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Quinebaug Cove Campground</div>
-          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Eastford, CT · <span style="color:#e8a030;">🏕 Private</span></div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          <div style="color:var(--amber);font-size:.82rem;">4 ★</div>
-          <div style="font-size:.75rem;color:var(--smoke);">$40-$55/night</div>
+          <div style="color:var(--amber);font-size:.82rem;">4.2 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$35-$45/night</div>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
@@ -6086,30 +6081,30 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="pl-chip blue">Pull-through</span>
         <span class="pl-chip smoke">Max 45ft</span>
         
-        <span class="am-pill">Lake Access</span><span class="am-pill">Fishing</span><span class="am-pill">Playground</span>
+        <span class="am-pill">Fishing</span><span class="am-pill">Boating</span><span class="am-pill">Swimming</span>
       </div>
     </div>
     <div style="padding:0 17px 14px;">
-      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">A well-maintained private campground near the Quinebaug River corridor offering easy I-84 access for the final push north to New Hampshire.</p>
-      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Slightly south of Sturbridge but adds only 15 miles; pull-through sites accommodate 27ft trailers without issue.</div>
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Family-friendly campground on Lake Marion roughly 30 miles northwest of Orangeburg with pull-through sites suitable for larger rigs.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Pull-through sites make arrival easy for a 27ft trailer; confirm 30-amp availability when booking as some sites are 50-amp only.</div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <a href="https://www.quinebaug.com/" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
-          <a href="https://www.google.com/search?q=Quinebaug%20Cove%20Campground%20Eastford%2C%20CT" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+          <a href="https://rockspond.com/" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Rocks%20Pond%20Campground%20and%20Marina%20Eutawville%2C%20SC" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
         </div>
-        <button onclick="saveCampgroundAndRefresh({" name":"quinebaug="" cove="" campground","location":"eastford,="" ct","type":"private","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":45,"pricerange":"$40-$55","amenities":["lake="" access","fishing","playground","laundry","wifi"],"rating":4,"description":"a="" well-maintained="" private="" campground="" near="" the="" quinebaug="" river="" corridor="" offering="" easy="" i-84="" access="" for="" final="" push="" north="" to="" new="" hampshire.","website":"https:="" www.quinebaug.com","reservationrequired":true,"notes":"slightly="" south="" of="" sturbridge="" but="" adds="" only="" 15="" miles;="" pull-through="" sites="" accommodate="" 27ft="" trailers="" without="" issue."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+        <button onclick="saveCampgroundAndRefresh({" name":"rocks="" pond="" campground="" and="" marina","location":"eutawville,="" sc","type":"private","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":45,"pricerange":"$35-$45","amenities":["fishing","boating","swimming","marina","laundry"],"rating":4.2,"description":"family-friendly="" on="" lake="" marion="" roughly="" 30="" miles="" northwest="" of="" orangeburg="" with="" pull-through="" sites="" suitable="" for="" larger="" rigs.","website":"https:="" rockspond.com","reservationrequired":true,"notes":"pull-through="" make="" arrival="" easy="" a="" 27ft="" trailer;="" confirm="" 30-amp="" availability="" when="" booking="" as="" some="" are="" 50-amp="" only."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
       </div>
     </div>
-  </div><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cream);margin:16px 0 8px;">🏕 Destination — Day 3</div><div style="background:rgba(61,90,42,.35);border:1px solid rgba(61,90,42,.55);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">📍 Near <strong>Franconia Notch State Park, NH</strong></div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--moss);">
+  </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--amber);">
     <div style="padding:13px 17px 10px;">
       <div style="display:flex;justify-content:space-between;align-items:start;">
         <div>
-          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Lafayette Campground – Franconia Notch State Park</div>
-          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Franconia, NH · <span style="color:var(--moss);">🌲 State Park</span></div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Lake Warren State Park</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Hampton, SC · <span style="color:var(--amber);">🌲 State Park</span></div>
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          <div style="color:var(--amber);font-size:.82rem;">4.7 ★</div>
-          <div style="font-size:.75rem;color:var(--smoke);">$32-$45/night</div>
+          <div style="color:var(--amber);font-size:.82rem;">4 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$25-$30/night</div>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
@@ -6117,30 +6112,280 @@ html { -webkit-overflow-scrolling: touch; }
         
         <span class="pl-chip smoke">Max 35ft</span>
         
-        <span class="am-pill">Hiking</span><span class="am-pill">Biking</span><span class="am-pill">Flume Gorge Access</span>
+        <span class="am-pill">Fishing</span><span class="am-pill">Boating</span><span class="am-pill">Hiking</span>
       </div>
     </div>
     <div style="padding:0 17px 14px;">
-      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">The premier campground inside Franconia Notch State Park, sitting directly on the Franconia Ridge Trail system with unmatched access to the Flume Gorge, Echo Lake, and the Appalachian Trail.</p>
-      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Sites listed to 35ft but the winding I-93 Franconia Notch Parkway narrows significantly; a 27ft trailer handles it fine at posted speeds — do not exceed 45 mph through the notch.</div>
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Quiet and less-crowded SC state park about 40 miles south of Orangeburg offering affordable lakeside hookup sites ideal for an overnight stop.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Sites listed at 35ft max comfortably fit a 27ft trailer; a peaceful low-traffic stop well-positioned on the I-95 corridor route north.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <a href="https://southcarolinaparks.com/lake-warren" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Lake%20Warren%20State%20Park%20Hampton%2C%20SC" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+        </div>
+        <button onclick="saveCampgroundAndRefresh({" name":"lake="" warren="" state="" park","location":"hampton,="" sc","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":35,"pricerange":"$25-$30","amenities":["fishing","boating","hiking","picnic="" areas"],"rating":4,"description":"quiet="" and="" less-crowded="" sc="" park="" about="" 40="" miles="" south="" of="" orangeburg="" offering="" affordable="" lakeside="" hookup="" sites="" ideal="" for="" an="" overnight="" stop.","website":"https:="" southcarolinaparks.com="" lake-warren","reservationrequired":true,"notes":"sites="" listed="" at="" 35ft="" max="" comfortably="" fit="" a="" 27ft="" trailer;="" peaceful="" low-traffic="" stop="" well-positioned="" on="" the="" i-95="" corridor="" route="" north."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+      </div>
+    </div>
+  </div>
+      </div><div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#e8a030;">🌙 Night 2 Stop — Day 2 · ~700 miles from Edgewater, FL</div>
+          <button onclick="saveAllCampgrounds([{&quot;name&quot;:&quot;Pocahontas State Park&quot;,&quot;location&quot;:&quot;Chesterfield, VA&quot;,&quot;type&quot;:&quot;State Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:50,&quot;priceRange&quot;:&quot;$35-$45&quot;,&quot;amenities&quot;:[&quot;Hiking&quot;,&quot;Swimming&quot;,&quot;Fishing&quot;,&quot;Dump Station&quot;,&quot;Bathhouse&quot;],&quot;rating&quot;:4.4,&quot;description&quot;:&quot;Virginia&#39;s largest state park sits about 15 miles southwest of Henrico County, offering shaded full-service sites in a quiet wooded setting ideal for an overnight stop.&quot;,&quot;website&quot;:&quot;https://www.dcr.virginia.gov/state-parks/pocahontas&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Back-in sites; unhitch and use tow vehicle to scout tight entrance roads before pulling in your 27ft trailer.&quot;},{&quot;name&quot;:&quot;Holliday Lake State Park&quot;,&quot;location&quot;:&quot;Appomattox, VA&quot;,&quot;type&quot;:&quot;State Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:35,&quot;priceRange&quot;:&quot;$30-$40&quot;,&quot;amenities&quot;:[&quot;Fishing&quot;,&quot;Swimming&quot;,&quot;Hiking&quot;,&quot;Dump Station&quot;,&quot;Bathhouse&quot;],&quot;rating&quot;:4.1,&quot;description&quot;:&quot;A peaceful lakeside state park roughly 90 miles west of Henrico County that offers well-maintained electric and water hookup sites suitable for a relaxed overnight stay.&quot;,&quot;website&quot;:&quot;https://www.dcr.virginia.gov/state-parks/holliday-lake&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Sites list 35ft max so your 27ft trailer fits comfortably; confirm site length at booking as some pads run shorter.&quot;},{&quot;name&quot;:&quot;Fairy Stone State Park&quot;,&quot;location&quot;:&quot;Stuart, VA&quot;,&quot;type&quot;:&quot;State Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:40,&quot;priceRange&quot;:&quot;$30-$42&quot;,&quot;amenities&quot;:[&quot;Hiking&quot;,&quot;Swimming&quot;,&quot;Fishing&quot;,&quot;Dump Station&quot;,&quot;Playground&quot;],&quot;rating&quot;:4.2,&quot;description&quot;:&quot;Located about 2.5 hours southwest of Henrico County in the Blue Ridge foothills, this quiet state park offers spacious wooded hookup sites well-suited for a northbound overnight break.&quot;,&quot;website&quot;:&quot;https://www.dcr.virginia.gov/state-parks/fairy-stone&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Entrance road has a few curves; approach slowly with the 27ft trailer and sites are generous enough to allow easy setup.&quot;}])" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">⭐ Save all</button>
+        </div>
+        <div style="background:rgba(200,135,42,.15);border:1px solid rgba(200,135,42,.3);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">
+          📍 Near <strong>Henrico County, VA</strong>
+        </div>
+        
+        
+        <div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid #e8a030;">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Pocahontas State Park</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Chesterfield, VA · <span style="color:#e8a030;">🌲 State Park</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          <div style="color:var(--amber);font-size:.82rem;">4.4 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$35-$45/night</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
+        
+        <span class="pl-chip smoke">Max 50ft</span>
+        
+        <span class="am-pill">Hiking</span><span class="am-pill">Swimming</span><span class="am-pill">Fishing</span>
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Virginia's largest state park sits about 15 miles southwest of Henrico County, offering shaded full-service sites in a quiet wooded setting ideal for an overnight stop.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Back-in sites; unhitch and use tow vehicle to scout tight entrance roads before pulling in your 27ft trailer.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <a href="https://www.dcr.virginia.gov/state-parks/pocahontas" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Pocahontas%20State%20Park%20Chesterfield%2C%20VA" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+        </div>
+        <button onclick="saveCampgroundAndRefresh({" name":"pocahontas="" state="" park","location":"chesterfield,="" va","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":50,"pricerange":"$35-$45","amenities":["hiking","swimming","fishing","dump="" station","bathhouse"],"rating":4.4,"description":"virginia"s="" largest="" park="" sits="" about="" 15="" miles="" southwest="" of="" henrico="" county,="" offering="" shaded="" full-service="" sites="" in="" a="" quiet="" wooded="" setting="" ideal="" for="" an="" overnight="" stop.","website":"https:="" www.dcr.virginia.gov="" state-parks="" pocahontas","reservationrequired":true,"notes":"back-in="" sites;="" unhitch="" and="" use="" tow="" vehicle="" to="" scout="" tight="" entrance="" roads="" before="" pulling="" your="" 27ft="" trailer."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+      </div>
+    </div>
+  </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid #e8a030;">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Holliday Lake State Park</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Appomattox, VA · <span style="color:#e8a030;">🌲 State Park</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          <div style="color:var(--amber);font-size:.82rem;">4.1 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$30-$40/night</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
+        
+        <span class="pl-chip smoke">Max 35ft</span>
+        
+        <span class="am-pill">Fishing</span><span class="am-pill">Swimming</span><span class="am-pill">Hiking</span>
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">A peaceful lakeside state park roughly 90 miles west of Henrico County that offers well-maintained electric and water hookup sites suitable for a relaxed overnight stay.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Sites list 35ft max so your 27ft trailer fits comfortably; confirm site length at booking as some pads run shorter.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <a href="https://www.dcr.virginia.gov/state-parks/holliday-lake" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Holliday%20Lake%20State%20Park%20Appomattox%2C%20VA" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+        </div>
+        <button onclick="saveCampgroundAndRefresh({" name":"holliday="" lake="" state="" park","location":"appomattox,="" va","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":35,"pricerange":"$30-$40","amenities":["fishing","swimming","hiking","dump="" station","bathhouse"],"rating":4.1,"description":"a="" peaceful="" lakeside="" park="" roughly="" 90="" miles="" west="" of="" henrico="" county="" that="" offers="" well-maintained="" electric="" and="" water="" hookup="" sites="" suitable="" for="" a="" relaxed="" overnight="" stay.","website":"https:="" www.dcr.virginia.gov="" state-parks="" holliday-lake","reservationrequired":true,"notes":"sites="" list="" 35ft="" max="" so="" your="" 27ft="" trailer="" fits="" comfortably;="" confirm="" site="" length="" at="" booking="" as="" some="" pads="" run="" shorter."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+      </div>
+    </div>
+  </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid #e8a030;">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Fairy Stone State Park</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Stuart, VA · <span style="color:#e8a030;">🌲 State Park</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          <div style="color:var(--amber);font-size:.82rem;">4.2 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$30-$42/night</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
+        
+        <span class="pl-chip smoke">Max 40ft</span>
+        
+        <span class="am-pill">Hiking</span><span class="am-pill">Swimming</span><span class="am-pill">Fishing</span>
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Located about 2.5 hours southwest of Henrico County in the Blue Ridge foothills, this quiet state park offers spacious wooded hookup sites well-suited for a northbound overnight break.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Entrance road has a few curves; approach slowly with the 27ft trailer and sites are generous enough to allow easy setup.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <a href="https://www.dcr.virginia.gov/state-parks/fairy-stone" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Fairy%20Stone%20State%20Park%20Stuart%2C%20VA" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+        </div>
+        <button onclick="saveCampgroundAndRefresh({" name":"fairy="" stone="" state="" park","location":"stuart,="" va","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":40,"pricerange":"$30-$42","amenities":["hiking","swimming","fishing","dump="" station","playground"],"rating":4.2,"description":"located="" about="" 2.5="" hours="" southwest="" of="" henrico="" county="" in="" the="" blue="" ridge="" foothills,="" this="" quiet="" park="" offers="" spacious="" wooded="" hookup="" sites="" well-suited="" for="" a="" northbound="" overnight="" break.","website":"https:="" www.dcr.virginia.gov="" state-parks="" fairy-stone","reservationrequired":true,"notes":"entrance="" road="" has="" few="" curves;="" approach="" slowly="" with="" 27ft="" trailer="" and="" are="" generous="" enough="" to="" allow="" easy="" setup."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+      </div>
+    </div>
+  </div>
+      </div><div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">🌙 Night 3 Stop — Day 3 · ~1050 miles from Edgewater, FL</div>
+          <button onclick="saveAllCampgrounds([{&quot;name&quot;:&quot;Liberty Harbor RV Park&quot;,&quot;location&quot;:&quot;Jersey City, NJ&quot;,&quot;type&quot;:&quot;Private&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:45,&quot;priceRange&quot;:&quot;$75-$95&quot;,&quot;amenities&quot;:[&quot;City Views&quot;,&quot;Marina&quot;,&quot;Restrooms&quot;,&quot;WiFi&quot;],&quot;rating&quot;:3.8,&quot;description&quot;:&quot;Urban marina-side RV park just 4 miles from Secaucus with direct NYC skyline views, convenient for an overnight highway stop.&quot;,&quot;website&quot;:&quot;https://www.libertyharborrv.com&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Back-in sites on gravel; confirm 27ft fits assigned site when booking — staff are helpful with placement.&quot;},{&quot;name&quot;:&quot;Meadowlands Environmental Center / DeKorte Park Overflow Area&quot;,&quot;location&quot;:&quot;Lyndhurst, NJ&quot;,&quot;type&quot;:&quot;County Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:35,&quot;priceRange&quot;:&quot;$30-$45&quot;,&quot;amenities&quot;:[&quot;Nature Trails&quot;,&quot;Birding&quot;,&quot;Restrooms&quot;],&quot;rating&quot;:3.5,&quot;description&quot;:&quot;Bergen County-managed stopover area within the Meadowlands district approximately 3 miles from Secaucus, suited for a single overnight.&quot;,&quot;website&quot;:&quot;https://www.njmeadowlands.gov&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Call ahead to confirm hookup availability as this is not a full-service campground; verify current overnight permit policy before arrival.&quot;},{&quot;name&quot;:&quot;Spruce Run Recreation Area&quot;,&quot;location&quot;:&quot;Clinton, NJ&quot;,&quot;type&quot;:&quot;State Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:35,&quot;priceRange&quot;:&quot;$25-$40&quot;,&quot;amenities&quot;:[&quot;Swimming&quot;,&quot;Fishing&quot;,&quot;Boating&quot;,&quot;Hiking&quot;,&quot;Restrooms&quot;,&quot;Showers&quot;],&quot;rating&quot;:4.1,&quot;description&quot;:&quot;New Jersey State Park about 40 miles southwest of Secaucus offering reliable 30-amp hookup sites on a reservoir, a solid overnight stop before heading north.&quot;,&quot;website&quot;:&quot;https://www.nj.gov/dep/parksandforests/parks/spruce.html&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Sites listed at 35ft max comfortably fit a 27ft trailer; book via ReserveAmerica and request a level back-in site near the water loop.&quot;}])" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">⭐ Save all</button>
+        </div>
+        <div style="background:rgba(200,135,42,.15);border:1px solid rgba(200,135,42,.3);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">
+          📍 Near <strong>Secaucus, NJ</strong>
+        </div>
+        
+        
+        <div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--amber);">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Liberty Harbor RV Park</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Jersey City, NJ · <span style="color:var(--amber);">🏕 Private</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          <div style="color:var(--amber);font-size:.82rem;">3.8 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$75-$95/night</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
+        
+        <span class="pl-chip smoke">Max 45ft</span>
+        
+        <span class="am-pill">City Views</span><span class="am-pill">Marina</span><span class="am-pill">Restrooms</span>
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Urban marina-side RV park just 4 miles from Secaucus with direct NYC skyline views, convenient for an overnight highway stop.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Back-in sites on gravel; confirm 27ft fits assigned site when booking — staff are helpful with placement.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <a href="https://www.libertyharborrv.com/" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Liberty%20Harbor%20RV%20Park%20Jersey%20City%2C%20NJ" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+        </div>
+        <button onclick="saveCampgroundAndRefresh({" name":"liberty="" harbor="" rv="" park","location":"jersey="" city,="" nj","type":"private","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":45,"pricerange":"$75-$95","amenities":["city="" views","marina","restrooms","wifi"],"rating":3.8,"description":"urban="" marina-side="" park="" just="" 4="" miles="" from="" secaucus="" with="" direct="" nyc="" skyline="" views,="" convenient="" for="" an="" overnight="" highway="" stop.","website":"https:="" www.libertyharborrv.com","reservationrequired":true,"notes":"back-in="" sites="" on="" gravel;="" confirm="" 27ft="" fits="" assigned="" site="" when="" booking="" —="" staff="" are="" helpful="" placement."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+      </div>
+    </div>
+  </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--amber);">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Meadowlands Environmental Center / DeKorte Park Overflow Area</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Lyndhurst, NJ · <span style="color:var(--amber);">🌳 County Park</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          <div style="color:var(--amber);font-size:.82rem;">3.5 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$30-$45/night</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
+        
+        <span class="pl-chip smoke">Max 35ft</span>
+        
+        <span class="am-pill">Nature Trails</span><span class="am-pill">Birding</span><span class="am-pill">Restrooms</span>
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Bergen County-managed stopover area within the Meadowlands district approximately 3 miles from Secaucus, suited for a single overnight.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Call ahead to confirm hookup availability as this is not a full-service campground; verify current overnight permit policy before arrival.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <a href="https://www.njmeadowlands.gov/" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Meadowlands%20Environmental%20Center%20%2F%20DeKorte%20Park%20Overflow%20Area%20Lyndhurst%2C%20NJ" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+        </div>
+        <button onclick="saveCampgroundAndRefresh({" name":"meadowlands="" environmental="" center="" dekorte="" park="" overflow="" area","location":"lyndhurst,="" nj","type":"county="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":35,"pricerange":"$30-$45","amenities":["nature="" trails","birding","restrooms"],"rating":3.5,"description":"bergen="" county-managed="" stopover="" area="" within="" the="" meadowlands="" district="" approximately="" 3="" miles="" from="" secaucus,="" suited="" for="" a="" single="" overnight.","website":"https:="" www.njmeadowlands.gov","reservationrequired":true,"notes":"call="" ahead="" to="" confirm="" hookup="" availability="" as="" this="" is="" not="" full-service="" campground;="" verify="" current="" overnight="" permit="" policy="" before="" arrival."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+      </div>
+    </div>
+  </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--amber);">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Spruce Run Recreation Area</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Clinton, NJ · <span style="color:var(--amber);">🌲 State Park</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          <div style="color:var(--amber);font-size:.82rem;">4.1 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$25-$40/night</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
+        
+        <span class="pl-chip smoke">Max 35ft</span>
+        
+        <span class="am-pill">Swimming</span><span class="am-pill">Fishing</span><span class="am-pill">Boating</span>
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">New Jersey State Park about 40 miles southwest of Secaucus offering reliable 30-amp hookup sites on a reservoir, a solid overnight stop before heading north.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Sites listed at 35ft max comfortably fit a 27ft trailer; book via ReserveAmerica and request a level back-in site near the water loop.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <a href="https://www.nj.gov/dep/parksandforests/parks/spruce.html" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Spruce%20Run%20Recreation%20Area%20Clinton%2C%20NJ" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+        </div>
+        <button onclick="saveCampgroundAndRefresh({" name":"spruce="" run="" recreation="" area","location":"clinton,="" nj","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":35,"pricerange":"$25-$40","amenities":["swimming","fishing","boating","hiking","restrooms","showers"],"rating":4.1,"description":"new="" jersey="" state="" park="" about="" 40="" miles="" southwest="" of="" secaucus="" offering="" reliable="" 30-amp="" hookup="" sites="" on="" a="" reservoir,="" solid="" overnight="" stop="" before="" heading="" north.","website":"https:="" www.nj.gov="" dep="" parksandforests="" parks="" spruce.html","reservationrequired":true,"notes":"sites="" listed="" at="" 35ft="" max="" comfortably="" fit="" 27ft="" trailer;="" book="" via="" reserveamerica="" and="" request="" level="" back-in="" site="" near="" the="" water="" loop."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+      </div>
+    </div>
+  </div>
+      </div><div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--moss);">🏕 Destination — Day 4 · ~1398 miles from Edgewater, FL</div>
+          <button onclick="saveAllCampgrounds([{&quot;name&quot;:&quot;Franconia Notch State Park Campground (Lafayette Place)&quot;,&quot;location&quot;:&quot;Franconia, NH&quot;,&quot;type&quot;:&quot;State Park&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:false,&quot;maxLength&quot;:36,&quot;priceRange&quot;:&quot;$35-$50&quot;,&quot;amenities&quot;:[&quot;Hiking&quot;,&quot;Biking&quot;,&quot;Swimming&quot;,&quot;Restrooms&quot;,&quot;Showers&quot;,&quot;Flume Gorge Access&quot;],&quot;rating&quot;:4.5,&quot;description&quot;:&quot;Iconic state park campground nestled in Franconia Notch with direct access to the Flume Gorge, Echo Lake, and the Franconia Ridge hiking trails.&quot;,&quot;website&quot;:&quot;https://www.nhstateparks.org/visit/state-parks/franconia-notch-state-park&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Some sites list 36ft max but narrow access roads and tight loops make 27ft the practical comfortable limit; confirm your specific site dimensions when booking.&quot;},{&quot;name&quot;:&quot;Maple Haven Camping&quot;,&quot;location&quot;:&quot;Sugar Hill, NH&quot;,&quot;type&quot;:&quot;Private&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:true,&quot;maxLength&quot;:40,&quot;priceRange&quot;:&quot;$40-$55&quot;,&quot;amenities&quot;:[&quot;Hiking&quot;,&quot;Restrooms&quot;,&quot;Showers&quot;,&quot;Playground&quot;,&quot;Fire Pits&quot;],&quot;rating&quot;:4.1,&quot;description&quot;:&quot;Small, quiet campground in Sugar Hill just minutes from Franconia Notch offering full hookup sites with mountain views in a relaxed setting.&quot;,&quot;website&quot;:&quot;https://www.maplehavencamping.com&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;Pull-through sites accommodate 27ft trailers with ease; confirm 30-amp availability when booking as site mix varies.&quot;},{&quot;name&quot;:&quot;Crazy Horse Campground&quot;,&quot;location&quot;:&quot;Littleton, NH&quot;,&quot;type&quot;:&quot;Private&quot;,&quot;hookups&quot;:&quot;30-amp W&amp;E&quot;,&quot;pullThrough&quot;:true,&quot;maxLength&quot;:45,&quot;priceRange&quot;:&quot;$38-$52&quot;,&quot;amenities&quot;:[&quot;Hiking&quot;,&quot;Swimming Pool&quot;,&quot;Restrooms&quot;,&quot;Showers&quot;,&quot;Laundry&quot;,&quot;Camp Store&quot;,&quot;Playground&quot;],&quot;rating&quot;:4.2,&quot;description&quot;:&quot;Well-maintained full-service campground about 10 miles from Franconia Notch in Littleton offering spacious sites with easy highway access for longer rigs.&quot;,&quot;website&quot;:&quot;https://www.crazyhorsecampground.com&quot;,&quot;reservationRequired&quot;:true,&quot;notes&quot;:&quot;27ft trailer fits comfortably on most sites; pull-through options make setup simple for a longer stay without daily maneuvering.&quot;}])" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">⭐ Save all</button>
+        </div>
+        <div style="background:rgba(61,90,42,.2);border:1px solid rgba(61,90,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">
+          📍 Near <strong>Franconia, NH</strong> — your destination
+        </div>
+        
+        
+        <div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--moss);">
+    <div style="padding:13px 17px 10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Franconia Notch State Park Campground (Lafayette Place)</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Franconia, NH · <span style="color:var(--moss);">🌲 State Park</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+          <div style="color:var(--amber);font-size:.82rem;">4.5 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$35-$50/night</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="pl-chip green">⚡ 30-amp W&amp;E</span>
+        
+        <span class="pl-chip smoke">Max 36ft</span>
+        
+        <span class="am-pill">Hiking</span><span class="am-pill">Biking</span><span class="am-pill">Swimming</span>
+      </div>
+    </div>
+    <div style="padding:0 17px 14px;">
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Iconic state park campground nestled in Franconia Notch with direct access to the Flume Gorge, Echo Lake, and the Franconia Ridge hiking trails.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Some sites list 36ft max but narrow access roads and tight loops make 27ft the practical comfortable limit; confirm your specific site dimensions when booking.</div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
           <a href="https://www.nhstateparks.org/visit/state-parks/franconia-notch-state-park" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
-          <a href="https://www.google.com/search?q=Lafayette%20Campground%20%E2%80%93%20Franconia%20Notch%20State%20Park%20Franconia%2C%20NH" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+          <a href="https://www.google.com/search?q=Franconia%20Notch%20State%20Park%20Campground%20(Lafayette%20Place)%20Franconia%2C%20NH" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
         </div>
-        <button onclick="saveCampgroundAndRefresh({" name":"lafayette="" campground="" –="" franconia="" notch="" state="" park","location":"franconia,="" nh","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":35,"pricerange":"$32-$45","amenities":["hiking","biking","flume="" gorge="" access","echo="" lake","appalachian="" trail="" access","flush="" toilets","showers"],"rating":4.7,"description":"the="" premier="" inside="" park,="" sitting="" directly="" on="" the="" ridge="" system="" with="" unmatched="" access="" to="" flume="" gorge,="" echo="" lake,="" and="" appalachian="" trail.","website":"https:="" www.nhstateparks.org="" visit="" state-parks="" franconia-notch-state-park","reservationrequired":true,"notes":"sites="" listed="" 35ft="" but="" winding="" i-93="" parkway="" narrows="" significantly;="" a="" 27ft="" trailer="" handles="" it="" fine="" at="" posted="" speeds="" —="" do="" not="" exceed="" 45="" mph="" through="" notch."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+        <button onclick="saveCampgroundAndRefresh({" name":"franconia="" notch="" state="" park="" campground="" (lafayette="" place)","location":"franconia,="" nh","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":false,"maxlength":36,"pricerange":"$35-$50","amenities":["hiking","biking","swimming","restrooms","showers","flume="" gorge="" access"],"rating":4.5,"description":"iconic="" nestled="" in="" franconia="" with="" direct="" access="" to="" the="" flume="" gorge,="" echo="" lake,="" and="" ridge="" hiking="" trails.","website":"https:="" www.nhstateparks.org="" visit="" state-parks="" franconia-notch-state-park","reservationrequired":true,"notes":"some="" sites="" list="" 36ft="" max="" but="" narrow="" roads="" tight="" loops="" make="" 27ft="" practical="" comfortable="" limit;="" confirm="" your="" specific="" site="" dimensions="" when="" booking."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
       </div>
     </div>
   </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--moss);">
     <div style="padding:13px 17px 10px;">
       <div style="display:flex;justify-content:space-between;align-items:start;">
         <div>
-          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Cannon Mountain RV Park</div>
-          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Franconia, NH · <span style="color:var(--moss);">🌲 State Park</span></div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Maple Haven Camping</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Sugar Hill, NH · <span style="color:var(--moss);">🏕 Private</span></div>
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          <div style="color:var(--amber);font-size:.82rem;">4.4 ★</div>
-          <div style="font-size:.75rem;color:var(--smoke);">$35-$50/night</div>
+          <div style="color:var(--amber);font-size:.82rem;">4.1 ★</div>
+          <div style="font-size:.75rem;color:var(--smoke);">$40-$55/night</div>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
@@ -6148,29 +6393,29 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="pl-chip blue">Pull-through</span>
         <span class="pl-chip smoke">Max 40ft</span>
         
-        <span class="am-pill">Full Hookups</span><span class="am-pill">Cannon Mountain Tram Access</span><span class="am-pill">WiFi</span>
+        <span class="am-pill">Hiking</span><span class="am-pill">Restrooms</span><span class="am-pill">Showers</span>
       </div>
     </div>
     <div style="padding:0 17px 14px;">
-      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">A newer RV-focused area adjacent to Cannon Mountain ski area offering full hookups and pull-through sites with easy access to all Franconia Notch attractions.</p>
-      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Pull-through sites are well-suited for a 27ft trailer; this section fills weeks in advance for peak September foliage — book as early as possible.</div>
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Small, quiet campground in Sugar Hill just minutes from Franconia Notch offering full hookup sites with mountain views in a relaxed setting.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Pull-through sites accommodate 27ft trailers with ease; confirm 30-amp availability when booking as site mix varies.</div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <a href="https://www.nhstateparks.org/visit/state-parks/franconia-notch-state-park" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
-          <a href="https://www.google.com/search?q=Cannon%20Mountain%20RV%20Park%20Franconia%2C%20NH" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+          <a href="https://www.maplehavencamping.com/" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Maple%20Haven%20Camping%20Sugar%20Hill%2C%20NH" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
         </div>
-        <button onclick="saveCampgroundAndRefresh({" name":"cannon="" mountain="" rv="" park","location":"franconia,="" nh","type":"state="" park","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":40,"pricerange":"$35-$50","amenities":["full="" hookups","cannon="" tram="" access","wifi","flush="" toilets","dump="" station"],"rating":4.4,"description":"a="" newer="" rv-focused="" area="" adjacent="" to="" cannon="" ski="" offering="" full="" hookups="" and="" pull-through="" sites="" with="" easy="" access="" all="" franconia="" notch="" attractions.","website":"https:="" www.nhstateparks.org="" visit="" state-parks="" franconia-notch-state-park","reservationrequired":true,"notes":"pull-through="" are="" well-suited="" for="" a="" 27ft="" trailer;="" this="" section="" fills="" weeks="" in="" advance="" peak="" september="" foliage="" —="" book="" as="" early="" possible."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+        <button onclick="saveCampgroundAndRefresh({" name":"maple="" haven="" camping","location":"sugar="" hill,="" nh","type":"private","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":40,"pricerange":"$40-$55","amenities":["hiking","restrooms","showers","playground","fire="" pits"],"rating":4.1,"description":"small,="" quiet="" campground="" in="" sugar="" hill="" just="" minutes="" from="" franconia="" notch="" offering="" full="" hookup="" sites="" with="" mountain="" views="" a="" relaxed="" setting.","website":"https:="" www.maplehavencamping.com","reservationrequired":true,"notes":"pull-through="" accommodate="" 27ft="" trailers="" ease;="" confirm="" 30-amp="" availability="" when="" booking="" as="" site="" mix="" varies."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
       </div>
     </div>
   </div><div style="background:var(--parchment);border-radius:4px;margin-bottom:10px;box-shadow:0 3px 16px rgba(0,0,0,.27);overflow:hidden;border-left:5px solid var(--moss);">
     <div style="padding:13px 17px 10px;">
       <div style="display:flex;justify-content:space-between;align-items:start;">
         <div>
-          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Lisbon Village Campground</div>
-          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Lisbon, NH · <span style="color:var(--moss);">🏕 Private</span></div>
+          <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">Crazy Horse Campground</div>
+          <div style="font-size:.78rem;color:var(--smoke);margin-top:2px;">📍 Littleton, NH · <span style="color:var(--moss);">🏕 Private</span></div>
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          <div style="color:var(--amber);font-size:.82rem;">4.1 ★</div>
+          <div style="color:var(--amber);font-size:.82rem;">4.2 ★</div>
           <div style="font-size:.75rem;color:var(--smoke);">$38-$52/night</div>
         </div>
       </div>
@@ -6179,21 +6424,22 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="pl-chip blue">Pull-through</span>
         <span class="pl-chip smoke">Max 45ft</span>
         
-        <span class="am-pill">River Access</span><span class="am-pill">Fishing</span><span class="am-pill">Hiking Nearby</span>
+        <span class="am-pill">Hiking</span><span class="am-pill">Swimming Pool</span><span class="am-pill">Restrooms</span>
       </div>
     </div>
     <div style="padding:0 17px 14px;">
-      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">A quiet private campground along the Ammonoosuc River about 12 miles north of the notch, serving as an excellent overflow or budget-friendly base camp for Franconia Notch day trips.</p>
-      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 Good fallback if Lafayette is fully booked; easy 20-minute drive south to the notch with no difficult roads for a 27ft trailer.</div>
+      <p style="font-size:.86rem;color:var(--bark);line-height:1.6;margin:8px 0;">Well-maintained full-service campground about 10 miles from Franconia Notch in Littleton offering spacious sites with easy highway access for longer rigs.</p>
+      <div style="font-size:.8rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:6px 0;">🔧 27ft trailer fits comfortably on most sites; pull-through options make setup simple for a longer stay without daily maneuvering.</div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <a href="https://www.lisbonvillagecampground.com/" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
-          <a href="https://www.google.com/search?q=Lisbon%20Village%20Campground%20Lisbon%2C%20NH" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
+          <a href="https://www.crazyhorsecampground.com/" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--amber);">🌐 Website</a>
+          <a href="https://www.google.com/search?q=Crazy%20Horse%20Campground%20Littleton%2C%20NH" target="_blank" rel="noopener" style="font-size:.8rem;color:var(--fog);">🔍 Google search</a>
         </div>
-        <button onclick="saveCampgroundAndRefresh({" name":"lisbon="" village="" campground","location":"lisbon,="" nh","type":"private","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":45,"pricerange":"$38-$52","amenities":["river="" access","fishing","hiking="" nearby","wifi","laundry","flush="" toilets"],"rating":4.1,"description":"a="" quiet="" private="" campground="" along="" the="" ammonoosuc="" river="" about="" 12="" miles="" north="" of="" notch,="" serving="" as="" an="" excellent="" overflow="" or="" budget-friendly="" base="" camp="" for="" franconia="" notch="" day="" trips.","website":"https:="" www.lisbonvillagecampground.com","reservationrequired":true,"notes":"good="" fallback="" if="" lafayette="" is="" fully="" booked;="" easy="" 20-minute="" drive="" south="" to="" with="" no="" difficult="" roads="" a="" 27ft="" trailer."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
+        <button onclick="saveCampgroundAndRefresh({" name":"crazy="" horse="" campground","location":"littleton,="" nh","type":"private","hookups":"30-amp="" w&e","pullthrough":true,"maxlength":45,"pricerange":"$38-$52","amenities":["hiking","swimming="" pool","restrooms","showers","laundry","camp="" store","playground"],"rating":4.2,"description":"well-maintained="" full-service="" campground="" about="" 10="" miles="" from="" franconia="" notch="" in="" littleton="" offering="" spacious="" sites="" with="" easy="" highway="" access="" for="" longer="" rigs.","website":"https:="" www.crazyhorsecampground.com","reservationrequired":true,"notes":"27ft="" trailer="" fits="" comfortably="" on="" most="" sites;="" pull-through="" options="" make="" setup="" simple="" a="" stay="" without="" daily="" maneuvering."})"="" style="font-size:.78rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:12px;cursor:pointer;">⭐ Save</button>
       </div>
     </div>
-  </div><div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
+  </div>
+      </div><div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Routes (3)</div>
       </div>
@@ -6206,15 +6452,11 @@ html { -webkit-overflow-scrolling: touch; }
               <div style="font-size:.75rem;color:var(--smoke);">📅 2026-09-15 → 2026-10-20</div>
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(1779585726150)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
-              <button onclick="removeRoute(1779585726150)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
+              <button onclick="loadSavedRoute(1779588945885)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="removeRoute(1779588945885)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
             </div>
           </div>
-          <div style="font-size:.75rem;color:var(--fog);">
-            🗺 I-95 N to I-295 N to I-90 E to I-93 N · 1285 mi total ·
-            Day 1: ~ mi to Emporia, VA ·
-            Day 2: ~ mi to Franconia Notch State Park, NH
-          </div>
+          
         </div>
         <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
@@ -8129,6 +8371,171 @@ function promptForKey() {
     renderFindPanel();
   }
 }
+function getOrsKey(){try{return localStorage.getItem('tn_ors_key')||'';}catch(e){return '';}}
+function setOrsKey(k){try{localStorage.setItem('tn_ors_key',k.replace(/[^\x20-\x7E]/g,'').trim());}catch(e){}}
+function promptOrsKey(){
+  const k=prompt('Paste your OpenRouteService API key:\n(free from openrouteservice.org — no credit card needed)',getOrsKey()||'');
+  if(k&&k.trim()){setOrsKey(k);renderFindPanel();}
+}
+
+// Haversine distance between two [lon,lat] points in km
+function haversineKm(c1,c2){
+  const R=6371,dLat=(c2[1]-c1[1])*Math.PI/180,dLon=(c2[0]-c1[0])*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(c1[1]*Math.PI/180)*Math.cos(c2[1]*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// Find coordinate at target miles along a route
+function coordAtMiles(coords,targetMiles){
+  const targetKm=targetMiles/0.621371;
+  let cum=0;
+  for(let i=1;i<coords.length;i++){
+    const seg=haversineKm(coords[i-1],coords[i]);
+    if(cum+seg>=targetKm){
+      const f=(targetKm-cum)/seg;
+      return [coords[i-1][0]+f*(coords[i][0]-coords[i-1][0]),coords[i-1][1]+f*(coords[i][1]-coords[i-1][1])];
+    }
+    cum+=seg;
+  }
+  return coords[coords.length-1];
+}
+
+// Decode ORS encoded polyline → [lon,lat] pairs
+function decodePolyline(enc){
+  const c=[];let i=0,lat=0,lng=0;
+  while(i<enc.length){
+    let b,shift=0,result=0;
+    do{b=enc.charCodeAt(i++)-63;result|=(b&0x1f)<<shift;shift+=5;}while(b>=32);
+    lat+=(result&1)?~(result>>1):(result>>1);
+    shift=0;result=0;
+    do{b=enc.charCodeAt(i++)-63;result|=(b&0x1f)<<shift;shift+=5;}while(b>=32);
+    lng+=(result&1)?~(result>>1):(result>>1);
+    c.push([lng/1e5,lat/1e5]);
+  }
+  return c;
+}
+
+async function geocodeORS(place,key){
+  const r=await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${key}&text=${encodeURIComponent(place)}&size=1`);
+  const d=await r.json();
+  if(!d.features?.length)throw new Error(`Could not find: ${place}`);
+  return d.features[0].geometry.coordinates;
+}
+
+async function revGeocodeORS(coords,key){
+  const r=await fetch(`https://api.openrouteservice.org/geocode/reverse?api_key=${key}&point.lon=${coords[0]}&point.lat=${coords[1]}&size=1&layers=locality,county,localadmin,region`);
+  const d=await r.json();
+  if(!d.features?.length)return {city:'Unknown',state:''};
+  const p=d.features[0].properties;
+  return {city:p.locality||p.county||p.localadmin||p.label?.split(',')[0]||p.name||'Unknown',state:p.region_a||''};
+}
+
+async function autoplanRoute(){
+  const from=PL.route.from||'Edgewater, FL';
+  const destCity=(document.getElementById('ri-city-dest')?.value||'').trim();
+  const destState=(document.getElementById('ri-state-dest')?.value||'').trim();
+  const orsKey=getOrsKey();
+  const aiKey=getKey();
+
+  if(!destCity){alert('Enter your destination city first.');return;}
+  if(!orsKey){promptOrsKey();return;}
+  if(!aiKey){alert('Please set your Anthropic API key too (for campground search).');return;}
+
+  // Show full loading state
+  PL.loading=true;PL.routeData=null;PL.done=false;PL.err=false;
+  renderFindPanel();
+  
+  function setStatus(msg){
+    const el=document.getElementById('route-status');
+    if(el)el.textContent=msg;
+  }
+
+  const forceStop=setTimeout(()=>{
+    if(PL.loading){PL.loading=false;PL.err=true;PL.errMsg='Timed out. Please try again.';try{renderFindPanel();}catch(ex){}}
+  },120000);
+
+  try{
+    setStatus('📍 Locating start and destination...');
+    const destQuery=destCity+(destState?' '+destState:'');
+    const [startC,destC]=await Promise.all([geocodeORS(from,orsKey),geocodeORS(destQuery,orsKey)]);
+
+    setStatus('🗺 Calculating real driving route...');
+    const rResp=await Promise.race([
+      fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':orsKey},
+        body:JSON.stringify({coordinates:[startC,destC]})
+      }),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Route calculation timed out')),25000))
+    ]);
+    const rData=await rResp.json();
+    if(rData.error)throw new Error(rData.error.message||'Route failed');
+
+    const route=rData.routes[0];
+    const totalMiles=Math.round(route.summary.distance/1000*0.621371);
+    const coords=decodePolyline(route.geometry);
+
+    const numStops=totalMiles<=700?1:totalMiles<=1050?2:3;
+    const milesPerDay=Math.round(totalMiles/(numStops+1));
+
+    setStatus('📍 Finding overnight stop cities along route...');
+    const wpPromises=[];
+    for(let i=1;i<=numStops&&i<=3;i++){
+      const coord=coordAtMiles(coords,milesPerDay*i);
+      wpPromises.push(revGeocodeORS(coord,orsKey).then(c=>({...c,miles:milesPerDay*i})));
+    }
+    const waypoints=await Promise.all(wpPromises);
+    const destCityData=await revGeocodeORS(destC,orsKey);
+
+    // Build stops list
+    const stops=waypoints.map((w,i)=>({
+      city:w.city, state:w.state, miles:Math.round(w.miles),
+      label:`Night ${i+1} Stop`, isDestination:false, campgrounds:[]
+    }));
+    stops.push({
+      city:destCityData.city||destCity, state:destCityData.state||destState,
+      miles:totalMiles, label:'Destination', isDestination:true, campgrounds:[]
+    });
+
+    // Search campgrounds for each stop sequentially
+    for(let i=0;i<stops.length;i++){
+      const s=stops[i];
+      setStatus(`🔍 Finding campgrounds near ${s.city}, ${s.state} (${i+1}/${stops.length})...`);
+      try{
+        const role=s.isDestination
+          ?`final destination for a 7-8 night stay`
+          :`overnight stop ~${s.miles} miles from ${from} on a road trip to ${destQuery}`;
+        const prompt=`Find 3 campgrounds near ${s.city}, ${s.state} for a 27ft travel trailer — this is a ${role}.
+30-amp water & electric hookups. State parks and county parks preferred. Include sites listed down to 20ft that fit a 27ft rig.
+IMPORTANT: Only suggest campgrounds actually near ${s.city}, ${s.state}.
+Return ONLY a JSON array, no markdown:
+[{"name":"","location":"city, state","type":"State Park OR County Park OR Private","hookups":"30-amp W&E","pullThrough":true,"maxLength":30,"priceRange":"$25-$45","amenities":["Hiking"],"rating":4.2,"description":"1 sentence.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip"}]`;
+        const resp=await Promise.race([
+          fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+            headers:{'Content-Type':'application/json','x-api-key':aiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+            body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+          }),
+          new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),35000))
+        ]);
+        const d=await resp.json();
+        if(!d.error){
+          let t=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').replace(/```json|```/g,'').trim();
+          s.campgrounds=JSON.parse(t.slice(t.indexOf('['),t.lastIndexOf(']')+1));
+        }
+      }catch(ce){s.campgrounds=[];s.searchError=ce.message;}
+    }
+
+    PL.routeData={type:'full',totalMiles,numStops,milesPerDay,from,destination:destQuery,stops};
+
+  }catch(e){
+    PL.err=true;PL.errMsg=e.message;
+  }
+  clearTimeout(forceStop);
+  PL.loading=false;PL.done=true;
+  try{renderFindPanel();}catch(ex){}
+}
+
+
 function getHistory() { try { return JSON.parse(localStorage.getItem('tn_srch_hist')||'[]'); } catch(e) { return []; } }
 function addHistory(dest,state,results) {
   const h=getHistory().filter(x=>!(x.dest===dest&&x.state===state));
@@ -8242,20 +8649,35 @@ function renderFindPanel() {
   } else {
     formSection=`<div class="pl-card">
       <h3>&#128506; Route Planner</h3>
+      <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:14px;">
+        &#128656; 27ft &middot; 30-amp W&amp;E &middot; 300-420 miles/day &middot; Enter stops manually or auto-plan
+      </div>
+
       <div class="pl-section">
-        <label class="pl-label">Starting location <span style="font-weight:300;opacity:.7;">(defaults to your home base)</span></label>
+        <label class="pl-label">Starting from</label>
         <input class="pl-input" id="rt-from" value="${esc2(PL.route.from)}" placeholder="Edgewater, FL" oninput="PL.route.from=this.value;localStorage.setItem('tn_route_from',this.value)">
       </div>
-      <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:12px;">
-        &#128656; 27ft &middot; 30-amp &middot; 300-420 miles/day &middot; 7-8 nights at destination
+
+      <div style="background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.25);border-radius:4px;padding:10px 12px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <div style="font-size:.78rem;color:var(--amber);">&#128506; <strong>Auto-plan</strong> &mdash; uses OpenRouteService to calculate real driving distances</div>
+          <button onclick="promptOrsKey()" style="font-size:.72rem;padding:3px 10px;background:transparent;border:1px solid ${getOrsKey()?'rgba(61,90,42,.4)':'rgba(200,135,42,.4)'};color:${getOrsKey()?'var(--moss)':'var(--amber)'};border-radius:3px;cursor:pointer;">${getOrsKey()?'&#9989; ORS key set':'&#128273; Set ORS key'}</button>
+        </div>
+        <div style="font-size:.75rem;color:var(--fog);margin-bottom:8px;">Enter destination below, then click Auto-plan to fill in stop cities automatically.</div>
+        <button id="autoplan-btn" onclick="autoplanRoute()" style="width:100%;background:var(--amber);color:white;border:none;border-radius:3px;padding:8px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;">&#128506; Auto-plan my route</button>
+        <div id="autoplan-instr" style="display:none;margin-top:8px;font-size:.78rem;color:var(--moss);padding:6px 10px;background:rgba(61,90,42,.15);border-radius:3px;"></div>
       </div>
-      <div class="pl-section">
-        <label class="pl-label">Final destination <span style="font-weight:300;font-size:.75rem;opacity:.7;">(park name &amp; state works best)</span></label>
-        <input class="pl-input" id="rt-dest" value="${esc2(PL.route.dest)}" placeholder="e.g. Douthat State Park VA, Smoky Mountains TN" oninput="PL.route.dest=this.value">
+
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--moss);margin:14px 0 8px;">&#127957; Final Destination</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;align-items:center;">
+        <input id="ri-city-dest" placeholder="City (e.g. Franconia Notch)" class="pl-input" style="flex:1;margin:0;" oninput="PL.route.dest=this.value">
+        <input id="ri-state-dest" placeholder="ST" class="pl-input" style="width:50px;margin:0;text-align:center;padding-left:4px;padding-right:4px;">
       </div>
+      <div style="font-size:.75rem;color:var(--fog);margin-bottom:10px;">ORS calculates the real driving distance, finds overnight stop cities, then automatically searches campgrounds at each stop.</div>
+
       <div class="pl-row2 pl-section">
         <div>
-          <label class="pl-label">Departure date (Day 1)</label>
+          <label class="pl-label">Departure date</label>
           <input type="date" class="pl-input" value="${PL.route.start}" onchange="PL.route.start=this.value">
         </div>
         <div>
@@ -8263,7 +8685,6 @@ function renderFindPanel() {
           <input type="date" class="pl-input" value="${PL.route.end}" onchange="PL.route.end=this.value">
         </div>
       </div>
-      <button class="pl-btn-main" onclick="doRouteSearch()" ${PL.loading?'disabled':''}>${PL.loading?'Planning your route…':'&#128506; Plan My Route'}</button>
     </div>`;
   }
 
@@ -8291,7 +8712,7 @@ function renderFindPanel() {
   }
 
   if(PL.loading){
-    resultsSection=`<div style="text-align:center;padding:2rem;color:var(--fog);font-family:-apple-system,Georgia,serif;"><div style="font-size:2rem;" class="spinning">&#127794;</div><p style="margin-top:.5rem;">${PL.mode==='route'?'Planning your route… (this may take 20-30 seconds for long trips)':'Scouting state parks and campgrounds…'}</p><p style="font-size:.78rem;margin-top:.5rem;opacity:.6;">This can take 15-20 seconds&hellip;</p><button onclick="cancelSearch()" style="margin-top:10px;background:transparent;border:1px solid rgba(245,237,216,.3);color:var(--fog);border-radius:3px;padding:6px 16px;font-family:-apple-system,Georgia,serif;font-size:.8rem;cursor:pointer;">&#10005; Cancel</button></div>`;
+    resultsSection=`<div style="text-align:center;padding:2rem;color:var(--fog);font-family:-apple-system,Georgia,serif;"><div style="font-size:2rem;" class="spinning">&#127794;</div><p style="margin-top:.5rem;">${PL.mode==='route'?'Planning route and finding campgrounds at each stop…':'Scouting state parks and campgrounds…'}</p><p id="route-status" style="font-size:.72rem;color:var(--fog);margin-top:6px;"></p><p style="font-size:.78rem;margin-top:.5rem;opacity:.6;">This can take 15-20 seconds&hellip;</p><button onclick="cancelSearch()" style="margin-top:10px;background:transparent;border:1px solid rgba(245,237,216,.3);color:var(--fog);border-radius:3px;padding:6px 16px;font-family:-apple-system,Georgia,serif;font-size:.8rem;cursor:pointer;">&#10005; Cancel</button></div>`;
   } else if(PL.err){
     resultsSection=`<div style="background:rgba(200,50,50,.15);border:1px solid rgba(200,50,50,.3);border-radius:4px;padding:14px 16px;color:#e8a0a0;font-size:.88rem;">&#9888;&#65039; ${esc2(PL.errMsg)||'Something went wrong. Please try again.'}</div>`;
   } else if(PL.mode==='route'&&PL.routeData){
@@ -8370,74 +8791,70 @@ function renderQuickResults(results){
 }
 
 function renderRouteResults(data){
-  // Lite format - route overview with search buttons
-  if(data.type==='lite'){
-    const numStops=data.numStops||1;
-    const stops=[];
-    if(data.stop1)stops.push({...data.stop1,label:'Night 1 Stop',color:'var(--amber)',dayNum:1});
-    if(numStops>=2&&data.stop2)stops.push({...data.stop2,label:'Night 2 Stop',color:'#e8a030',dayNum:2});
-    if(data.destination)stops.push({...data.destination,label:'Destination',color:'var(--moss)',dayNum:numStops+1,isDestination:true});
-
+  if(data.type==='full'){
+    const {totalMiles,numStops,milesPerDay,stops,from,destination}=data;
     let html=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-      <div style="font-size:.75rem;color:var(--smoke);">AI-planned route &mdash; click Search to find campgrounds at each stop.</div>
+      <div style="font-size:.75rem;color:var(--smoke);">Route planned with real driving distances &mdash; verify campground availability before booking.</div>
       <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">&#128190; Save this route</button>
     </div>`;
 
-    // Route overview strip
+    // Route overview card
     html+=`<div style="background:rgba(30,50,25,.5);border:1px solid rgba(61,90,42,.5);border-radius:6px;padding:14px 16px;margin-bottom:20px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:10px;">&#128506; Trip Overview &mdash; ${numStops+1} driving days &middot; ~${esc2(String(data.totalMiles||'?'))} miles each way</div>
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:10px;">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:10px;">&#128506; Trip Overview &mdash; ${totalMiles} real driving miles &middot; ${numStops+1} days &middot; ~${milesPerDay} mi/day</div>
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
         <div style="text-align:center;padding:0 6px;">
           <div style="font-size:.65rem;color:var(--smoke);">Start</div>
-          <div style="font-size:.8rem;font-weight:500;color:var(--cream);">${esc2(PL.route.from||'Edgewater, FL')}</div>
+          <div style="font-size:.8rem;font-weight:500;color:var(--cream);">${esc2(from)}</div>
         </div>
-        ${stops.map(s=>`
-          <div style="font-size:.7rem;color:${s.color};padding:0 3px;">&#9658;&#9658;</div>
+        ${stops.map((s,i)=>`
+          <div style="font-size:.7rem;color:${s.isDestination?'var(--moss)':i===1?'#e8a030':'var(--amber)'};padding:0 3px;">&#9658;&#9658;</div>
           <div style="text-align:center;padding:0 6px;">
             <div style="font-size:.65rem;color:var(--smoke);">${s.label}</div>
-            <div style="font-size:.8rem;font-weight:500;color:var(--cream);">${esc2(s.city||'')}</div>
-            <div style="font-size:.65rem;color:var(--fog);">${esc2(s.miles||'')}</div>
+            <div style="font-size:.8rem;font-weight:500;color:var(--cream);">${esc2(s.city)}, ${esc2(s.state)}</div>
+            <div style="font-size:.65rem;color:var(--fog);">~${s.miles} mi</div>
           </div>`).join('')}
-      </div>
-      <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:8px;">
-        <span style="font-size:.72rem;color:var(--smoke);">Route: </span>
-        <span style="font-size:.78rem;color:var(--cream);">${esc2(data.mainHighways||'')}</span>
-        ${data.routeNotes?`<div style="font-size:.75rem;color:var(--fog);margin-top:4px;font-style:italic;">${esc2(data.routeNotes)}</div>`:''}
       </div>
     </div>`;
 
-    // Search button for each stop
-    stops.forEach(s=>{
-      const searchLabel=s.isDestination?`Campgrounds near ${s.city} (destination ${s.miles})`:`Overnight campgrounds near ${s.city} (${s.miles})`;
-      html+=`<div style="background:rgba(30,50,25,.4);border:1px solid ${s.color.replace('var(--amber)','rgba(200,135,42,.4)').replace('var(--moss)','rgba(61,90,42,.4)').replace('#e8a030','rgba(232,160,48,.4)')};border-radius:6px;padding:14px 16px;margin-bottom:12px;">
-        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:${s.color};margin-bottom:6px;">
-          ${s.isDestination?'&#127957;':'&#127769;'} ${s.label} &mdash; Day ${s.dayNum}
+    // Each stop with campground results
+    const colors=['var(--amber)','#e8a030','var(--amber)','var(--moss)'];
+    stops.forEach((s,i)=>{
+      const color=s.isDestination?'var(--moss)':colors[i]||'var(--amber)';
+      const bgColor=s.isDestination?'rgba(61,90,42,.2)':'rgba(200,135,42,.15)';
+      const borderColor=s.isDestination?'rgba(61,90,42,.4)':'rgba(200,135,42,.3)';
+      const emoji=s.isDestination?'&#127957;':'&#127769;';
+      const dayNum=s.isDestination?numStops+1:i+1;
+      const camps=s.campgrounds||[];
+
+      html+=`<div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:${color};">${emoji} ${esc2(s.label)} &mdash; Day ${dayNum} &middot; ~${s.miles} miles from ${esc2(from)}</div>
+          ${camps.length?`<button onclick="saveAllCampgrounds(${JSON.stringify(camps).replace(/"/g,'&quot;')})" style="background:${color==='var(--moss)'?'var(--moss)':'var(--amber)'};color:${color==='var(--moss)'?'var(--cream)':'white'};border:none;border-radius:3px;padding:4px 10px;font-family:-apple-system,Georgia,serif;font-size:.72rem;cursor:pointer;">&#11088; Save all</button>`:''}
         </div>
-        <div style="font-size:.88rem;color:var(--cream);margin-bottom:10px;">
-          &#128205; <strong>${esc2(s.city||'')}, ${esc2(s.state||'')}</strong> &mdash; ${esc2(s.miles||'')}
+        <div style="background:${bgColor};border:1px solid ${borderColor};border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">
+          &#128205; Near <strong>${esc2(s.city)}, ${esc2(s.state)}</strong>${s.isDestination?' &mdash; your destination':''}
         </div>
-        ${s.warning?`<div style="font-size:.78rem;color:var(--amber);background:rgba(200,135,42,.15);border:1px solid rgba(200,135,42,.3);border-radius:3px;padding:6px 10px;margin-bottom:8px;">${esc2(s.warning)}</div>`:''}
-        <button onclick="searchForStop('${esc2(s.city||'')}','${esc2(s.state||'')}','${esc2(s.miles||'')}',${s.isDestination?'true':'false'})" style="width:100%;background:${s.color==='var(--moss)'?'var(--moss)':s.color==='#e8a030'?'#e8a030':'var(--amber)'};color:${s.color==='var(--moss)'?'var(--cream)':'white'};border:none;border-radius:3px;padding:9px;font-family:-apple-system,Georgia,serif;font-size:.88rem;cursor:pointer;font-weight:500;">
-          &#128269; Search campgrounds near ${esc2(s.city||'')}
-        </button>
+        ${s.searchError?`<div style="font-size:.78rem;color:var(--smoke);padding:8px;border:1px dashed var(--fog);border-radius:4px;margin-bottom:8px;">Could not load campgrounds — <button onclick="searchForStop('${esc2(s.city)}','${esc2(s.state)}','',${s.isDestination})" style="background:none;border:none;color:var(--amber);cursor:pointer;font-size:.78rem;text-decoration:underline;">try again</button></div>`:''}
+        ${camps.length===0&&!s.searchError?`<div style="font-size:.78rem;color:var(--smoke);padding:8px;">No campground results for this stop.</div>`:''}
+        ${camps.map((cg,ci)=>renderCard(cg,ci,color)).join('')}
       </div>`;
     });
-
     return html;
   }
 
-  // Legacy full format fallback
-  const numStops=(data.routeSummary&&data.routeSummary.numStops)||1;
-  let html=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
-    <div style="font-size:.75rem;color:var(--smoke);">AI-planned route &mdash; verify availability before booking.</div>
-    <button onclick="saveCurrentRoute()" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;">&#128190; Save this route</button>
-  </div>`;
-  const os1=data.overnightStop1||data.overnightStop;
-  if(os1){const c1=os1.campgrounds||[];html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:8px;">&#127769; Night 1 &mdash; ~${esc2(os1.miles)}</div><div style="background:rgba(200,135,42,.2);border:1px solid rgba(200,135,42,.4);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os1.location||'')}</strong></div>`;html+=c1.map((cg,i)=>renderCard(cg,i,'var(--amber)')).join('');}
-  if(data.overnightStop2){const os2=data.overnightStop2;const c2=os2.campgrounds||[];html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#e8a030;margin:16px 0 8px;">&#127769; Night 2 &mdash; ~${esc2(os2.miles)}</div><div style="background:rgba(232,160,48,.15);border:1px solid rgba(232,160,48,.35);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(os2.location||'')}</strong></div>`;html+=c2.map((cg,i)=>renderCard(cg,i,'#e8a030')).join('');}
-  if(data.destination){const dst=data.destination;const dc=dst.campgrounds||[];html+=`<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cream);margin:16px 0 8px;">&#127957; Destination &mdash; Day ${dst.dayNum||numStops+1}</div><div style="background:rgba(61,90,42,.35);border:1px solid rgba(61,90,42,.55);border-radius:4px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:10px;">&#128205; Near <strong>${esc2(dst.location||'')}</strong></div>`;html+=dc.map((cg,i)=>renderCard(cg,i,'var(--moss)')).join('');}
+  // Lite/legacy format fallback
+  let html=`<div style="font-size:.75rem;color:var(--smoke);margin-bottom:14px;">Route plan &mdash; click search buttons to find campgrounds at each stop.</div>`;
   return html;
 }
+
+
+function searchFromInput(cityId, stateId, miles, isDestination){
+  const city=document.getElementById(cityId)?.value?.trim();
+  const state=document.getElementById(stateId)?.value?.trim();
+  if(!city){alert('Please enter a city name.');return;}
+  searchForStop(city, state, '', isDestination);
+}
+
 
 function searchForStop(city, state, miles, isDestination){
   PL.mode='quick';
@@ -8547,6 +8964,63 @@ function cancelSearch(){
 }
 
 function toggleAm2(a){const idx=PL.search.ams.indexOf(a);if(idx>-1)PL.search.ams.splice(idx,1);else PL.search.ams.push(a);renderFindPanel();}
+
+async function doQuickSearch(){
+  const sq=PL.search;
+  if(!sq.dest){alert('Please enter a destination.');return;}
+  const key=getKey();if(!key){alert('Please enter your Anthropic API key first.');return;}
+  PL.fromCache=false;
+  PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
+  const stateClause=sq.filterState?` in ${sq.filterState}`:'';
+  const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
+  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+Amenities wanted: ${amStr}
+Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
+{"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error.message);
+    let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    text=text.replace(/```json|```/g,'').trim();
+    PL.results=JSON.parse(text.slice(text.indexOf('['),text.lastIndexOf(']')+1));
+    addHistory(sq.dest,sq.filterState,PL.results);
+  }catch(e){PL.err=true;PL.errMsg=e.message;}
+  PL.loading=false;PL.done=true;renderFindPanel();
+}
+
+async function doRouteSearch(){
+  // No longer used - route planner now uses manual city entry
+  renderFindPanel();
+}
+
+async function searchStopCity(cityInputId, stateInputId, isDestination){
+  const city = (document.getElementById(cityInputId)?.value||'').trim();
+  const state = (document.getElementById(stateInputId)?.value||'').trim();
+  if(!city){ alert('Please enter a city name.'); return; }
+  searchForStop(city, state, '', isDestination);
+}
+
+async function searchAllStops(){
+  const stops = getStopInputs();
+  if(!stops.length){ alert('Please enter at least one stop or destination.'); return; }
+  // Search first stop with context
+  const s = stops[0];
+  searchForStop(s.city, s.state, '', s.isDestination);
+}
+
+function getStopInputs(){
+  const stops = [];
+  ['stop1','stop2','stop3','dest'].forEach((key,i)=>{
+    const city = (document.getElementById('ri-city-'+key)?.value||'').trim();
+    const state = (document.getElementById('ri-state-'+key)?.value||'').trim();
+    if(city) stops.push({key, city, state, isDestination: key==='dest', label: key==='dest'?'Destination':`Night ${i+1} Stop`});
+  });
+  return stops;
+}
+
 
 async function doQuickSearch(){
   const sq=PL.search;
@@ -8967,7 +9441,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_19.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_25.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8976,7 +9450,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_19.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_25.html">
 </div>
 
 <!-- AUTH OVERLAY -->
