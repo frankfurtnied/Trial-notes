@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_29.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_30.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -5969,6 +5969,13 @@ html { -webkit-overflow-scrolling: touch; }
         🚐 27ft · 30-amp · Water &amp; Electric — searching at 20ft since state parks list conservatively
       </div>
       <button class="pl-btn-main" onclick="doQuickSearch()">🔍 Find Campgrounds</button>
+    </div><div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Searches</div>
+        <button onclick="localStorage.removeItem(&#39;tn_srch_hist&#39;);renderFindPanel()" style="padding:3px 8px;font-size:.7rem;border:1px solid rgba(200,50,50,.3);border-radius:10px;cursor:pointer;background:transparent;color:rgba(200,100,100,.7);">clear all</button>
+      </div>
+      <div style="background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.3);border-radius:6px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;"><div><div style="font-size:.9rem;font-weight:500;color:var(--cream);">📍 Blue Ridge Parkway NC</div><div style="font-size:.72rem;color:var(--smoke);margin-top:2px;">6 campgrounds · 4 state parks · May 24</div></div><div style="display:flex;gap:6px;flex-shrink:0;"><button onclick="loadHistoryResult(0)" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:7px 16px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;font-weight:500;">💾 Show results</button><button onclick="PL.search.dest=&#39;Blue Ridge Parkway NC&#39;;PL.search.filterState=&#39;&#39;;PL.fromCache=false;doQuickSearch()" style="background:transparent;border:1px solid var(--fog);color:var(--fog);border-radius:3px;padding:7px 10px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;" title="Search again for fresh results">🔄</button></div></div>
+      
     </div><div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Routes (3)</div>
@@ -7886,7 +7893,7 @@ function showAuthMsg(msg, type) {
 const PL = {
   mode: 'quick',
   search: { dest: '', filterState: '', ams: [] },
-  route: { dest: '', start: '', end: '', from: localStorage.getItem('tn_route_from')||'Edgewater, FL' },
+  route: { dest: '', start: '', end: '', from: localStorage.getItem('tn_route_from')||'Edgewater, FL', numStops: parseInt(localStorage.getItem('tn_route_stops')||'2') },
   results: [], routeData: null,
   loading: false, done: false, err: false, errMsg: '', abortController: null, fromCache: false
 };
@@ -8005,7 +8012,7 @@ async function autoplanRoute(){
     const totalMiles=Math.round(route.summary.distance/1000*0.621371);
     const coords=decodePolyline(route.geometry);
 
-    const numStops=totalMiles<=700?1:totalMiles<=1050?2:3;
+    const numStops=PL.route.numStops||2;
     const milesPerDay=Math.round(totalMiles/(numStops+1));
 
     setStatus('📍 Finding overnight stop cities along route...');
@@ -8181,7 +8188,16 @@ function renderFindPanel() {
     formSection=`<div class="pl-card">
       <h3>&#128506; Route Planner</h3>
       <div style="background:rgba(61,90,42,.25);border:1px solid rgba(61,90,42,.4);border-radius:3px;padding:8px 12px;font-size:.82rem;color:var(--cream);margin-bottom:14px;">
-        &#128656; 27ft &middot; 30-amp W&amp;E &middot; 300-420 miles/day &middot; Enter stops manually or auto-plan
+        &#128656; 27ft &middot; 30-amp W&amp;E &middot; Enter stops manually or use Auto-plan below
+      </div>
+      <div class="pl-section">
+        <label class="pl-label">How many overnight stops do you want?</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${[1,2,3].map(n=>`<button onclick="PL.route.numStops=${n};localStorage.setItem('tn_route_stops','${n}');renderFindPanel()" style="flex:1;padding:8px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:1px solid ${PL.route.numStops===n?'var(--amber)':'var(--fog)'};border-radius:4px;cursor:pointer;background:${PL.route.numStops===n?'var(--amber)':'rgba(255,255,255,.1)'};color:${PL.route.numStops===n?'white':'var(--fog)'};">
+            ${n} stop${n!==1?'s':''}<br><span style="font-size:.68rem;opacity:.8;">${n===1?'1 driving day':n===2?'2 driving days':'3 driving days'}</span>
+          </button>`).join('')}
+        </div>
+        <div style="font-size:.72rem;color:var(--fog);margin-top:6px;">Auto-plan will space stops equally — e.g. 1050 miles ÷ ${PL.route.numStops+1} days = ~${Math.round(1050/(PL.route.numStops+1))} miles/day</div>
       </div>
 
       <div class="pl-section">
@@ -8990,7 +9006,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_29.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_30.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -8999,7 +9015,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_29.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_30.html">
 </div>
 
 <!-- AUTH OVERLAY -->
