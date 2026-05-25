@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_31.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_32.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -5978,19 +5978,33 @@ html { -webkit-overflow-scrolling: touch; }
       
     </div><div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Routes (3)</div>
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Routes (4)</div>
       </div>
       
         <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
             <div>
               <div style="font-weight:500;font-size:.95rem;color:var(--cream);">Clayton ,ny</div>
-              <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">📍 clayton ,ny · Saved May 24, 2026</div>
+              <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">📍 Clayton ,ny · Saved May 24, 2026</div>
               
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(1779658736775)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
-              <button onclick="removeRoute(1779658736775)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
+              <button onclick="loadSavedRoute(1779669161412)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="removeRoute(1779669161412)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
+            </div>
+          </div>
+          
+        </div>
+        <div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:12px 14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+            <div>
+              <div style="font-weight:500;font-size:.95rem;color:var(--cream);">Clayton ,ny</div>
+              <div style="font-size:.75rem;color:var(--smoke);margin-top:2px;">📍 Clayton ,ny · Saved May 24, 2026</div>
+              
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
+              <button onclick="loadSavedRoute(1779668780910)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="removeRoute(1779668780910)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
             </div>
           </div>
           
@@ -7736,7 +7750,20 @@ async function syncToCloud() {
         body: JSON.stringify({ user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() })
       }));
     }
-    if (!ok) { showToast('Sync error ' + status + ': ' + (data?.message || data?.hint || JSON.stringify(data)).slice(0,100)); console.error('Sync error:', data); }
+    if (!ok) {
+      if (status === 401) {
+        // Token expired — try to refresh silently
+        try {
+          const refreshed = await getStoredSession();
+          if (refreshed) { await syncToCloud(); return; } // retry once with fresh token
+        } catch(re) {}
+        // Refresh failed — show quiet message, don't alarm user
+        console.warn('Sync: session expired, please refresh the page');
+      } else {
+        showToast('Sync error ' + status + ': ' + (data?.message || data?.hint || JSON.stringify(data)).slice(0,60));
+        console.error('Sync error:', data);
+      }
+    }
     else showSyncIndicator();
   } catch(e) { showToast('Sync exception: ' + e.message); console.error(e); }
 }
@@ -9003,7 +9030,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_31.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_32.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -9012,7 +9039,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_31.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_32.html">
 </div>
 
 <!-- AUTH OVERLAY -->
