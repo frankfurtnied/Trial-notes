@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_33.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_34.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -5969,7 +5969,7 @@ html { -webkit-overflow-scrolling: touch; }
         <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">💾 Saved Searches</div>
         <button onclick="localStorage.removeItem(&#39;tn_srch_hist&#39;);renderFindPanel()" style="padding:3px 8px;font-size:.7rem;border:1px solid rgba(200,50,50,.3);border-radius:10px;cursor:pointer;background:transparent;color:rgba(200,100,100,.7);">clear all</button>
       </div>
-      <div style="background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.3);border-radius:6px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;"><div><div style="font-size:.9rem;font-weight:500;color:var(--cream);">📍 Blue Ridge Parkway NC</div><div style="font-size:.72rem;color:var(--smoke);margin-top:2px;">6 campgrounds · 4 state parks · May 24</div></div><div style="display:flex;gap:6px;flex-shrink:0;"><button onclick="loadHistoryResult(0)" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:7px 16px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;font-weight:500;">💾 Show results</button><button onclick="PL.search.dest=&#39;Blue Ridge Parkway NC&#39;;PL.search.filterState=&#39;&#39;;PL.fromCache=false;doQuickSearch()" style="background:transparent;border:1px solid var(--fog);color:var(--fog);border-radius:3px;padding:7px 10px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;" title="Search again for fresh results">🔄</button></div></div>
+      <div style="background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.3);border-radius:6px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;"><div><div style="font-size:.9rem;font-weight:500;color:var(--cream);">📍 West Virginia, Virginia · WV</div><div style="font-size:.72rem;color:var(--smoke);margin-top:2px;">6 campgrounds · 6 state parks · May 25</div></div><div style="display:flex;gap:6px;flex-shrink:0;"><button onclick="loadHistoryResult(0)" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:7px 16px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;font-weight:500;">💾 Show results</button><button onclick="PL.search.dest=&#39;West Virginia, Virginia&#39;;PL.search.filterState=&#39;WV&#39;;PL.fromCache=false;doQuickSearch()" style="background:transparent;border:1px solid var(--fog);color:var(--fog);border-radius:3px;padding:7px 10px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;" title="Search again for fresh results">🔄</button></div></div><div style="background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.3);border-radius:6px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;"><div><div style="font-size:.9rem;font-weight:500;color:var(--cream);">📍 Blue Ridge Parkway NC</div><div style="font-size:.72rem;color:var(--smoke);margin-top:2px;">6 campgrounds · 4 state parks · May 24</div></div><div style="display:flex;gap:6px;flex-shrink:0;"><button onclick="loadHistoryResult(1)" style="background:var(--amber);color:white;border:none;border-radius:3px;padding:7px 16px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;font-weight:500;">💾 Show results</button><button onclick="PL.search.dest=&#39;Blue Ridge Parkway NC&#39;;PL.search.filterState=&#39;&#39;;PL.fromCache=false;doQuickSearch()" style="background:transparent;border:1px solid var(--fog);color:var(--fog);border-radius:3px;padding:7px 10px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;" title="Search again for fresh results">🔄</button></div></div>
       
     </div><div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -8472,7 +8472,7 @@ Return ONLY a valid JSON array, no markdown. Each object:
     const resp=await Promise.race([
       fetch('https://api.anthropic.com/v1/messages',{method:'POST',
         headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})
       }),
       new Promise((_,reject)=>setTimeout(()=>reject(new Error('Search timed out')),40000))
     ]);
@@ -8552,14 +8552,14 @@ async function doQuickSearch(){
   PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
   const stateClause=sq.filterState?` in ${sq.filterState}`:'';
   const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
-  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+  const prompt=`You are a campground expert for the southeastern US. Find 9 campgrounds near: ${sq.dest}.
 Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
-PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 9 results.
 Amenities wanted: ${amStr}
 Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
 {"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     if(data.error)throw new Error(data.error.message);
     let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
@@ -8609,14 +8609,14 @@ async function doQuickSearch(){
   PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
   const stateClause=sq.filterState?` in ${sq.filterState}`:'';
   const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
-  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+  const prompt=`You are a campground expert for the southeastern US. Find 9 campgrounds near: ${sq.dest}.
 Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
-PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 9 results.
 Amenities wanted: ${amStr}
 Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
 {"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     if(data.error)throw new Error(data.error.message);
     let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
@@ -8706,14 +8706,14 @@ async function doQuickSearch(){
   PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
   const stateClause=sq.filterState?` in ${sq.filterState}`:'';
   const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
-  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+  const prompt=`You are a campground expert for the southeastern US. Find 9 campgrounds near: ${sq.dest}.
 Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
-PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 9 results.
 Amenities wanted: ${amStr}
 Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
 {"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     if(data.error)throw new Error(data.error.message);
     let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
@@ -8773,7 +8773,7 @@ If 2 stops: fill overnightStop2 same as overnightStop1. Be concise — short nam
     const resp=await fetchWithTimeout('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})
     },75000);
 
     const data=await resp.json();
@@ -8800,14 +8800,14 @@ async function doQuickSearch(){
   PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
   const stateClause=sq.filterState?` in ${sq.filterState}`:'';
   const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
-  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+  const prompt=`You are a campground expert for the southeastern US. Find 9 campgrounds near: ${sq.dest}.
 Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
-PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 9 results.
 Amenities wanted: ${amStr}
 Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
 {"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     if(data.error)throw new Error(data.error.message);
     let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
@@ -8899,14 +8899,14 @@ async function doQuickSearch(){
   PL.loading=true;PL.results=[];PL.done=false;PL.err=false;renderFindPanel();
   const stateClause=sq.filterState?` in ${sq.filterState}`:'';
   const amStr=sq.ams.length?sq.ams.join(', '):'none specified';
-  const prompt=`You are a campground expert for the southeastern US. Find 6 campgrounds${stateClause} near: ${sq.dest}.
+  const prompt=`You are a campground expert for the southeastern US. Find 9 campgrounds near: ${sq.dest}.
 Traveler: 27ft travel trailer, 30-amp water & electric. State parks often list conservative max lengths — include sites down to 20ft that realistically fit a 27ft rig.
-PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 6 results.
+PRIORITY ORDER: 1) State Parks 2) County Parks 3) Private campgrounds only if needed to reach 9 results.
 Amenities wanted: ${amStr}
 Return ONLY a valid JSON array, no markdown, keep each object concise. Each object:
 {"name":"","location":"city, state","type":"State Park OR County Park OR Private Campground","hookups":"30-amp water & electric","pullThrough":true,"maxLength":25,"priceRange":"$25-$45","amenities":[],"rating":4.2,"description":"1-2 short sentences max.","website":"https://...","reservationRequired":true,"notes":"brief trailer tip only"}`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     if(data.error)throw new Error(data.error.message);
     let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
@@ -9020,7 +9020,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_33.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_34.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -9029,7 +9029,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_33.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_34.html">
 </div>
 
 <!-- AUTH OVERLAY -->
