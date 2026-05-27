@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_49.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_50.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,7 +12,7 @@
 /* Use system fonts — no internet needed */
 </style>
 <style>
-:root{--bark:#2C1A0E;--moss:#3D5A2A;--pine:#1E3A1F;--soil:#6B4226;--amber:#C8872A;--cream:#F5EDD8;--parchment:#EDE0C4;--fog:#D4C9B0;--smoke:#8B7D6B;--ember:#E07030;}
+:root{--bark:#2C1A0E;--moss:#3D5A2A;--pine:#1E3A1F;--soil:#6B4226;--amber:#C8872A;--cream:#F5EDD8;--parchment:#EDE0C4;--fog: #7a6a5a;--smoke: #b5a898;--ember:#E07030;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background-color:var(--pine);background-image:radial-gradient(ellipse at 20% 20%,rgba(61,90,42,.6) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(44,26,14,.8) 0%,transparent 60%);font-family:-apple-system,Georgia,serif;min-height:100vh;color:var(--bark);}
 .app{max-width:980px;margin:0 auto;padding:36px 18px 80px;}
@@ -195,7 +195,7 @@ html { -webkit-overflow-scrolling: touch; }
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 /* ── PLANNER TABS ── */
 .pl-section{margin-bottom:18px;}
-.pl-label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke);margin-bottom:5px;}
+.pl-label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#6b5740;margin-bottom:5px;}
 .pl-input{width:100%;background:rgba(255,255,255,.5);border:1px solid var(--fog);border-radius:3px;padding:8px 11px;font-family:-apple-system,Georgia,serif;font-size:16px;color:var(--bark);outline:none;box-sizing:border-box;transition:border-color .2s;}
 .pl-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(200,135,42,.15);}
 .pl-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -269,8 +269,7 @@ html { -webkit-overflow-scrolling: touch; }
     <div class="stat"><div class="stat-num">153</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-num">855</div><div class="stat-label">Nights Camped</div></div>
     <div class="stat"><div class="stat-num">8,788</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;"><button id="calc-miles-btn" onclick="calculateAllMileage()" style="font-size:.58rem;padding:1px 6px;background:transparent;border:1px solid rgba(200,135,42,.5);color:var(--amber);border-radius:3px;cursor:pointer;font-family:-apple-system,Georgia,serif;">🔄 recalc</button><div id="calc-miles-prog" style="font-size:.58rem;color:var(--smoke);margin-top:1px;"></div></div></div>
-    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Upcoming</div></div>
-    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Journal Entries</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Upcoming</div></div>
     <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Wekiwa Springs State Park</div><div class="stat-sub">21 trips</div></div>
     <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Kissimmee Prairie Preserve State Park</div><div class="stat-sub" style="letter-spacing:2px">★★★★★</div></div></div>
 
@@ -4384,7 +4383,7 @@ html { -webkit-overflow-scrolling: touch; }
 <div class="panel" id="panel-upcoming">
   <div class="entries-header">
     <span class="entries-title">Upcoming Trips</span>
-    <span class="entry-count" id="upCount">6 booked</span>
+    <span class="entry-count" id="upCount">5 booked</span>
   </div>
   <div id="upcomingList"><div class="entry-card">
       <div class="card-top">
@@ -4433,22 +4432,6 @@ html { -webkit-overflow-scrolling: touch; }
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1779843134788)">✏️ Edit</button>
         <button class="btn-sm" onclick="deleteUpcoming(1779843134788)">Cancel Trip</button>
-      </div>
-    </div><div class="entry-card">
-      <div class="card-top">
-        <div>
-          <div class="card-loc">📍 Skidaway Island State Park</div>
-          <div class="card-date">Oct 3, 2026 – Oct 10, 2026</div>
-        </div>
-        <div class="card-badges"><span class="badge bn">In 130 days</span></div>
-      </div>
-      <div class="card-body">
-        
-        <div class="card-note">Booked with Keeners</div>
-      </div>
-      <div class="card-foot">
-        <button class="btn-sm" onclick="startEditUpcoming(1779844792221)">✏️ Edit</button>
-        <button class="btn-sm" onclick="deleteUpcoming(1779844792221)">Cancel Trip</button>
       </div>
     </div><div class="entry-card">
       <div class="card-top">
@@ -6079,7 +6062,7 @@ html { -webkit-overflow-scrolling: touch; }
         </div>
     </div></div>
 
-<div class="toast" id="toast">Park updated ✓</div>
+<div class="toast" id="toast">Welcome back! 🌲</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -7198,7 +7181,6 @@ function renderStats() {
     <div class="stat"><div class="stat-num">${totalNights}</div><div class="stat-label">Nights Camped</div></div>
     <div class="stat"><div class="stat-num">${totalMilesDriven>0?totalMilesDriven.toLocaleString():'—'}</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;">${calcBtn}</div></div>
     <div class="stat"><div class="stat-num">${upcomingCount}</div><div class="stat-label">Upcoming</div></div>
-    <div class="stat"><div class="stat-num">${state.entries.length}</div><div class="stat-label">Journal Entries</div></div>
     ${mostVisited?`<div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(mostVisited)}</div><div class="stat-sub">${mostVisitedCount} trips</div></div>`:''}
     ${bestRated?`<div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(bestRated)}</div><div class="stat-sub" style="letter-spacing:2px">${stars(bestRating)}</div></div>`:''}`;
 }
@@ -8382,7 +8364,7 @@ function renderFindPanel() {
             style="width:80px;font-size:1.1rem;padding:8px 10px;text-align:center;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:4px;color:var(--bark);font-family:-apple-system,Georgia,serif;">
           <span style="font-size:.85rem;color:var(--fog);">overnight stop${(PL.route.numStops||2)!==1?'s':''} &rarr; ${(PL.route.numStops||2)+1} driving days</span>
         </div>
-        <div id="stops-hint" style="font-size:.72rem;color:var(--fog);margin-top:6px;">Auto-plan will divide the route into ${(PL.route.numStops||2)+1} equal driving days</div>
+        <div id="stops-hint" style="font-size:.75rem;color:var(--bark);margin-top:6px;">Auto-plan will divide the route into ${(PL.route.numStops||2)+1} equal driving days</div>
       </div>
 
       <div class="pl-section">
@@ -8395,7 +8377,7 @@ function renderFindPanel() {
           <div style="font-size:.78rem;color:var(--amber);">&#128506; <strong>Auto-plan</strong> &mdash; uses OpenRouteService to calculate real driving distances</div>
           <button onclick="promptOrsKey()" style="font-size:.72rem;padding:3px 10px;background:transparent;border:1px solid ${getOrsKey()?'rgba(61,90,42,.4)':'rgba(200,135,42,.4)'};color:${getOrsKey()?'var(--moss)':'var(--amber)'};border-radius:3px;cursor:pointer;">${getOrsKey()?'&#9989; ORS key set':'&#128273; Set ORS key'}</button>
         </div>
-        <div style="font-size:.75rem;color:var(--fog);margin-bottom:8px;">Enter destination below, then click Auto-plan to fill in stop cities automatically.</div>
+        <div style="font-size:.78rem;color:var(--bark);margin-bottom:8px;">Enter destination below, then click Auto-plan to fill in stop cities automatically.</div>
         <button id="autoplan-btn" onclick="autoplanRoute()" style="width:100%;background:var(--amber);color:white;border:none;border-radius:3px;padding:8px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;">&#128506; Auto-plan my route</button>
         <div id="autoplan-instr" style="display:none;margin-top:8px;font-size:.78rem;color:var(--moss);padding:6px 10px;background:rgba(61,90,42,.15);border-radius:3px;"></div>
       </div>
@@ -8405,7 +8387,7 @@ function renderFindPanel() {
         <input id="ri-city-dest" placeholder="City (e.g. Franconia Notch)" class="pl-input" style="flex:1;margin:0;" oninput="PL.route.dest=this.value">
         <input id="ri-state-dest" placeholder="ST" class="pl-input" style="width:50px;margin:0;text-align:center;padding-left:4px;padding-right:4px;">
       </div>
-      <div style="font-size:.75rem;color:var(--fog);margin-bottom:10px;">ORS calculates the real driving distance, finds overnight stop cities, then automatically searches campgrounds at each stop.</div>
+      <div style="font-size:.78rem;color:var(--bark);margin-bottom:10px;">ORS calculates the real driving distance, finds overnight stop cities, then automatically searches campgrounds at each stop.</div>
 
       <div class="pl-row2 pl-section">
         <div>
