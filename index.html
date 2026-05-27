@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_58.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_59.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="stylesheet" href="./index_files/leaflet.css">
-<script src="./index_files/leaflet.js"></script>
+<link rel="stylesheet" href="./index_files/leaflet.min.css">
+<script src="./index_files/leaflet.min.js"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trail Notes">
@@ -9642,27 +9642,39 @@ let _mapInitialized = false;
 
 function initParkMap() {
   if (_mapInitialized) {
-    setTimeout(function() { if(_leafletMap) _leafletMap.invalidateSize(); }, 300);
+    setTimeout(function() { if(_leafletMap) _leafletMap.invalidateSize(true); }, 300);
     return;
   }
+
+  var statusEl = document.getElementById('map-status');
+
+  // Check if Leaflet loaded
+  if (typeof L === 'undefined') {
+    if (statusEl) statusEl.innerHTML = '⚠️ Map library not loaded — please check your internet connection and refresh.';
+    var mapEl = document.getElementById('parkMap');
+    if (mapEl) mapEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--smoke);font-family:var(--font-body);font-size:.9rem;padding:40px;text-align:center;"><div>🗺️<br><br>Map requires internet connection.<br>Make sure the app is loaded from<br><strong>frankfurtnied.github.io</strong></div></div>';
+    return;
+  }
+
   _mapInitialized = true;
 
   setTimeout(function() {
     var mapEl = document.getElementById('parkMap');
     if (!mapEl) return;
 
-    _leafletMap = L.map('parkMap', {zoomControl: true, preferCanvas: true}).setView([28.5, -82.5], 7);
+    try {
+      _leafletMap = L.map('parkMap', {zoomControl: true}).setView([28.5, -82.5], 7);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 18,
-      crossOrigin: true
-    }).addTo(_leafletMap);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18
+      }).addTo(_leafletMap);
 
-    // Force size recalculation after render
-    setTimeout(function() { _leafletMap.invalidateSize(true); }, 400);
-    setTimeout(function() { plotAllParks(); }, 500);
-  }, 300);
+      setTimeout(function() { _leafletMap.invalidateSize(true); plotAllParks(); }, 500);
+    } catch(err) {
+      if (statusEl) statusEl.textContent = 'Map error: ' + err.message;
+    }
+  }, 400);
 }
 
 function makePinIcon(color) {
