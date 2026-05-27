@@ -1,35 +1,120 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_50.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_57.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="./index_files/leaflet.css">
+<script src="./index_files/leaflet.js"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trail Notes">
 <meta name="theme-color" content="#1E3A1F">
 <title>Trail Notes — Camping Diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./index_files/css2" rel="stylesheet">
 <style>
-/* Use system fonts — no internet needed */
-</style>
-<style>
-:root{--bark:#2C1A0E;--moss:#3D5A2A;--pine:#1E3A1F;--soil:#6B4226;--amber:#C8872A;--cream:#F5EDD8;--parchment:#EDE0C4;--fog: #7a6a5a;--smoke: #b5a898;--ember:#E07030;}
+:root{
+  --bark:#2C1A0E;--moss:#3D5A2A;--pine:#1E3A1F;--soil:#6B4226;
+  --amber:#C8872A;--cream:#F5EDD8;--parchment:#EDE0C4;
+  --fog:#7a6a5a;--smoke:#b5a898;--ember:#E07030;
+  --font-heading:'Playfair Display',Georgia,serif;
+  --font-body:'Lato',system-ui,-apple-system,sans-serif;
+  --font-serif:'Playfair Display',Georgia,serif;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background-color:var(--pine);background-image:radial-gradient(ellipse at 20% 20%,rgba(61,90,42,.6) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(44,26,14,.8) 0%,transparent 60%);font-family:-apple-system,Georgia,serif;min-height:100vh;color:var(--bark);}
+body{
+  background-color:var(--pine);
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(61,90,42,.6) 0%,transparent 60%),
+                   radial-gradient(ellipse at 80% 80%,rgba(44,26,14,.8) 0%,transparent 60%);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.6;
+  min-height:100vh;
+  color:var(--bark);
+  -webkit-font-smoothing:antialiased;
+}
 .app{max-width:980px;margin:0 auto;padding:36px 18px 80px;}
+
+/* ── HEADER ── */
 header{text-align:center;margin-bottom:32px;animation:fadeDown .8s ease both;}
 .logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;}
-header h1{font-family:-apple-system,Georgia,serif;font-size:clamp(1.8rem,5vw,3rem);color:var(--cream);}
+header h1{
+  font-family:var(--font-heading);
+  font-size:clamp(2rem,5.5vw,3.4rem);
+  font-weight:700;
+  color:var(--cream);
+  letter-spacing:.02em;
+  line-height:1.1;
+}
 header h1 em{font-style:italic;color:var(--amber);}
-header p{color:var(--fog);font-size:.95rem;font-weight:300;letter-spacing:.14em;text-transform:uppercase;margin-top:4px;}
-.divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:12px auto 0;}
-.stats-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
-.stat{background:rgba(245,237,216,.1);border:1px solid rgba(245,237,216,.15);border-radius:4px;padding:10px 14px;flex:1;min-width:90px;text-align:center;}
-.stat-num{font-family:-apple-system,Georgia,serif;font-size:1.7rem;color:var(--amber);line-height:1;}
-.stat-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--fog);margin-top:3px;}
+header p{
+  color:var(--smoke);
+  font-family:var(--font-body);
+  font-size:.78rem;
+  font-weight:300;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  margin-top:6px;
+}
+.divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:14px auto 0;}
+
+/* ── STATS BAR ── */
+.stats-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.stat{
+  background:rgba(245,237,216,.08);
+  border:1px solid rgba(245,237,216,.12);
+  border-radius:6px;
+  padding:14px 16px;
+  flex:1;
+  min-width:90px;
+  text-align:center;
+  transition:background .2s;
+}
+.stat:hover{background:rgba(245,237,216,.13);}
+.stat-num{
+  font-family:var(--font-heading);
+  font-size:1.9rem;
+  font-weight:600;
+  color:var(--amber);
+  line-height:1;
+  letter-spacing:-.01em;
+}
+.stat-label{
+  font-family:var(--font-body);
+  font-size:.62rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  color:var(--smoke);
+  margin-top:5px;
+}
+
+/* ── TABS ── */
 .tabs{display:flex;gap:4px;margin-bottom:22px;}
-.tab{flex:1;padding:10px 14px;text-align:center;font-family:-apple-system,Georgia,serif;font-size:.92rem;background:rgba(245,237,216,.08);border:1px solid rgba(245,237,216,.15);color:var(--fog);border-radius:4px;cursor:pointer;transition:all .2s;}
-.tab:hover{background:rgba(245,237,216,.14);color:var(--cream);}
-.tab.active{background:var(--parchment);color:var(--bark);border-color:var(--parchment);font-weight:700;}
+.tab{
+  flex:1;
+  padding:11px 14px;
+  text-align:center;
+  font-family:var(--font-body);
+  font-size:.82rem;
+  font-weight:400;
+  letter-spacing:.04em;
+  background:rgba(245,237,216,.07);
+  border:1px solid rgba(245,237,216,.13);
+  color:var(--smoke);
+  border-radius:5px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.tab:hover{background:rgba(245,237,216,.13);color:var(--cream);}
+.tab.active{
+  background:var(--parchment);
+  color:var(--bark);
+  border-color:var(--parchment);
+  font-weight:700;
+  letter-spacing:.02em;
+}
 .panel{display:none;}.panel.active{display:block;}
 .top-bar{display:flex;gap:8px;margin-bottom:14px;align-items:stretch;}
 .top-bar input{flex:1;background:rgba(245,237,216,.1);border:1px solid rgba(245,237,216,.2);border-radius:4px;padding:10px 14px;font-family:-apple-system,Georgia,serif;font-size:.98rem;color:var(--cream);outline:none;}
@@ -42,8 +127,20 @@ header p{color:var(--fog);font-size:.95rem;font-weight:300;letter-spacing:.14em;
 .park-header{display:flex;align-items:center;justify-content:space-between;padding:13px 17px;cursor:pointer;user-select:none;border-left:5px solid var(--moss);}
 .park-header.been{border-left-color:var(--amber);}
 .park-header.custom-h{border-left-color:var(--ember);}
-.park-name{font-family:-apple-system,Georgia,serif;font-size:1.02rem;color:var(--bark);}
-.park-sub{font-size:.78rem;color:var(--smoke);margin-top:2px;}
+.park-name{
+  font-family:var(--font-heading);
+  font-size:1.05rem;
+  font-weight:600;
+  color:var(--bark);
+  letter-spacing:.01em;
+}
+.park-sub{
+  font-family:var(--font-body);
+  font-size:.76rem;
+  color:var(--smoke);
+  margin-top:3px;
+  letter-spacing:.02em;
+}
 .park-right{display:flex;gap:5px;align-items:center;flex-shrink:0;}
 .badge{font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:12px;}
 .bv{background:var(--amber);color:white;}.bn{background:var(--moss);color:var(--cream);}.bc{background:var(--ember);color:white;}
@@ -53,16 +150,38 @@ header p{color:var(--fog);font-size:.95rem;font-weight:300;letter-spacing:.14em;
 .park-card.open .park-body{display:block;}
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
 @media(max-width:560px){.info-grid{grid-template-columns:1fr;}}
-.info-block label{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke);margin-bottom:2px;}
-.info-block p{font-size:.93rem;color:var(--bark);line-height:1.5;}
+.info-block label{display:block;font-family:var(--font-body);font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--smoke);margin-bottom:3px;}
+.info-block p{font-family:var(--font-body);font-size:.9rem;color:var(--bark);line-height:1.65;}
 .trip-log{margin-top:14px;border-top:1px solid var(--fog);padding-top:12px;}
-.trip-log-title{font-family:-apple-system,Georgia,serif;font-size:.95rem;color:var(--bark);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.trip-log-title{font-family:var(--font-heading);font-size:.95rem;font-weight:600;color:var(--bark);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;letter-spacing:.01em;}
 .trip-count-badge{background:var(--amber);color:white;font-size:.65rem;padding:2px 8px;border-radius:12px;font-family:Arial,sans-serif;}
 .trip-entries{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
 .trip-entry{display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,.35);border:1px solid var(--fog);border-radius:3px;padding:7px 10px;font-size:.87rem;color:var(--bark);}
-.trip-date-badge{font-family:-apple-system,Georgia,serif;color:var(--amber);font-size:.85rem;white-space:nowrap;flex-shrink:0;}
-.trip-site{color:var(--moss);font-size:.82rem;white-space:nowrap;flex-shrink:0;}
-.trip-note{flex:1;color:var(--smoke);font-size:.82rem;font-style:italic;}
+.trip-date-badge{
+  font-family:var(--font-body);
+  font-weight:700;
+  color:var(--amber);
+  font-size:.8rem;
+  letter-spacing:.02em;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.trip-site{
+  font-family:var(--font-body);
+  font-weight:700;
+  color:var(--moss);
+  font-size:.8rem;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.trip-note{
+  flex:1;
+  font-family:var(--font-body);
+  color:var(--smoke);
+  font-size:.8rem;
+  font-style:italic;
+  line-height:1.5;
+}
 .btn-del-trip{background:none;border:none;color:var(--fog);cursor:pointer;font-size:.85rem;padding:0 2px;transition:color .2s;flex-shrink:0;}
 .btn-del-trip:hover{color:#c0392b;}
 .add-trip-row{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;background:rgba(255,255,255,.2);border:1px dashed var(--fog);border-radius:4px;padding:10px;}
@@ -85,7 +204,7 @@ header p{color:var(--fog);font-size:.95rem;font-weight:300;letter-spacing:.14em;
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
 .modal-bg.hidden{display:none;}
 .modal{background:var(--parchment);border-radius:6px;padding:26px 28px;width:100%;max-width:680px;box-shadow:0 20px 60px rgba(0,0,0,.6);position:relative;}
-.modal-title{font-family:-apple-system,Georgia,serif;font-size:1.2rem;color:var(--bark);margin-bottom:16px;}
+.modal-title{font-family:var(--font-heading);font-size:1.3rem;font-weight:600;color:var(--bark);margin-bottom:18px;letter-spacing:.01em;}
 .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;color:var(--smoke);cursor:pointer;}
 .modal-close:hover{color:var(--bark);}
 .fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
@@ -117,7 +236,7 @@ textarea{resize:vertical;min-height:76px;line-height:1.6;}
 .entry-card{background:var(--parchment);border-radius:4px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 16px rgba(0,0,0,.27);transition:transform .2s,box-shadow .2s;}
 .entry-card:hover{transform:translateY(-2px);box-shadow:0 7px 26px rgba(0,0,0,.38);}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px 17px 10px;border-bottom:1px solid var(--fog);}
-.card-loc{font-family:-apple-system,Georgia,serif;font-size:1.05rem;color:var(--bark);margin-bottom:2px;}
+.card-loc{font-family:var(--font-heading);font-size:1.05rem;font-weight:600;color:var(--bark);margin-bottom:2px;letter-spacing:.01em;}
 .card-date{font-size:.78rem;color:var(--smoke);letter-spacing:.06em;}
 .card-badges{display:flex;gap:5px;align-items:center;flex-shrink:0;}
 .bw{font-size:1.15rem;}.bm{background:var(--moss);color:var(--cream);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:12px;}
@@ -195,7 +314,7 @@ html { -webkit-overflow-scrolling: touch; }
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 /* ── PLANNER TABS ── */
 .pl-section{margin-bottom:18px;}
-.pl-label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#6b5740;margin-bottom:5px;}
+.pl-label{display:block;font-family:var(--font-body);font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#6b5740;margin-bottom:5px;}
 .pl-input{width:100%;background:rgba(255,255,255,.5);border:1px solid var(--fog);border-radius:3px;padding:8px 11px;font-family:-apple-system,Georgia,serif;font-size:16px;color:var(--bark);outline:none;box-sizing:border-box;transition:border-color .2s;}
 .pl-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(200,135,42,.15);}
 .pl-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -240,8 +359,8 @@ html { -webkit-overflow-scrolling: touch; }
 .apikey-box p{font-size:.78rem;color:var(--fog);line-height:1.6;margin-bottom:8px;}
 .spinning{animation:spin 1s linear infinite;display:inline-block;}
 </style>
-</head>
-<body>
+<link rel="stylesheet" href="chrome-extension://ac971c7c-ea0e-4d67-ad36-c2667d0be484/app/content-style.css"></head>
+<body class="">
 <div id="offline-banner" style="display:none;background:#b84040;color:white;text-align:center;padding:8px;font-size:.82rem;font-family:-apple-system,Georgia,serif;position:sticky;top:0;z-index:999;">
   You are offline — saved campgrounds, routes and diary still available. New searches require internet.
 </div>
@@ -280,6 +399,7 @@ html { -webkit-overflow-scrolling: touch; }
   <div class="tab" onclick="switchTab(&#39;wishlist&#39;)">🌟 Wish List</div>
   <div class="tab" onclick="switchTab(&#39;journal&#39;)">📓 My Journal</div>
   <div class="tab" onclick="switchTab(&#39;findcamps&#39;)">🔍 Find Campgrounds</div>
+  <div class="tab" onclick="switchTab(&#39;map&#39;);initParkMap();">🗺️ Map</div>
 </div>
 
 <div class="panel active" id="panel-parks">
@@ -337,6 +457,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site ?</span>
         <span class="trip-note">Trip #2</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,0)" title="Remove">✕</button>
@@ -347,6 +468,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
         <span class="trip-note">trip #17</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(4,0)" title="Remove">✕</button>
@@ -357,6 +479,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 63</span>
         <span class="trip-note">Trip #26 — nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,1)" title="Remove">✕</button>
@@ -367,6 +490,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 90</span>
         <span class="trip-note">Trip #35 — just ok, small</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,2)" title="Remove">✕</button>
@@ -377,6 +501,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 93</span>
         <span class="trip-note">Trip #37 — good, Thanksgiving weekend</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,3)" title="Remove">✕</button>
@@ -387,6 +512,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 75</span>
         <span class="trip-note">Trip #44 — not a good site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,4)" title="Remove">✕</button>
@@ -397,6 +523,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 48</span>
         <span class="trip-note">Trip #70 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,5)" title="Remove">✕</button>
@@ -407,6 +534,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 108</span>
         <span class="trip-note">Trip #87 — just good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,7)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,7)" title="Remove">✕</button>
@@ -417,6 +545,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 48</span>
         <span class="trip-note">Trip #90 — very good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(4,8)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(4,8)" title="Remove">✕</button>
@@ -478,6 +607,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 25</span>
         <span class="trip-note">Trip #139 — good, South Carolina</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(39,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(39,0)" title="Remove">✕</button>
@@ -539,6 +669,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site C23</span>
         <span class="trip-note">Trip #60 — good site, NC.</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(37,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(37,0)" title="Remove">✕</button>
@@ -600,6 +731,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
         <span class="trip-note">Trip #4</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,0)" title="Remove">✕</button>
@@ -610,6 +742,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         
         <span class="trip-note">Trip #11</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,1)" title="Remove">✕</button>
@@ -620,6 +753,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #22</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,2)" title="Remove">✕</button>
@@ -630,6 +764,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #25 — Dec getaway</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,3)" title="Remove">✕</button>
@@ -640,6 +775,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #41 — best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,4)" title="Remove">✕</button>
@@ -650,6 +786,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 33</span>
         <span class="trip-note">Trip #43 — ok site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,5)" title="Remove">✕</button>
@@ -660,6 +797,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #48 — great</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,6)" title="Remove">✕</button>
@@ -670,6 +808,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #65 — not fit, ok</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,7)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,8)" title="Remove">✕</button>
@@ -680,6 +819,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #82</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,8)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,9)" title="Remove">✕</button>
@@ -690,6 +830,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
         <span class="trip-note">Trip #83</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,9)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,10)" title="Remove">✕</button>
@@ -700,6 +841,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #91 — too small</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,10)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,11)" title="Remove">✕</button>
@@ -710,6 +852,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 29</span>
         <span class="trip-note">Trip #111 — a little narrow but nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,11)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,12)" title="Remove">✕</button>
@@ -720,6 +863,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 3</span>
         <span class="trip-note">Trip #136 — shade, excellent</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(2,12)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(2,13)" title="Remove">✕</button>
@@ -779,6 +923,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#142</span>
         <span class="trip-date-badge">📅 Nov 4, 2024 → Nov 6, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
+        
         
         
         <div class="trip-actions">
@@ -842,6 +987,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 6</span>
         <span class="trip-note">Trip #123</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(34,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(34,0)" title="Remove">✕</button>
@@ -902,6 +1048,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="trip-date-badge">📅 Nov 6, 2024 → Nov 7, 2024</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 11</span>
+        
         
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776905257701,0)" title="Edit">✏️</button>
@@ -964,6 +1111,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 32</span>
         <span class="trip-note">Trip #128 — ok. Beautiful park, odd layout, confusing signs, nice trails</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(31,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(31,0)" title="Remove">✕</button>
@@ -1025,6 +1173,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 93</span>
         <span class="trip-note">Trip #100</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(36,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(36,0)" title="Remove">✕</button>
@@ -1086,6 +1235,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site 96</span>
         <span class="trip-note">Trip #113 — best site, lakefront, beautiful</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(15,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(15,0)" title="Remove">✕</button>
@@ -1147,6 +1297,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
         <span class="trip-note">Trip #9</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(16,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(16,0)" title="Remove">✕</button>
@@ -1157,6 +1308,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 28</span>
         <span class="trip-note">Trip #31 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(16,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(16,1)" title="Remove">✕</button>
@@ -1218,6 +1370,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 24</span>
         <span class="trip-note">Trip #108 — great, April 12–18</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(33,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(33,0)" title="Remove">✕</button>
@@ -1279,6 +1432,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 41</span>
         <span class="trip-note">Trip #5</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(6,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(6,0)" title="Remove">✕</button>
@@ -1289,6 +1443,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 8 nights</span>
         
         <span class="trip-note">Trip #16 , cold!</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(6,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(6,1)" title="Remove">✕</button>
@@ -1299,6 +1454,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site 41+42</span>
         <span class="trip-note">Trip #45 — excellent</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(6,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(6,2)" title="Remove">✕</button>
@@ -1309,6 +1465,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 15 nights</span>
         <span class="trip-site">Site 40</span>
         <span class="trip-note">Trip #95 — best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(6,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(6,3)" title="Remove">✕</button>
@@ -1370,6 +1527,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 172</span>
         <span class="trip-note">Trip #135 — waterfront, June 12–16</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(35,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(35,0)" title="Remove">✕</button>
@@ -1430,6 +1588,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="trip-date-badge">📅 Jun 17, 2017 → Jun 18, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 50</span>
+        
         
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776907371154,0)" title="Edit">✏️</button>
@@ -1492,6 +1651,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site 53</span>
         <span class="trip-note">Trip #127 — very nice, Oct 14–21</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(30,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(30,0)" title="Remove">✕</button>
@@ -1553,6 +1713,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 15</span>
         <span class="trip-note">Trip #129 — not our favorite park</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(32,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(32,0)" title="Remove">✕</button>
@@ -1613,6 +1774,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="trip-date-badge">📅 Jul 23, 2020 → Jul 26, 2020</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 101</span>
+        
         
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776906864399,0)" title="Edit">✏️</button>
@@ -1675,6 +1837,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 37</span>
         
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1777632922321,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(1777632922321,0)" title="Remove">✕</button>
@@ -1736,6 +1899,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 12</span>
         <span class="trip-note">Trip #93 — very good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(25,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(25,0)" title="Remove">✕</button>
@@ -1797,6 +1961,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 49</span>
         <span class="trip-note">Trip #30 — not great park</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(19,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(19,0)" title="Remove">✕</button>
@@ -1858,6 +2023,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         
         <span class="trip-note">Trip #19</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,0)" title="Remove">✕</button>
@@ -1868,6 +2034,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 24</span>
         <span class="trip-note">Trip #28 was canceled Martin in hospital</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,1)" title="Remove">✕</button>
@@ -1878,6 +2045,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 28</span>
         <span class="trip-note">Trip #34 — good, small</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,2)" title="Remove">✕</button>
@@ -1888,6 +2056,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 28</span>
         <span class="trip-note">Trip #66 — great</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,3)" title="Remove">✕</button>
@@ -1898,6 +2067,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 28</span>
         <span class="trip-note">Trip #91 — very good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,5)" title="Remove">✕</button>
@@ -1908,6 +2078,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 56</span>
         <span class="trip-note">Trip #92 — hard to get in, nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,6)" title="Remove">✕</button>
@@ -1918,6 +2089,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 43</span>
         <span class="trip-note">Trip #107</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(5,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(5,7)" title="Remove">✕</button>
@@ -1979,6 +2151,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 71</span>
         <span class="trip-note">Trip #138 — pull through</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(38,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(38,0)" title="Remove">✕</button>
@@ -2040,6 +2213,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 2</span>
         <span class="trip-note">Trip #137 — very good, great tubing, kayaking, cheap</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(29,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(29,0)" title="Remove">✕</button>
@@ -2050,6 +2224,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 5</span>
         <span class="trip-note">Trip #148 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(29,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(29,1)" title="Remove">✕</button>
@@ -2060,6 +2235,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 2</span>
         <span class="trip-note">we met Canadians</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(29,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(29,0)" title="Remove">✕</button>
@@ -2080,7 +2256,7 @@ html { -webkit-overflow-scrolling: touch; }
           <button class="btn-o danger" onclick="deleteCustomPark(29)">🗑 Remove</button>
         </div>
       </div>
-    </div><div class="park-card" id="pc40" style="animation-delay:0.35000000000000003s">
+    </div><div class="park-card open" id="pc40" style="animation-delay:0.35000000000000003s">
       <div class="park-header been " onclick="toggleCard(40)">
         <div>
           <div class="park-name">Kerr Lake State Recreation Area</div>
@@ -2121,6 +2297,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 38</span>
         <span class="trip-note">Trip #140 — Satterwhite Point JC Cooper Camp. LOVED this waterfront!</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(40,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(40,0)" title="Remove">✕</button>
@@ -2182,6 +2359,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 20</span>
         <span class="trip-note">It was way out there for stargazing nothing special</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776963732011,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(1776963732011,0)" title="Remove">✕</button>
@@ -2243,6 +2421,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         
         <span class="trip-note">Trip #8 not very nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(21,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(21,0)" title="Remove">✕</button>
@@ -2304,6 +2483,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 45?</span>
         <span class="trip-note">Trip #3</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(18,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,0)" title="Remove">✕</button>
@@ -2314,6 +2494,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 47</span>
         <span class="trip-note">Trip #86 — very good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(18,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,2)" title="Remove">✕</button>
@@ -2324,6 +2505,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 47</span>
         <span class="trip-note">Trip #104 — excellent</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(18,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,3)" title="Remove">✕</button>
@@ -2334,6 +2516,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 46</span>
         <span class="trip-note">Trip #109 — great</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(18,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,4)" title="Remove">✕</button>
@@ -2344,6 +2527,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 31</span>
         <span class="trip-note">Trip #131 — private</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(18,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,5)" title="Remove">✕</button>
@@ -2354,6 +2538,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #144 — valentines weekend</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(18,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,6)" title="Remove">✕</button>
@@ -2364,6 +2549,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 3</span>
         <span class="trip-note">Trip #145 — not bad, ok site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(18,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(18,7)" title="Remove">✕</button>
@@ -2425,6 +2611,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 29</span>
         <span class="trip-note">Trip #14</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(20,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(20,0)" title="Remove">✕</button>
@@ -2486,6 +2673,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 46</span>
         
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(27,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(27,1)" title="Remove">✕</button>
@@ -2496,6 +2684,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 67</span>
         <span class="trip-note">Trip #133 — waterfront</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(27,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(27,0)" title="Remove">✕</button>
@@ -2506,6 +2695,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 6 nights</span>
         <span class="trip-site">Site 104</span>
         <span class="trip-note">Trip #146 — April 14–20</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(27,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(27,1)" title="Remove">✕</button>
@@ -2516,6 +2706,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site 104</span>
         <span class="trip-note">With Mark &amp; Sheryl in Site 103</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(27,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(27,0)" title="Remove">✕</button>
@@ -2576,6 +2767,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="trip-date-badge">📅 Aug 19, 2012 → Aug 21, 2012</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site ?</span>
+        
         
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776821921700,0)" title="Edit">✏️</button>
@@ -2638,6 +2830,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         
         <span class="trip-note">Trip #10</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(17,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,0)" title="Remove">✕</button>
@@ -2648,6 +2841,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 71</span>
         <span class="trip-note">Trip #38</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(17,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,1)" title="Remove">✕</button>
@@ -2658,6 +2852,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 72</span>
         <span class="trip-note">Trip #61 — best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(17,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,2)" title="Remove">✕</button>
@@ -2668,6 +2863,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 11</span>
         <span class="trip-note">Trip #96 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(17,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,5)" title="Remove">✕</button>
@@ -2678,6 +2874,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 16</span>
         <span class="trip-note">Trip #116 — Xmas</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(17,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,3)" title="Remove">✕</button>
@@ -2688,6 +2885,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 72</span>
         <span class="trip-note">Trip #118 — good, hard to park</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(17,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(17,4)" title="Remove">✕</button>
@@ -2749,6 +2947,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 77</span>
         <span class="trip-note">Trip #114 — top site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(14,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(14,0)" title="Remove">✕</button>
@@ -2810,6 +3009,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 369 nights</span>
         <span class="trip-site">Site 28</span>
         <span class="trip-note">Trip #147 — June 1–5</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(28,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(28,0)" title="Remove">✕</button>
@@ -2820,6 +3020,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 29</span>
         <span class="trip-note">Trip #151 — excellent! Go for 25 next.</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(28,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(28,1)" title="Remove">✕</button>
@@ -2881,6 +3082,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site best site</span>
         <span class="trip-note">Trip #59</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(23,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(23,0)" title="Remove">✕</button>
@@ -2942,6 +3144,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         
         <span class="trip-note">That was the day we picked our trailer up</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776947379017,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(1776947379017,0)" title="Remove">✕</button>
@@ -3003,6 +3206,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 55</span>
         <span class="trip-note">Trip #119 — tight spot</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(11,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(11,0)" title="Remove">✕</button>
@@ -3064,6 +3268,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 12</span>
         <span class="trip-note">Trip #122 — not best, own 6 sites</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(12,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(12,0)" title="Remove">✕</button>
@@ -3125,6 +3330,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 11</span>
         <span class="trip-note">Trip #47</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(10,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(10,0)" title="Remove">✕</button>
@@ -3186,6 +3392,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 12</span>
         <span class="trip-note">Trip #51 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,0)" title="Remove">✕</button>
@@ -3196,6 +3403,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 60</span>
         <span class="trip-note">Trip #76</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,1)" title="Remove">✕</button>
@@ -3206,6 +3414,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 60</span>
         <span class="trip-note">Trip #99</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,2)" title="Remove">✕</button>
@@ -3216,6 +3425,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 60</span>
         <span class="trip-note">Trip #97</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,3)" title="Remove">✕</button>
@@ -3226,6 +3436,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 60</span>
         <span class="trip-note">Trip #102</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,4)" title="Remove">✕</button>
@@ -3236,6 +3447,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 62</span>
         <span class="trip-note">Trip #105 — excellent</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,5)" title="Remove">✕</button>
@@ -3246,6 +3458,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 60</span>
         <span class="trip-note">Trip #110 — beautiful</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,6)" title="Remove">✕</button>
@@ -3256,6 +3469,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 60</span>
         <span class="trip-note">Trip #120</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,7)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,7)" title="Remove">✕</button>
@@ -3266,6 +3480,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 60</span>
         <span class="trip-note">Trip #141 — beautiful fall colors</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(7,8)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(7,9)" title="Remove">✕</button>
@@ -3327,6 +3542,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 21</span>
         <span class="trip-note">Trip #75 — not private</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(22,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(22,0)" title="Remove">✕</button>
@@ -3388,6 +3604,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
         <span class="trip-note">Trip #13</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(9,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(9,0)" title="Remove">✕</button>
@@ -3398,6 +3615,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 8</span>
         <span class="trip-note">Trip #46 — great</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(9,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(9,1)" title="Remove">✕</button>
@@ -3408,6 +3626,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 1</span>
         <span class="trip-note">Trip #69 — great view</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(9,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(9,2)" title="Remove">✕</button>
@@ -3469,6 +3688,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
         <span class="trip-note">Trip #7</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,0)" title="Remove">✕</button>
@@ -3479,6 +3699,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 22</span>
         <span class="trip-note">Trip #58 — no shade</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,1)" title="Remove">✕</button>
@@ -3489,6 +3710,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 22</span>
         <span class="trip-note">Trip #67 — no shade. Site 24 is best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,2)" title="Remove">✕</button>
@@ -3499,6 +3721,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 43</span>
         <span class="trip-note">Trip #71 — with sewer</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,3)" title="Remove">✕</button>
@@ -3509,6 +3732,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 14 nights</span>
         <span class="trip-site">Site 22</span>
         <span class="trip-note">Trip #74</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,4)" title="Remove">✕</button>
@@ -3519,6 +3743,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 24</span>
         <span class="trip-note">Trip #81 — best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,5)" title="Remove">✕</button>
@@ -3529,6 +3754,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 38</span>
         <span class="trip-note">Trip #94 — excellent</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,6)" title="Remove">✕</button>
@@ -3539,6 +3765,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 36</span>
         <span class="trip-note">Trip #106</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,7)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,7)" title="Remove">✕</button>
@@ -3549,6 +3776,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 7</span>
         <span class="trip-note">Trip #115</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,8)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,8)" title="Remove">✕</button>
@@ -3559,6 +3787,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 12+13</span>
         <span class="trip-note">Trip #142-buddy sites 12 &amp; 13, excellent esp 13</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,9)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,9)" title="Remove">✕</button>
@@ -3620,6 +3849,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 49</span>
         <span class="trip-note">Trip #84 — With Mother</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(24,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(24,0)" title="Remove">✕</button>
@@ -3681,6 +3911,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 24</span>
         <span class="trip-note">Trip #132 — good!</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(13,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(13,0)" title="Remove">✕</button>
@@ -3742,6 +3973,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         
         <span class="trip-note">Trip #6</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,1)" title="Remove">✕</button>
@@ -3752,6 +3984,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         
         <span class="trip-note">Trip #12</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,2)" title="Remove">✕</button>
@@ -3762,6 +3995,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 30</span>
         <span class="trip-note">Trip #15 — fall weekend</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,3)" title="Remove">✕</button>
@@ -3772,6 +4006,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 18</span>
         <span class="trip-note">Trip #20</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,6)" title="Remove">✕</button>
@@ -3782,6 +4017,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 30</span>
         <span class="trip-note">Trip #23 nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,7)" title="Remove">✕</button>
@@ -3792,6 +4028,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 65</span>
         <span class="trip-note">Trip #27 — nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,8)" title="Remove">✕</button>
@@ -3802,6 +4039,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 43</span>
         <span class="trip-note">Trip #32 — ok</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,9)" title="Remove">✕</button>
@@ -3812,6 +4050,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 18</span>
         <span class="trip-note">Trip #36 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,7)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,10)" title="Remove">✕</button>
@@ -3822,6 +4061,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 17</span>
         <span class="trip-note">Trip #39 — ok</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,8)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,11)" title="Remove">✕</button>
@@ -3832,6 +4072,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 88</span>
         <span class="trip-note">Trip #42 — best site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,9)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,12)" title="Remove">✕</button>
@@ -3842,6 +4083,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 65</span>
         <span class="trip-note">Trip #49 — nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,10)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,13)" title="Remove">✕</button>
@@ -3852,6 +4094,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 88</span>
         <span class="trip-note">Trip #52 — best site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,11)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,14)" title="Remove">✕</button>
@@ -3862,6 +4105,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 96</span>
         <span class="trip-note">Trip #62 — ok</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,12)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,16)" title="Remove">✕</button>
@@ -3872,6 +4116,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 42</span>
         <span class="trip-note">Trip #64 — narrow, just ok</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,13)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,17)" title="Remove">✕</button>
@@ -3882,6 +4127,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 88</span>
         <span class="trip-note">Trip #72</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,14)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,18)" title="Remove">✕</button>
@@ -3892,6 +4138,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 13 nights</span>
         <span class="trip-site">Site 16</span>
         <span class="trip-note">Trip #112 — ok but not private</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,15)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,19)" title="Remove">✕</button>
@@ -3902,6 +4149,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 53</span>
         <span class="trip-note">Trip #125 — very nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,16)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,20)" title="Remove">✕</button>
@@ -3912,6 +4160,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 53</span>
         <span class="trip-note">Trip #134 — very nice, waterfront</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1,17)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(1,22)" title="Remove">✕</button>
@@ -3954,7 +4203,7 @@ html { -webkit-overflow-scrolling: touch; }
           
         </div>
         <div class="info-grid">
-          
+          <div class="info-block"><label>✅ Good Sites</label><p>61-53 by water Good.22 Pull through. 24,32 good. 27,28,43 ok. 25 best,33 very good.  40,41,42 ok by water</p></div>
           <div class="info-block"><label>🏕 Sites We've Stayed</label><p>50</p></div>
           
           
@@ -3972,6 +4221,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span class="trip-date-badge">📅 Jun 15, 2017 → Jun 17, 2017</span>
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 50</span>
+        
         
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776945920611,0)" title="Edit">✏️</button>
@@ -4034,6 +4284,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 53</span>
         <span class="trip-note">Very nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(3,0)" title="Remove">✕</button>
@@ -4044,6 +4295,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #21</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,0)" title="Remove">✕</button>
@@ -4054,6 +4306,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #24 — best site, cold</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,2)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,1)" title="Remove">✕</button>
@@ -4064,6 +4317,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #29 great</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,3)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,2)" title="Remove">✕</button>
@@ -4074,6 +4328,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 1 night</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #33 — best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,4)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,3)" title="Remove">✕</button>
@@ -4084,6 +4339,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #40 — great</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,5)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,4)" title="Remove">✕</button>
@@ -4094,6 +4350,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #50 — best site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,6)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,5)" title="Remove">✕</button>
@@ -4104,6 +4361,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 56</span>
         <span class="trip-note">Trip #53 — large, not private.</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,7)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,6)" title="Remove">✕</button>
@@ -4114,6 +4372,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #56</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,8)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,8)" title="Remove">✕</button>
@@ -4124,6 +4383,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 47</span>
         <span class="trip-note">Trip #63 — not good, inside, exposed</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,9)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,9)" title="Remove">✕</button>
@@ -4134,6 +4394,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #68 — best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,10)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,10)" title="Remove">✕</button>
@@ -4144,6 +4405,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #77 — best</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,11)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,11)" title="Remove">✕</button>
@@ -4154,6 +4416,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #78 I don't have actual date</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,12)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,12)" title="Remove">✕</button>
@@ -4164,6 +4427,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #79  I don't have actual date</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,13)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,13)" title="Remove">✕</button>
@@ -4174,6 +4438,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 44</span>
         <span class="trip-note">Trip #80 — wet</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,14)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,14)" title="Remove">✕</button>
@@ -4184,6 +4449,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #98</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,15)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,15)" title="Remove">✕</button>
@@ -4194,6 +4460,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 46</span>
         <span class="trip-note">Trip #101</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,16)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,16)" title="Remove">✕</button>
@@ -4204,6 +4471,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 44</span>
         <span class="trip-note">Trip #103 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,17)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,17)" title="Remove">✕</button>
@@ -4214,6 +4482,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 2 nights</span>
         <span class="trip-site">Site 45</span>
         <span class="trip-note">Trip #117 — best site</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,18)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,18)" title="Remove">✕</button>
@@ -4224,6 +4493,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 5 nights</span>
         <span class="trip-site">Site 41</span>
         <span class="trip-note">Trip #121 — very nice</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,19)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,19)" title="Remove">✕</button>
@@ -4234,6 +4504,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 37</span>
         <span class="trip-note">Trip #130 — good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(3,20)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(3,20)" title="Remove">✕</button>
@@ -4295,6 +4566,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 8 nights</span>
         <span class="trip-site">Site 35E</span>
         <span class="trip-note">Trip #141</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776970763557,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(1776970763557,0)" title="Remove">✕</button>
@@ -4356,6 +4628,7 @@ html { -webkit-overflow-scrolling: touch; }
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 21</span>
         <span class="trip-note">good</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(1776961962322,0)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(1776961962322,0)" title="Remove">✕</button>
@@ -4391,14 +4664,16 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Paynes Prairie State Park</div>
           <div class="card-date">Jun 24, 2026 – Jun 28, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 29 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 28 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 46</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1776893028104)">✏️ Edit</button>
+        <button class="btn-sm" onclick="startLogDrive(1776893028104)" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss);">🚗 Log drive</button>
         <button class="btn-sm" onclick="deleteUpcoming(1776893028104)">Cancel Trip</button>
       </div>
     </div><div class="entry-card">
@@ -4407,14 +4682,16 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Stephen Foster Folk Culture State Park</div>
           <div class="card-date">Sep 3, 2026 – Sep 7, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 100 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 99 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 4</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1777250533170)">✏️ Edit</button>
+        <button class="btn-sm" onclick="startLogDrive(1777250533170)" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss);">🚗 Log drive</button>
         <button class="btn-sm" onclick="deleteUpcoming(1777250533170)">Cancel Trip</button>
       </div>
     </div><div class="entry-card">
@@ -4423,14 +4700,16 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Skidaway Island State Park, GA</div>
           <div class="card-date">Oct 3, 2026 – Oct 10, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 130 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 129 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1779843134788)">✏️ Edit</button>
+        <button class="btn-sm" onclick="startLogDrive(1779843134788)" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss);">🚗 Log drive</button>
         <button class="btn-sm" onclick="deleteUpcoming(1779843134788)">Cancel Trip</button>
       </div>
     </div><div class="entry-card">
@@ -4439,14 +4718,16 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Anastasia State Park</div>
           <div class="card-date">Nov 4, 2026 – Nov 8, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 162 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 161 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 97</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1776894047340)">✏️ Edit</button>
+        <button class="btn-sm" onclick="startLogDrive(1776894047340)" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss);">🚗 Log drive</button>
         <button class="btn-sm" onclick="deleteUpcoming(1776894047340)">Cancel Trip</button>
       </div>
     </div><div class="entry-card">
@@ -4455,14 +4736,16 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Silver Springs State Park</div>
           <div class="card-date">Dec 16, 2026 – Dec 20, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 204 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 203 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1776893176171)">✏️ Edit</button>
+        <button class="btn-sm" onclick="startLogDrive(1776893176171)" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss);">🚗 Log drive</button>
         <button class="btn-sm" onclick="deleteUpcoming(1776893176171)">Cancel Trip</button>
       </div>
     </div></div>
@@ -5967,6 +6250,18 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
+<div class="panel" id="panel-map">
+  <div style="background:rgba(245,237,216,.06);border:1px solid rgba(245,237,216,.12);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+    <div id="parkMap" style="height: 520px; width: 100%; position: relative;" class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(168px, 757px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(223px, -354px, 0px) scale(1);"><img alt="" src="./index_files/12.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-370px, -462px, 0px); opacity: 1;"><img alt="" src="./index_files/12(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-114px, -462px, 0px); opacity: 1;"><img alt="" src="./index_files/13.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-370px, -206px, 0px); opacity: 1;"><img alt="" src="./index_files/13(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-114px, -206px, 0px); opacity: 1;"><img alt="" src="./index_files/11.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-370px, -718px, 0px); opacity: 1;"><img alt="" src="./index_files/11(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-114px, -718px, 0px); opacity: 1;"><img alt="" src="./index_files/12(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-626px, -462px, 0px); opacity: 1;"><img alt="" src="./index_files/12(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(142px, -462px, 0px); opacity: 1;"><img alt="" src="./index_files/13(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-626px, -206px, 0px); opacity: 1;"><img alt="" src="./index_files/13(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(142px, -206px, 0px); opacity: 1;"><img alt="" src="./index_files/14.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-370px, 50px, 0px); opacity: 1;"><img alt="" src="./index_files/14(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-114px, 50px, 0px); opacity: 1;"><img alt="" src="./index_files/11(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-626px, -718px, 0px); opacity: 1;"><img alt="" src="./index_files/11(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(142px, -718px, 0px); opacity: 1;"><img alt="" src="./index_files/14(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-626px, 50px, 0px); opacity: 1;"><img alt="" src="./index_files/14(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(142px, 50px, 0px); opacity: 1;"><img alt="" src="./index_files/13(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(398px, -206px, 0px); opacity: 1;"><img alt="" src="./index_files/12(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(398px, -462px, 0px); opacity: 1;"><img alt="" src="./index_files/14(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(398px, 50px, 0px); opacity: 1;"></div><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 17; transform: translate3d(1px, 2px, 0px) scale(2);"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(307px, -505px, 0px); z-index: -505;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(307px, -597px, 0px); z-index: -597;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(289px, -669px, 0px); z-index: -669;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(306px, -481px, 0px); z-index: -481;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(384px, -617px, 0px); z-index: -617;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(292px, -518px, 0px); z-index: -518;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(301px, -531px, 0px); z-index: -531;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(249px, -624px, 0px); z-index: -624;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(330px, -576px, 0px); z-index: -576;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(280px, -610px, 0px); z-index: -610;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(307px, -505px, 0px); z-index: -505;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(218px, -530px, 0px); z-index: -530;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(304px, -526px, 0px); z-index: -526;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(275px, -448px, 0px); z-index: -448;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(309px, -558px, 0px); z-index: -558;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(228px, -637px, 0px); z-index: -637;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(288px, -576px, 0px); z-index: -576;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(278px, -503px, 0px); z-index: -503;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(295px, -447px, 0px); z-index: -447;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(271px, -502px, 0px); z-index: -502;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(303px, -443px, 0px); z-index: -443;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(284px, -457px, 0px); z-index: -457;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(2420px, 221px, 0px); z-index: 221;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(302px, -474px, 0px); z-index: -474;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(374px, -684px, 0px); z-index: -684;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(318px, -437px, 0px); z-index: -437;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(293px, -478px, 0px); z-index: -478;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(305px, -455px, 0px); z-index: -455;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(297px, -470px, 0px); z-index: -470;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(326px, -453px, 0px); z-index: -453;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(319px, -469px, 0px); z-index: -469;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(292px, -504px, 0px); z-index: -504;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(284px, -555px, 0px); z-index: -555;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(307px, -467px, 0px); z-index: -467;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(279px, -439px, 0px); z-index: -439;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(475px, -838px, 0px); z-index: -838;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(277px, -506px, 0px); z-index: -506;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(285px, -495px, 0px); z-index: -495;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(281px, -483px, 0px); z-index: -483;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(299px, -499px, 0px); z-index: -499;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(288px, -487px, 0px); z-index: -487;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(324px, -458px, 0px); z-index: -458;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(290px, -487px, 0px); z-index: -487;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(312px, -562px, 0px); z-index: -562;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(274px, -517px, 0px); z-index: -517;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(312px, -491px, 0px); z-index: -491;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(372px, -654px, 0px); z-index: -654;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(302px, -474px, 0px); z-index: -474;"><div style="background:#c0392b;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(412px, -707px, 0px); z-index: -707;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 13px; height: 13px; transform: translate3d(269px, -498px, 0px); z-index: -498;"><div style="background:#C8872A;width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(2242px, 3391px, 0px) scale(16);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_57.html#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_57.html#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com/" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © <a href="https://openstreetmap.org/">OpenStreetMap</a></div></div></div></div>
+  </div>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:.78rem;color:var(--smoke);padding:4px 2px;margin-bottom:8px;">
+    <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#C8872A;border:2px solid white;margin-right:4px;vertical-align:middle;"></span>Visited</span>
+    <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#c0392b;border:2px solid white;margin-right:4px;vertical-align:middle;"></span>Favorite</span>
+    <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#b5a898;border:2px solid white;margin-right:4px;vertical-align:middle;"></span>Not yet visited</span>
+  </div>
+  <div id="map-status" style="font-size:.75rem;color:var(--smoke);font-style:italic;">50 parks plotted. Click any pin for details.</div>
+</div>
+
 <div class="panel" id="panel-findcamps"><div class="apikey-box" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <p style="margin:0;font-size:.82rem;">🔑 <strong>API Key</strong> — ✅ Set and saved in this browser</p>
     <button onclick="promptForKey()" style="background:rgba(255,255,255,.1);color:var(--fog);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:5px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">🔄 Update key</button>
@@ -6778,7 +7073,7 @@ function migrateWishlist(id) {
 }
 
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal','findcamps'][i]===t));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal','findcamps','map'][i]===t));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+t).classList.add('active');
   if (t === 'triplog') renderTripLog();
@@ -6929,6 +7224,7 @@ function migrateExpired() {
         depart: trip.endDate && trip.endDate !== trip.startDate ? trip.endDate : undefined,
         site:   trip.site || '',
         note:   trip.note || '',
+        driveLog: trip.driveLog || null,
         photo:  null
       });
       state.visited[parkId] = true;
@@ -7087,12 +7383,63 @@ function renderUpcoming() {
         ${t.site ? `<div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site ${esc(t.site)}</strong></div>` : ''}
         ${t.note ? `<div class="card-note">${esc(t.note)}</div>` : ''}
       </div>
+      ${t.driveLog?`<div style="font-size:.78rem;color:var(--moss);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:4px;">🚗 Actual drive: <strong>${t.driveLog.miles} miles</strong>${(t.driveLog.hours||t.driveLog.minutes)?' · '+(t.driveLog.hours?t.driveLog.hours+'h ':'')+( t.driveLog.minutes?t.driveLog.minutes+' min':''):''}${t.driveLog.note?' · '+esc(t.driveLog.note):''}</div>`:''}
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(${t.id})">✏️ Edit</button>
+        <button class="btn-sm" onclick="startLogDrive(${t.id})" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss);">🚗 Log drive</button>
         <button class="btn-sm" onclick="deleteUpcoming(${t.id})">Cancel Trip</button>
       </div>
     </div>`;
   }).join('');
+}
+
+function startLogDrive(id) {
+  window._loggingDriveId = id;
+  const t = (state.upcoming||[]).find(x=>x.id===id);
+  if(!t) return;
+  const existing = t.driveLog||{};
+  const bg = document.getElementById('driveLogBg');
+  if(bg) {
+    document.getElementById('dl-park').textContent = t.parkName;
+    document.getElementById('dl-miles').value = existing.miles||'';
+    document.getElementById('dl-hours').value = existing.hours||'';
+    document.getElementById('dl-minutes').value = existing.minutes||'';
+    document.getElementById('dl-note').value = existing.note||'';
+    bg.style.display = 'flex';
+    document.getElementById('dl-miles').focus();
+  }
+}
+
+function saveDriveLog() {
+  const id = window._loggingDriveId;
+  const miles = parseInt(document.getElementById('dl-miles').value)||0;
+  const hours = parseInt(document.getElementById('dl-hours').value)||0;
+  const minutes = parseInt(document.getElementById('dl-minutes').value)||0;
+  const note = document.getElementById('dl-note').value.trim();
+  if(!miles) { showToast('Please enter the actual miles.'); return; }
+  const idx = (state.upcoming||[]).findIndex(x=>x.id===id);
+  if(idx >= 0) {
+    state.upcoming[idx].driveLog = {miles, hours, minutes, note};
+    const parkId = state.upcoming[idx].parkId;
+    if(parkId) {
+      state.parkMileage[parkId] = miles * 2;
+      const park = allParks().find(p=>String(p.id)===String(parkId));
+      if(park) {
+        const timeStr = (hours||minutes)?(hours?hours+'h ':'')+(minutes?minutes+' min':''):'';
+        park.drive = miles+' Miles'+(timeStr?' · '+timeStr:'');
+      }
+    }
+    saveState(); scheduleSyncToCloud();
+    closeDriveLog();
+    renderUpcoming();
+    showToast('Drive logged! 🚗');
+  }
+}
+
+function closeDriveLog() {
+  const bg = document.getElementById('driveLogBg');
+  if(bg) bg.style.display = 'none';
+  window._loggingDriveId = null;
 }
 
 function startEditUpcoming(id) {
@@ -7285,6 +7632,7 @@ function renderParks() {
         <span style="font-size:.72rem;color:var(--smoke);white-space:nowrap">🌙 ${nights} night${nights>1?'s':''}</span>
         ${t.site?`<span class="trip-site">Site ${esc(t.site)}</span>`:''}
         ${t.note?`<span class="trip-note">${esc(t.note)}</span>`:''}
+        ${t.driveLog?`<span style="font-size:.75rem;color:var(--moss);white-space:nowrap;">🚗 ${t.driveLog.miles}mi${(t.driveLog.hours||t.driveLog.minutes)?' · '+(t.driveLog.hours?t.driveLog.hours+'h ':'')+( t.driveLog.minutes?t.driveLog.minutes+'min':''):''}${t.driveLog.note?' · '+esc(t.driveLog.note):''}</span>`:''}
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(${p.id},${ti})" title="Edit">✏️</button>
           ${delBtn}
@@ -7757,6 +8105,7 @@ async function syncToCloud() {
     searchHistory: getHistory(),
     savedRoutes: getSavedRoutes(),
     parkMileage: state.parkMileage||{},
+    parkCoords: state.parkCoords||{},
     lifetimeMiles: state.lifetimeMiles||0,
   };
   try {
@@ -7823,6 +8172,7 @@ async function loadFromCloud() {
         try { localStorage.setItem('tn_saved_routes', JSON.stringify(d.savedRoutes)); } catch(e) {}
       }
       if (d.parkMileage !== undefined) state.parkMileage = d.parkMileage;
+      if (d.parkCoords !== undefined) state.parkCoords = d.parkCoords;
       if (d.lifetimeMiles) state.lifetimeMiles = d.lifetimeMiles;
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
@@ -9285,6 +9635,130 @@ Each campground: {"name":"","location":"city, state","type":"State Park","hookup
 }
 
 
+
+// ── INTERACTIVE MAP ──────────────────────────────
+let _leafletMap = null;
+let _mapInitialized = false;
+
+function initParkMap() {
+  if (_mapInitialized) {
+    setTimeout(() => { if(_leafletMap) _leafletMap.invalidateSize(); }, 200);
+    return;
+  }
+  _mapInitialized = true;
+
+  setTimeout(() => {
+    _leafletMap = L.map('parkMap', {zoomControl: true}).setView([28.5, -82.5], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+      maxZoom: 18
+    }).addTo(_leafletMap);
+
+    _leafletMap.invalidateSize();
+    plotAllParks();
+  }, 250);
+}
+
+function makePinIcon(color) {
+  return L.divIcon({
+    html: '<div style="background:'+color+';width:13px;height:13px;border-radius:50%;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.5);"></div>',
+    iconSize: [13, 13],
+    iconAnchor: [6, 6],
+    className: ''
+  });
+}
+
+function plotAllParks() {
+  if (!_leafletMap) return;
+  const parks = allParks();
+  const cached = state.parkCoords || {};
+  let plotted = 0;
+
+  parks.forEach(p => {
+    if (cached[p.id]) {
+      addParkMarker(p, cached[p.id].lat, cached[p.id].lon);
+      plotted++;
+    }
+  });
+
+  const missing = parks.filter(p => !cached[p.id]);
+  if (missing.length) {
+    const statusEl = document.getElementById('map-status');
+    if (statusEl) statusEl.textContent = plotted + ' parks shown. Locating remaining ' + missing.length + ' parks...';
+    geocodeParksForMap(missing);
+  } else {
+    const statusEl = document.getElementById('map-status');
+    if (statusEl) statusEl.textContent = plotted + ' parks plotted. Click any pin for details.';
+  }
+}
+
+async function geocodeParksForMap(parks) {
+  const key = getOrsKey();
+  if (!key) {
+    const el = document.getElementById('map-status');
+    if (el) el.textContent = 'Set your ORS key in Route Planner to locate all parks.';
+    return;
+  }
+  if (!state.parkCoords) state.parkCoords = {};
+  let done = 0;
+
+  for (const p of parks) {
+    const addr = p.address || (p.name + (p.city ? ', ' + p.city : '') + (p.state ? ' ' + p.state : ''));
+    try {
+      const coords = await geocodeORS(addr, key);
+      state.parkCoords[p.id] = {lat: coords[1], lon: coords[0]};
+      if (_leafletMap) addParkMarker(p, coords[1], coords[0]);
+      done++;
+      const el = document.getElementById('map-status');
+      if (el) el.textContent = 'Locating parks... ' + done + '/' + parks.length;
+      await new Promise(r => setTimeout(r, 600));
+    } catch(e) {}
+  }
+
+  saveState(); scheduleSyncToCloud();
+  const el = document.getElementById('map-status');
+  if (el) el.textContent = Object.keys(state.parkCoords).length + ' parks plotted. Click any pin for details.';
+}
+
+function addParkMarker(park, lat, lon) {
+  if (!_leafletMap) return;
+  const trips = getTrips(park.id);
+  const isFav = !!(state.favorites && state.favorites[park.id]);
+  const visited = trips.length > 0;
+
+  const color = isFav ? '#c0392b' : visited ? '#C8872A' : '#b5a898';
+  const marker = L.marker([lat, lon], {icon: makePinIcon(color)}).addTo(_leafletMap);
+
+  const rating = state.ratings && state.ratings[park.id] ? '★'.repeat(state.ratings[park.id]) : '';
+  const lastTrip = trips.length ? trips[trips.length-1] : null;
+  const lastDate = lastTrip ? (lastTrip.date || '') : '';
+  const drive = park.drive ? '<div style="color:#888;margin-top:3px;">🚗 ' + park.drive + '</div>' : '';
+
+    const popupHtml = [
+    '<div style="font-family:Lato,sans-serif;min-width:190px;line-height:1.5;">',
+    '<div style="font-weight:700;font-size:.95rem;color:#2C1A0E;margin-bottom:2px;">' + park.name + '</div>',
+    park.city ? '<div style="font-size:.78rem;color:#888;margin-bottom:6px;">' + park.city + (park.state ? ', ' + park.state : '') + '</div>' : '',
+    '<div style="display:flex;gap:12px;font-size:.82rem;">',
+    '<span style="color:#3D5A2A;font-weight:700;">' + trips.length + ' trip' + (trips.length !== 1 ? 's' : '') + '</span>',
+    rating ? '<span style="color:#C8872A;">' + rating + '</span>' : '',
+    '</div>',
+    lastDate ? '<div style="font-size:.76rem;color:#888;margin-top:2px;">Last visit: ' + lastDate + '</div>' : '',
+    drive,
+    '<div style="margin-top:8px;"><button onclick="jumpToPark(' + park.id + ')" style="font-size:.75rem;padding:4px 10px;background:#3D5A2A;color:#F5EDD8;border:none;border-radius:3px;cursor:pointer;">View park</button></div>',
+    '</div>'
+  ].join('');
+  marker.bindPopup(popupHtml, {maxWidth: 250});
+}
+function jumpToPark(parkId) {
+  switchTab('parks');
+  setTimeout(function() {
+    var el = document.getElementById('pc' + parkId);
+    if (el) { el.scrollIntoView({behavior:'smooth'}); el.classList.add('open'); }
+  }, 300);
+}
+// ── END MAP ──────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', async () => {
   renderFindPanel();
   document.getElementById('userBar').style.visibility = 'hidden';
@@ -9349,4 +9823,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 </div>
 
 
+
+<!-- Drive Log Modal -->
+<div id="driveLogBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--parchment);border-radius:8px;padding:24px;max-width:380px;width:100%;font-family:-apple-system,Georgia,serif;">
+    <h3 style="margin:0 0 4px;color:var(--bark);font-size:1.1rem;">🚗 Log actual drive</h3>
+    <p id="dl-park" style="margin:0 0 16px;font-size:.85rem;color:var(--smoke);"></p>
+    <div style="margin-bottom:12px;">
+      <label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">Actual miles (one-way)</label>
+      <input id="dl-miles" type="number" min="0" placeholder="e.g. 82" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:1rem;font-family:-apple-system,Georgia,serif;background:white;">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">Drive time</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="dl-hours" type="number" min="0" max="12" placeholder="hrs" style="width:80px;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.95rem;font-family:-apple-system,Georgia,serif;background:white;">
+        <span style="color:var(--smoke);">h</span>
+        <input id="dl-minutes" type="number" min="0" max="59" placeholder="min" style="width:80px;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.95rem;font-family:-apple-system,Georgia,serif;background:white;">
+        <span style="color:var(--smoke);">min</span>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">Note (optional)</label>
+      <input id="dl-note" type="text" placeholder="e.g. heavy traffic on I-95" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="closeDriveLog()" style="padding:8px 16px;background:transparent;border:1px solid var(--fog);border-radius:4px;cursor:pointer;font-family:-apple-system,Georgia,serif;">Cancel</button>
+      <button onclick="saveDriveLog()" style="padding:8px 20px;background:var(--moss);color:var(--cream);border:none;border-radius:4px;cursor:pointer;font-family:-apple-system,Georgia,serif;font-weight:500;">💾 Save</button>
+    </div>
+  </div>
+</div>
 </div></body></html>
