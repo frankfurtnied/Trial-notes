@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_37.html -->
+<!-- saved from url=(0069)file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_49.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -242,6 +242,14 @@ html { -webkit-overflow-scrolling: touch; }
 </style>
 </head>
 <body>
+<div id="offline-banner" style="display:none;background:#b84040;color:white;text-align:center;padding:8px;font-size:.82rem;font-family:-apple-system,Georgia,serif;position:sticky;top:0;z-index:999;">
+  You are offline — saved campgrounds, routes and diary still available. New searches require internet.
+</div>
+<script>
+  window.addEventListener("online", function(){document.getElementById("offline-banner").style.display="none";});
+  window.addEventListener("offline", function(){document.getElementById("offline-banner").style.display="block";});
+  if(!navigator.onLine){document.getElementById("offline-banner").style.display="block";}
+</script>
 <div class="app">
 <header>
   <div class="logo-row"><span style="font-size:1.9rem">🌲</span><h1><em>Trail Notes</em></h1><span style="font-size:1.9rem">🌲</span></div>
@@ -260,7 +268,8 @@ html { -webkit-overflow-scrolling: touch; }
     <div class="stat"><div class="stat-num">50</div><div class="stat-label">Parks Listed</div></div>
     <div class="stat"><div class="stat-num">153</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-num">855</div><div class="stat-label">Nights Camped</div></div>
-    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Upcoming</div></div>
+    <div class="stat"><div class="stat-num">8,788</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;"><button id="calc-miles-btn" onclick="calculateAllMileage()" style="font-size:.58rem;padding:1px 6px;background:transparent;border:1px solid rgba(200,135,42,.5);color:var(--amber);border-radius:3px;cursor:pointer;font-family:-apple-system,Georgia,serif;">🔄 recalc</button><div id="calc-miles-prog" style="font-size:.58rem;color:var(--smoke);margin-top:1px;"></div></div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Upcoming</div></div>
     <div class="stat"><div class="stat-num">0</div><div class="stat-label">Journal Entries</div></div>
     <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Wekiwa Springs State Park</div><div class="stat-sub">21 trips</div></div>
     <div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">Kissimmee Prairie Preserve State Park</div><div class="stat-sub" style="letter-spacing:2px">★★★★★</div></div></div>
@@ -1325,7 +1334,7 @@ html { -webkit-overflow-scrolling: touch; }
       <div class="park-header been " onclick="toggleCard(35)">
         <div>
           <div class="park-name">Fort De Soto</div>
-          <div class="park-sub">📍 <a href="https://www.google.com/maps/dir/?api=1&amp;destination=3500%20Pinellas%20Bayway%20S%2C%20Tierra%20Verde%20FL%2033715" target="_blank" style="color:inherit;text-decoration:underline dotted;cursor:pointer" onclick="event.stopPropagation()" title="Get directions">3500 Pinellas Bayway S, Tierra Verde FL 33715</a>  · 🚗 3 hrs from home</div>
+          <div class="park-sub">📍 <a href="https://www.google.com/maps/dir/?api=1&amp;destination=3500%20Pinellas%20Bayway%20S%2C%20Tierra%20Verde%20FL%2033715" target="_blank" style="color:inherit;text-decoration:underline dotted;cursor:pointer" onclick="event.stopPropagation()" title="Get directions">3500 Pinellas Bayway S, Tierra Verde FL 33715</a>  · 🚗 177 Miles 3 hrs from home</div>
           <div class="park-sub"><a href="https://pinellas.gov/parks/fort-de-soto-park/" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline dotted">🌐 pinellas.gov/parks/fort-de-soto-park/</a></div>
         </div>
         <div class="park-right">
@@ -4375,7 +4384,7 @@ html { -webkit-overflow-scrolling: touch; }
 <div class="panel" id="panel-upcoming">
   <div class="entries-header">
     <span class="entries-title">Upcoming Trips</span>
-    <span class="entry-count" id="upCount">4 booked</span>
+    <span class="entry-count" id="upCount">6 booked</span>
   </div>
   <div id="upcomingList"><div class="entry-card">
       <div class="card-top">
@@ -4383,7 +4392,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Paynes Prairie State Park</div>
           <div class="card-date">Jun 24, 2026 – Jun 28, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 30 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 29 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 46</strong></div>
@@ -4399,7 +4408,7 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Stephen Foster Folk Culture State Park</div>
           <div class="card-date">Sep 3, 2026 – Sep 7, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 101 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 100 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 4</strong></div>
@@ -4412,10 +4421,42 @@ html { -webkit-overflow-scrolling: touch; }
     </div><div class="entry-card">
       <div class="card-top">
         <div>
+          <div class="card-loc">📍 Skidaway Island State Park, GA</div>
+          <div class="card-date">Oct 3, 2026 – Oct 10, 2026</div>
+        </div>
+        <div class="card-badges"><span class="badge bn">In 130 days</span></div>
+      </div>
+      <div class="card-body">
+        <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
+        <div class="card-note">Booked with Keeners</div>
+      </div>
+      <div class="card-foot">
+        <button class="btn-sm" onclick="startEditUpcoming(1779843134788)">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteUpcoming(1779843134788)">Cancel Trip</button>
+      </div>
+    </div><div class="entry-card">
+      <div class="card-top">
+        <div>
+          <div class="card-loc">📍 Skidaway Island State Park</div>
+          <div class="card-date">Oct 3, 2026 – Oct 10, 2026</div>
+        </div>
+        <div class="card-badges"><span class="badge bn">In 130 days</span></div>
+      </div>
+      <div class="card-body">
+        
+        <div class="card-note">Booked with Keeners</div>
+      </div>
+      <div class="card-foot">
+        <button class="btn-sm" onclick="startEditUpcoming(1779844792221)">✏️ Edit</button>
+        <button class="btn-sm" onclick="deleteUpcoming(1779844792221)">Cancel Trip</button>
+      </div>
+    </div><div class="entry-card">
+      <div class="card-top">
+        <div>
           <div class="card-loc">📍 Anastasia State Park</div>
           <div class="card-date">Nov 4, 2026 – Nov 8, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 163 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 162 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 97</strong></div>
@@ -4431,10 +4472,10 @@ html { -webkit-overflow-scrolling: touch; }
           <div class="card-loc">📍 Silver Springs State Park</div>
           <div class="card-date">Dec 16, 2026 – Dec 20, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 205 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 204 days</span></div>
       </div>
       <div class="card-body">
-        <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 7</strong></div>
+        <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
       <div class="card-foot">
@@ -5953,7 +5994,7 @@ html { -webkit-overflow-scrolling: touch; }
       <h3>🔍 Find Campgrounds</h3>
       <div class="pl-section">
         <label class="pl-label">Destination or region</label>
-        <input class="pl-input" id="sq-dest" value="Blue Ridge Parkway NC" placeholder="e.g. Blue Ridge Parkway NC, Ocala National Forest FL" oninput="PL.search.dest=this.value">
+        <input class="pl-input" id="sq-dest" value="" placeholder="e.g. Blue Ridge Parkway NC, Ocala National Forest FL" oninput="PL.search.dest=this.value">
       </div>
 
       <div class="pl-section">
@@ -5984,7 +6025,7 @@ html { -webkit-overflow-scrolling: touch; }
               
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(1779675171350)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="loadSavedRoute(1779675171350)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 12px;font-size:.75rem;cursor:pointer;">💾 Show</button>
               <button onclick="removeRoute(1779675171350)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
             </div>
           </div>
@@ -5998,7 +6039,7 @@ html { -webkit-overflow-scrolling: touch; }
               
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(1779669515081)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="loadSavedRoute(1779669515081)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 12px;font-size:.75rem;cursor:pointer;">💾 Show</button>
               <button onclick="removeRoute(1779669515081)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
             </div>
           </div>
@@ -6012,7 +6053,7 @@ html { -webkit-overflow-scrolling: touch; }
               <div style="font-size:.75rem;color:var(--smoke);">📅 2026-09-15 → 2026-10-20</div>
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(1779588945885)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="loadSavedRoute(1779588945885)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 12px;font-size:.75rem;cursor:pointer;">💾 Show</button>
               <button onclick="removeRoute(1779588945885)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
             </div>
           </div>
@@ -6026,7 +6067,7 @@ html { -webkit-overflow-scrolling: touch; }
               <div style="font-size:.75rem;color:var(--smoke);">📅 2026-10-01 → 2026-10-12</div>
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(1779448879212)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">🔄 Load</button>
+              <button onclick="loadSavedRoute(1779448879212)" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 12px;font-size:.75rem;cursor:pointer;">💾 Show</button>
               <button onclick="removeRoute(1779448879212)" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">✕</button>
             </div>
           </div>
@@ -6038,7 +6079,7 @@ html { -webkit-overflow-scrolling: touch; }
         </div>
     </div></div>
 
-<div class="toast" id="toast">Welcome back! 🌲</div>
+<div class="toast" id="toast">Park updated ✓</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -6845,6 +6886,7 @@ function addTrip(parkId) {
   if (departEl && departEl.value) entry.depart = departEl.value;
   state.tripLogs[parkId].push(entry);
   state.visited[parkId]=true;
+  calcNewParkMileage(parkId); // auto-calculate mileage for this park if not yet known
   dateEl.value=''; if(departEl) departEl.value=''; siteEl.value=''; noteEl.value='';
   saveState(); renderAll();
   setTimeout(()=>{ const c=document.getElementById('pc'+parkId); if(c&&!c.classList.contains('open'))c.classList.add('open'); },50);
@@ -7146,10 +7188,15 @@ function renderStats() {
 
   const stars = n => '★'.repeat(n) + '☆'.repeat(5-n);
 
+  const calcBtn=`<button id="calc-miles-btn" onclick="calculateAllMileage()" style="font-size:.58rem;padding:1px 6px;background:transparent;border:1px solid rgba(200,135,42,.5);color:var(--amber);border-radius:3px;cursor:pointer;font-family:-apple-system,Georgia,serif;">${Object.keys(state.parkMileage||{}).length?'&#128260; recalc':'&#128290; calculate'}</button><div id="calc-miles-prog" style="font-size:.58rem;color:var(--smoke);margin-top:1px;"></div>`;
+
+  const totalMilesDriven = getTotalMilesDriven();
+
   document.getElementById('statsBar').innerHTML = `
     <div class="stat"><div class="stat-num">${parks.length}</div><div class="stat-label">Parks Listed</div></div>
     <div class="stat"><div class="stat-num">${totalTrips}</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-num">${totalNights}</div><div class="stat-label">Nights Camped</div></div>
+    <div class="stat"><div class="stat-num">${totalMilesDriven>0?totalMilesDriven.toLocaleString():'—'}</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;">${calcBtn}</div></div>
     <div class="stat"><div class="stat-num">${upcomingCount}</div><div class="stat-label">Upcoming</div></div>
     <div class="stat"><div class="stat-num">${state.entries.length}</div><div class="stat-label">Journal Entries</div></div>
     ${mostVisited?`<div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(mostVisited)}</div><div class="stat-sub">${mostVisitedCount} trips</div></div>`:''}
@@ -7677,6 +7724,7 @@ const SUPABASE_KEY = 'sb_publishable_U7lDVjJvpZmQ6x48q-cFIw_HY-7qXQv';
 let currentUser = null;
 let accessToken  = localStorage.getItem('sb_access_token') || null;
 let syncTimeout  = null;
+let _homeCoords = null; // cached Edgewater home coordinates
 let editingUpcomingId = null;
 
 async function sbFetch(path, options = {}) {
@@ -7726,6 +7774,8 @@ async function syncToCloud() {
     savedCampgrounds: getSaved(),
     searchHistory: getHistory(),
     savedRoutes: getSavedRoutes(),
+    parkMileage: state.parkMileage||{},
+    lifetimeMiles: state.lifetimeMiles||0,
   };
   try {
     // Check if a row already exists for this user
@@ -7790,6 +7840,8 @@ async function loadFromCloud() {
       if (d.savedRoutes !== undefined) {
         try { localStorage.setItem('tn_saved_routes', JSON.stringify(d.savedRoutes)); } catch(e) {}
       }
+      if (d.parkMileage !== undefined) state.parkMileage = d.parkMileage;
+      if (d.lifetimeMiles) state.lifetimeMiles = d.lifetimeMiles;
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
 }
@@ -8091,6 +8143,94 @@ Return ONLY a JSON array, no markdown:
 }
 
 
+function getTotalMilesDriven(){
+  var total=0;
+  Object.entries(state.tripLogs||{}).forEach(function(entry){
+    var parkId=entry[0], trips=entry[1];
+    var miles=state.parkMileage[parkId];
+    if(miles&&trips&&trips.length) total+=miles*trips.length;
+  });
+  return Math.round(total);
+}
+
+function parseDriveMiles(driveStr){
+  if(!driveStr)return null;
+  var m=driveStr.match(/(\d+)\s*Miles/i);
+  return m?parseInt(m[1]):null;
+}
+
+async function calculateAllMileage(){
+  const orsKey=getOrsKey();
+  if(!orsKey){alert('Please set your ORS API key first (in Route Planner).');return;}
+  const allParks=[...BASE_PARKS,...(state.customParks||[])];
+  const tripParkIds=Object.keys(state.tripLogs||{}).filter(id=>(state.tripLogs[id]||[]).length>0);
+  const toCalc=tripParkIds.filter(id=>!state.parkMileage[id]);
+  if(!toCalc.length){showToast('All mileage already calculated!');return;}
+
+  const btn=document.getElementById('calc-miles-btn');
+  const prog=document.getElementById('calc-miles-prog');
+  if(btn)btn.disabled=true;
+
+  var processed=0;
+  for(var i=0;i<toCalc.length;i++){
+    var parkId=toCalc[i];
+    var park=allParks.find(function(p){return String(p.id)===String(parkId);});
+    if(!park){processed++;continue;}
+
+    if(prog)prog.textContent='Calculating: '+processed+'/'+toCalc.length+' parks...';
+
+    // Try to use existing drive field first
+    var onewayMiles=parseDriveMiles(park.drive||'');
+    if(!onewayMiles){
+      // Fall back to ORS
+      try{
+        if(!_homeCoords) _homeCoords=await geocodeORS('2929 Travelers Palm Dr, Edgewater FL 32141',orsKey);
+        var addr=park.address||(park.name+', '+( park.city||'')+(park.state?' '+park.state:''));
+        var parkCoords=await geocodeORS(addr,orsKey);
+        var rResp=await fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':orsKey},
+          body:JSON.stringify({coordinates:[_homeCoords,parkCoords]})
+        });
+        var rData=await rResp.json();
+        if(!rData.error) onewayMiles=Math.round(rData.routes[0].summary.distance/1000*0.621371);
+        await new Promise(function(r){setTimeout(r,1200);});
+      }catch(e){}
+    }
+    if(onewayMiles) state.parkMileage[parkId]=onewayMiles*2;
+    processed++;
+  }
+
+  saveState();scheduleSyncToCloud();
+  if(btn){btn.disabled=false;btn.textContent='✅ Mileage calculated';}
+  if(prog)prog.textContent='Done! '+getTotalMilesDriven().toLocaleString()+' total miles driven.';
+  renderAll();
+}
+
+async function calcNewParkMileage(parkId){
+  if(state.parkMileage[parkId])return; // already known
+  const orsKey=getOrsKey();
+  const allParks=[...BASE_PARKS,...(state.customParks||[])];
+  const park=allParks.find(function(p){return String(p.id)===String(parkId);});
+  if(!park)return;
+  var onewayMiles=parseDriveMiles(park.drive||'');
+  if(!onewayMiles&&orsKey){
+    try{
+      if(!_homeCoords) _homeCoords=await geocodeORS('2929 Travelers Palm Dr, Edgewater FL 32141',orsKey);
+      var addr=park.address||(park.name+', '+(park.city||'')+(park.state?' '+park.state:''));
+      var parkCoords=await geocodeORS(addr,orsKey);
+      var rResp=await fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':orsKey},
+        body:JSON.stringify({coordinates:[_homeCoords,parkCoords]})
+      });
+      var rData=await rResp.json();
+      if(!rData.error) onewayMiles=Math.round(rData.routes[0].summary.distance/1000*0.621371);
+    }catch(e){}
+  }
+  if(onewayMiles){state.parkMileage[parkId]=onewayMiles*2;saveState();scheduleSyncToCloud();}
+}
+
 function getHistory() { try { return JSON.parse(localStorage.getItem('tn_srch_hist')||'[]'); } catch(e) { return []; } }
 function addHistory(dest,state,results) {
   const h=getHistory().filter(x=>!(x.dest===dest&&x.state===state));
@@ -8107,6 +8247,8 @@ function loadHistoryResult(idx){
     renderFindPanel();
     return;
   }
+  PL.mode='quick';          // ensure we're in quick search mode
+  PL.routeData=null;        // clear any route data so route panel doesn't show
   PL.search.dest=h[idx].dest;
   PL.search.filterState=h[idx].state||'';
   PL.results=h[idx].results||[];
@@ -8148,6 +8290,29 @@ function removeRoute(id){
   scheduleSyncToCloud();
   renderFindPanel();
 }
+function shareRoute(){
+  if(!PL.routeData)return;
+  var d=PL.routeData;
+  var from=d.from||PL.route.from||'Edgewater, FL';
+  var dest=d.destination||PL.route.dest||'';
+  var lines=['Trail Notes - Road Trip Plan','From: '+from+' to '+dest];
+  if(d.totalMiles)lines.push(d.totalMiles+' miles total, '+((d.numStops||1)+1)+' driving days','');
+  (d.stops||[]).forEach(function(s){
+    lines.push((s.isDestination?'Destination':'Overnight')+': '+s.city+', '+s.state+' (~'+s.miles+' mi)');
+    if(s.campgrounds&&s.campgrounds.length){
+      s.campgrounds.slice(0,2).forEach(function(cg){lines.push('  - '+cg.name+' ('+cg.type+')');});
+    }
+    lines.push('');
+  });
+  lines.push('Planned with Trail Notes Camping App');
+  var text=lines.join('\n');
+  if(navigator.share){
+    navigator.share({title:'My Road Trip Plan',text:text}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(text).then(function(){showToast('Route copied to clipboard!');});
+  }
+}
+
 function saveCurrentRoute(){
   if(!PL.routeData){return;}
   const name=prompt('Name this route plan:',PL.route.dest||'My Route');
@@ -8344,7 +8509,7 @@ function renderFindPanel() {
               ${r.dates&&r.dates.start?`<div style="font-size:.75rem;color:var(--smoke);">&#128197; ${esc2(r.dates.start)}${r.dates.end?' &rarr; '+esc2(r.dates.end):''}</div>`:''}
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px;">
-              <button onclick="loadSavedRoute(${r.id})" style="background:var(--moss);color:var(--cream);border:none;border-radius:3px;padding:5px 10px;font-size:.75rem;cursor:pointer;">&#128260; Load</button>
+              <button onclick="loadSavedRoute(${r.id})" style="background:${PL._shownRouteId===r.id&&PL.routeData?'var(--amber)':'var(--moss)'};color:var(--cream);border:none;border-radius:3px;padding:5px 12px;font-size:.75rem;cursor:pointer;">${PL._shownRouteId===r.id&&PL.routeData?'&#128065; Hide':'&#128190; Show'}</button>
               <button onclick="removeRoute(${r.id})" style="background:transparent;border:1px solid rgba(200,50,50,.4);color:rgba(200,100,100,.8);border-radius:3px;padding:5px 8px;font-size:.75rem;cursor:pointer;">&#10005;</button>
             </div>
           </div>
@@ -8495,6 +8660,47 @@ Return ONLY a valid JSON array, no markdown. Each object:
 }
 
 
+function getReservationUrl(cg){
+  var name=encodeURIComponent(cg.name||'');
+  var loc=(cg.location||'').split(',');
+  var state=(loc[loc.length-1]||'').trim().toUpperCase();
+  var isPrivate=/(private)/i.test(cg.type||'');
+  if(isPrivate&&cg.website)return cg.website;
+  var systems={
+    FL:'https://www.reserveamerica.com/explore/search-results?state=FL&query='+name,
+    GA:'https://gastateparks.org/reservations',
+    SC:'https://southcarolinaparks.com/reservations',
+    NC:'https://ncparks.gov/camping/reservations',
+    TN:'https://tnstateparks.com/reservations',
+    VA:'https://reservations.dcr.virginia.gov/',
+    WV:'https://wvstateparks.com/reservations',
+    AL:'https://alapark.com/reservations',
+    MS:'https://www.reserveamerica.com/explore/search-results?state=MS&query='+name,
+    TX:'https://texasstateparks.reserveamerica.com/explore/search-results?query='+name,
+    AR:'https://www.reserveamerica.com/explore/search-results?state=AR&query='+name,
+    KY:'https://www.reserveamerica.com/explore/search-results?state=KY&query='+name,
+    NY:'https://www.reserveamerica.com/explore/search-results?state=NY&query='+name,
+    PA:'https://pennsylvaniastateparks.reserveamerica.com/explore/search-results?query='+name,
+    MD:'https://reservations.dnr.maryland.gov/',
+    NH:'https://nhstateparks.org/visit/make-a-reservation',
+    ME:'https://www.reserveamerica.com/explore/search-results?state=ME&query='+name,
+    VT:'https://vtstateparks.com/reservations.html',
+    MA:'https://www.reserveamerica.com/explore/search-results?state=MA&query='+name,
+    CT:'https://www.reserveamerica.com/explore/search-results?state=CT&query='+name,
+    NJ:'https://www.reserveamerica.com/explore/search-results?state=NJ&query='+name,
+    DE:'https://destateparks.com/Reservations',
+    OH:'https://reserveohio.com/explore/search-results?query='+name,
+    MI:'https://midnrreservations.com/explore/search-results?query='+name,
+    WI:'https://wisconsin.goingtocamp.com/',
+    MN:'https://mnrsvp.com/',
+    CA:'https://www.reservecalifornia.com/',
+    OR:'https://oregonstateparks.reserveamerica.com/explore/search-results?query='+name,
+    WA:'https://washington.goingtocamp.com/',
+    CO:'https://coloradostateparks.reserveamerica.com/explore/search-results?query='+name,
+  };
+  return systems[state]||('https://www.recreation.gov/search?q='+name);
+}
+
 function renderCard(cg,i,accent){
   const isState=/(state)/i.test(cg.type||''), isCounty=/(county)/i.test(cg.type||'');
   const typeLabel=isState?'&#127794; State Park':isCounty?'&#127795; County Park':'&#127957; Private';
@@ -8536,13 +8742,113 @@ function renderCard(cg,i,accent){
 function loadSavedRoute(id){
   const r=getSavedRoutes().find(x=>x.id===id);
   if(!r)return;
+  // Toggle — if this route is already showing, hide it
+  if(PL.mode==='route' && PL.routeData && PL._shownRouteId===id){
+    PL.routeData=null;PL.done=false;PL._shownRouteId=null;
+    renderFindPanel();
+    return;
+  }
   PL.mode='route';
   PL.route.dest=r.destination||'';
   PL.route.start=r.dates&&r.dates.start?r.dates.start:'';
   PL.route.end=r.dates&&r.dates.end?r.dates.end:'';
   PL.routeData=r.routeData;
+  PL._shownRouteId=id;
   PL.done=true;PL.err=false;PL.loading=false;
   renderFindPanel();
+}
+
+async function calculateLifetimeMileage(){
+  const orsKey=getOrsKey();
+  if(!orsKey){promptOrsKey();return;}
+  const home='2929 Travelers Palm Dr, Edgewater, FL 32141';
+
+  // Get all parks that have trips
+  const parks=allParks();
+  const parksWithTrips=parks.filter(p=>getTrips(p.id).length>0);
+  if(!parksWithTrips.length){alert('No trips logged yet.');return;}
+
+  // Show progress modal
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML='<div style="background:#2a3d1e;border:1px solid rgba(61,90,42,.5);border-radius:8px;padding:28px 32px;max-width:360px;width:90%;text-align:center;font-family:-apple-system,Georgia,serif;color:var(--cream);">'
+    +'<div style="font-size:1.2rem;font-weight:500;margin-bottom:8px;">&#128506; Calculating Lifetime Mileage</div>'
+    +'<div id="mile-status" style="font-size:.82rem;color:var(--smoke);margin-bottom:16px;">Locating your home address...</div>'
+    +'<div style="background:rgba(255,255,255,.1);border-radius:4px;height:6px;overflow:hidden;">'
+    +'<div id="mile-bar" style="background:var(--amber);height:100%;width:0%;transition:width .3s;"></div>'
+    +'</div>'
+    +'<div id="mile-count" style="font-size:.75rem;color:var(--fog);margin-top:8px;">0 of '+parksWithTrips.length+' parks</div>'
+    +'</div>';
+  document.body.appendChild(overlay);
+
+  function setStatus(msg,pct,count){
+    const s=document.getElementById('mile-status');
+    const b=document.getElementById('mile-bar');
+    const c=document.getElementById('mile-count');
+    if(s)s.textContent=msg;
+    if(b)b.style.width=pct+'%';
+    if(c)c.textContent=count+' of '+parksWithTrips.length+' parks';
+  }
+
+  try{
+    const homeCoords=await geocodeORS(home,orsKey);
+    let totalMiles=0;
+    let skipped=0;
+
+    // Check for cached distances
+    let cached={};
+    try{cached=JSON.parse(localStorage.getItem('tn_park_distances')||'{}');}catch(e){}
+
+    for(let i=0;i<parksWithTrips.length;i++){
+      const park=parksWithTrips[i];
+      const tripCount=getTrips(park.id).length;
+      setStatus('Measuring drive to '+park.name+'...',Math.round((i/parksWithTrips.length)*100),i);
+
+      try{
+        let distMiles;
+        if(cached[park.id]){
+          distMiles=cached[park.id];
+        } else {
+          const addr=park.address||park.name+', Florida';
+          const parkCoords=await geocodeORS(addr,orsKey);
+          const resp=await fetch('https://api.openrouteservice.org/v2/directions/driving-car',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':orsKey},
+            body:JSON.stringify({coordinates:[homeCoords,parkCoords]})
+          });
+          const data=await resp.json();
+          if(data.error)throw new Error(data.error.message);
+          distMiles=Math.round(data.routes[0].summary.distance/1000*0.621371);
+          cached[park.id]=distMiles;
+        }
+        totalMiles+=distMiles*2*tripCount;
+      }catch(e){
+        skipped++;
+        console.warn('Could not calculate distance for '+park.name+':',e.message);
+      }
+
+      // Small delay to avoid rate limiting
+      await new Promise(r=>setTimeout(r,250));
+    }
+
+    // Cache all distances for future use
+    try{localStorage.setItem('tn_park_distances',JSON.stringify(cached));}catch(e){}
+
+    // Save total to state
+    state.lifetimeMiles=Math.round(totalMiles);
+    saveState();
+    document.body.removeChild(overlay);
+
+    const msg='Total lifetime mileage: '+Math.round(totalMiles).toLocaleString()+' miles'
+      +(skipped?' ('+skipped+' park'+(skipped!==1?'s':'')+' could not be measured)':'')
+      +'\n\nThis includes '+parksWithTrips.length+' parks across '+getAllTripsSorted().length+' trips.\n\nSaved to your Miles Driven stat!';
+    alert(msg);
+    renderStats();
+
+  }catch(e){
+    document.body.removeChild(overlay);
+    alert('Could not calculate mileage: '+e.message);
+  }
 }
 
 function cancelSearch(){
@@ -9029,7 +9335,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <input type="file" id="et-file" accept="image/*" style="display:none" onchange="etPhotoChange(event)">
       <button class="btn-o" style="margin-top:5px" onclick="document.getElementById(&#39;et-file&#39;).click()">📷 Choose photo…</button>
       <div id="et-preview" style="display:none;margin-top:8px">
-        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_37.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
+        <img id="et-preview-img" src="file:///Users/martinfelkel/Downloads/index_files/Trail_Notes_with_Planner_37.html" style="max-width:100%;max-height:160px;border-radius:4px;border:1px solid var(--fog)">
         <br><button class="btn-o" style="margin-top:4px;font-size:.78rem" onclick="etClearPhoto()">✕ Remove photo</button>
       </div>
     </div>
@@ -9038,7 +9344,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 <div id="lightbox" class="hidden" onclick="this.classList.add(&#39;hidden&#39;)">
-  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/Trail_Notes_with_Planner_37.html">
+  <img id="lb-img" src="file:///Users/martinfelkel/Downloads/index_files/Trail_Notes_with_Planner_37.html">
 </div>
 
 <!-- AUTH OVERLAY -->
