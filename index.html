@@ -3,8 +3,6 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trail Notes">
@@ -399,7 +397,6 @@ html { -webkit-overflow-scrolling: touch; }
   <div class="tab" onclick="switchTab(&#39;wishlist&#39;)">🌟 Wish List</div>
   <div class="tab" onclick="switchTab(&#39;journal&#39;)">📓 My Journal</div>
   <div class="tab" onclick="switchTab(&#39;findcamps&#39;)">🔍 Find Campgrounds</div>
-  <div class="tab" onclick="switchTab(&#39;map&#39;);initParkMap();">🗺️ Map</div>
 </div>
 
 <div class="panel active" id="panel-parks">
@@ -6087,22 +6084,6 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
-<div class="panel" id="panel-map">
-  <div style="background:rgba(245,237,216,.06);border:1px solid rgba(245,237,216,.12);border-radius:8px;overflow:hidden;margin-bottom:14px;">
-    <div id="parkMap" style="height:520px;width:100%;"></div>
-  </div>
-  <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--smoke);padding:4px 2px;margin-bottom:8px;align-items:center;">
-    <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#e07030;border:2px solid white;color:white;font-size:9px;font-weight:700;">3</span>Visited (shows trip count)</span>
-    <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#e63946;border:2px solid white;color:white;font-size:9px;">♥</span>Favorite</span>
-    <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:#2d6a9f;border:2px solid white;"></span>Not yet visited</span>
-    <span style="font-size:.72rem;font-style:italic;opacity:.7;">Pin locations are approximate</span>
-  </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-  <div id="map-status" style="font-size:.75rem;color:var(--smoke);font-style:italic;"></div>
-  <button onclick="resetMapCoords()" style="font-size:.78rem;padding:5px 14px;background:var(--amber);color:white;border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">🔄 Fix wrong pin locations</button>
-</div>
-</div>
-
 <div class="panel" id="panel-findcamps"><div class="apikey-box" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <p style="margin:0;font-size:.82rem;">🔑 <strong>API Key</strong> — ✅ Set and saved in this browser</p>
     <button onclick="promptForKey()" style="background:rgba(255,255,255,.1);color:var(--fog);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:5px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">🔄 Update key</button>
@@ -6914,7 +6895,7 @@ function migrateWishlist(id) {
 }
 
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal','findcamps','map'][i]===t));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal','findcamps'][i]===t));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+t).classList.add('active');
   if (t === 'triplog') renderTripLog();
