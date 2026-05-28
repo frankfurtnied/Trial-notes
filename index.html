@@ -397,6 +397,7 @@ html { -webkit-overflow-scrolling: touch; }
   <div class="tab" onclick="switchTab(&#39;wishlist&#39;)">🌟 Wish List</div>
   <div class="tab" onclick="switchTab(&#39;journal&#39;)">📓 My Journal</div>
   <div class="tab" onclick="switchTab(&#39;findcamps&#39;)">🔍 Find Campgrounds</div>
+  <div class="tab" onclick="switchTab(&#39;stats&#39;);renderStatsPanel();">📊 Statistics</div>
 </div>
 
 <div class="panel active" id="panel-parks">
@@ -6084,6 +6085,10 @@ html { -webkit-overflow-scrolling: touch; }
   </div>
 </div>
 
+<div class="panel" id="panel-stats">
+  <div id="statsContent" style="padding:4px;"></div>
+</div>
+
 <div class="panel" id="panel-findcamps"><div class="apikey-box" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <p style="margin:0;font-size:.82rem;">🔑 <strong>API Key</strong> — ✅ Set and saved in this browser</p>
     <button onclick="promptForKey()" style="background:rgba(255,255,255,.1);color:var(--fog);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:5px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">🔄 Update key</button>
@@ -6895,7 +6900,7 @@ function migrateWishlist(id) {
 }
 
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal','findcamps'][i]===t));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['parks','upcoming','triplog','wishlist','journal','findcamps','stats'][i]===t));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+t).classList.add('active');
   if (t === 'triplog') renderTripLog();
@@ -9702,6 +9707,169 @@ function resetMapCoords() {
   showToast('Park locations cleared — click Map tab to re-locate.');
 }
 // ── END MAP ──────────────────────────────────────
+
+
+// ── TRIP STATISTICS ──────────────────────────────
+function getParkState(park) {
+  // Extract state abbreviation from address
+  var addr = park.address || '';
+  var m = addr.match(/\b([A-Z]{2})\b(?:\s+\d{5})?/);
+  if (m) return m[1];
+  if (park.state) return park.state;
+  return '?';
+}
+
+function renderStatsPanel() {
+  var el = document.getElementById('statsContent');
+  if (!el) return;
+
+  var allTrips = getAllTripsSorted();
+  var parks = allParks();
+
+  // Trips per year
+  var byYear = {};
+  allTrips.forEach(function(t){
+    if(!t.date) return;
+    var yr = t.date.slice(0,4);
+    byYear[yr] = (byYear[yr]||0) + 1;
+  });
+
+  // Trips per month (favorite month)
+  var byMonth = {};
+  var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  allTrips.forEach(function(t){
+    if(!t.date) return;
+    var mo = parseInt(t.date.slice(5,7)) - 1;
+    if(mo>=0 && mo<12) byMonth[mo] = (byMonth[mo]||0) + 1;
+  });
+  var favMonth = -1, favMonthCount = 0;
+  Object.keys(byMonth).forEach(function(mo){
+    if(byMonth[mo] > favMonthCount){ favMonthCount = byMonth[mo]; favMonth = parseInt(mo); }
+  });
+
+  // States visited
+  var byState = {};
+  parks.forEach(function(p){
+    if(getTrips(p.id).length > 0){
+      var st = getParkState(p);
+      byState[st] = (byState[st]||0) + 1;
+    }
+  });
+  var topState = '', topStateCount = 0;
+  Object.keys(byState).forEach(function(st){
+    if(byState[st] > topStateCount){ topStateCount = byState[st]; topState = st; }
+  });
+  var statesCount = Object.keys(byState).length;
+
+  // Longest drive (park with most miles)
+  var longestPark = '', longestMiles = 0;
+  parks.forEach(function(p){
+    if(getTrips(p.id).length > 0 && p.drive){
+      var m = (p.drive.match(/(\d+)\s*Miles/i));
+      if(m && parseInt(m[1]) > longestMiles){ longestMiles = parseInt(m[1]); longestPark = p.name; }
+    }
+  });
+
+  // Most visited park
+  var mostPark = '', mostCount = 0;
+  parks.forEach(function(p){
+    var c = getTrips(p.id).length;
+    if(c > mostCount){ mostCount = c; mostPark = p.name; }
+  });
+
+  // New parks discovered each year (first trip to each park)
+  var firstVisitYear = {};
+  parks.forEach(function(p){
+    var trips = getTrips(p.id);
+    if(trips.length){
+      var yr = trips[0].date ? trips[0].date.slice(0,4) : null;
+      if(yr) firstVisitYear[p.id] = yr;
+    }
+  });
+  var newParksByYear = {};
+  Object.values(firstVisitYear).forEach(function(yr){
+    newParksByYear[yr] = (newParksByYear[yr]||0) + 1;
+  });
+
+  var years = Object.keys(byYear).sort();
+  var maxYearTrips = Math.max.apply(null, Object.values(byYear));
+
+  // Build HTML
+  var html = '';
+
+  // Headline cards row
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;">';
+  html += statCard('🏕️', mostPark, mostCount + ' trips', 'Most Visited Park');
+  html += statCard('📅', favMonth>=0?monthNames[favMonth]:'—', favMonthCount + ' trips', 'Favorite Month');
+  html += statCard('🚗', longestPark || '—', longestMiles ? longestMiles + ' miles each way' : '', 'Longest Drive');
+  html += statCard('🗺️', topState || '—', statesCount + ' states total', 'Top State');
+  html += '</div>';
+
+  // Trips per year chart
+  html += '<div style="background:var(--parchment);border-radius:8px;padding:20px;margin-bottom:18px;">';
+  html += '<h3 style="font-family:var(--font-heading);font-size:1.1rem;color:var(--bark);margin-bottom:16px;">📈 Trips by Year</h3>';
+  years.forEach(function(yr){
+    var count = byYear[yr];
+    var pct = Math.round((count/maxYearTrips)*100);
+    var newP = newParksByYear[yr] || 0;
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
+    html += '<span style="font-family:var(--font-body);font-weight:700;font-size:.82rem;color:var(--bark);width:42px;">'+yr+'</span>';
+    html += '<div style="flex:1;background:rgba(61,90,42,.12);border-radius:4px;height:22px;position:relative;overflow:hidden;">';
+    html += '<div style="background:var(--amber);height:100%;width:'+pct+'%;border-radius:4px;transition:width .5s;"></div>';
+    html += '<span style="position:absolute;left:8px;top:2px;font-size:.75rem;color:var(--bark);font-weight:700;">'+count+' trip'+(count>1?'s':'')+(newP?' · '+newP+' new park'+(newP>1?'s':''):'')+'</span>';
+    html += '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Season breakdown
+  var seasons = {Spring:0, Summer:0, Fall:0, Winter:0};
+  allTrips.forEach(function(t){
+    if(!t.date) return;
+    var mo = parseInt(t.date.slice(5,7));
+    if(mo>=3 && mo<=5) seasons.Spring++;
+    else if(mo>=6 && mo<=8) seasons.Summer++;
+    else if(mo>=9 && mo<=11) seasons.Fall++;
+    else seasons.Winter++;
+  });
+  var seasonIcons = {Spring:'🌸', Summer:'☀️', Fall:'🍂', Winter:'❄️'};
+  var maxSeason = Math.max.apply(null, Object.values(seasons));
+
+  html += '<div style="background:var(--parchment);border-radius:8px;padding:20px;margin-bottom:18px;">';
+  html += '<h3 style="font-family:var(--font-heading);font-size:1.1rem;color:var(--bark);margin-bottom:16px;">🌦️ Camping by Season</h3>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:center;">';
+  ['Spring','Summer','Fall','Winter'].forEach(function(s){
+    var pct = maxSeason ? Math.round((seasons[s]/maxSeason)*100) : 0;
+    html += '<div>';
+    html += '<div style="font-size:1.8rem;margin-bottom:4px;">'+seasonIcons[s]+'</div>';
+    html += '<div style="font-family:var(--font-heading);font-size:1.4rem;font-weight:600;color:var(--amber);">'+seasons[s]+'</div>';
+    html += '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke);">'+s+'</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  // States breakdown
+  var stateEntries = Object.entries(byState).sort(function(a,b){return b[1]-a[1];});
+  html += '<div style="background:var(--parchment);border-radius:8px;padding:20px;">';
+  html += '<h3 style="font-family:var(--font-heading);font-size:1.1rem;color:var(--bark);margin-bottom:16px;">📍 Parks by State</h3>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:10px;">';
+  stateEntries.forEach(function(e){
+    html += '<div style="background:rgba(61,90,42,.12);border-radius:20px;padding:6px 14px;font-family:var(--font-body);font-size:.85rem;color:var(--bark);"><strong>'+e[0]+'</strong> · '+e[1]+' park'+(e[1]>1?'s':'')+'</div>';
+  });
+  html += '</div></div>';
+
+  el.innerHTML = html;
+}
+
+function statCard(icon, big, sub, label) {
+  return '<div style="background:var(--parchment);border-radius:8px;padding:16px;text-align:center;">' +
+    '<div style="font-size:1.8rem;margin-bottom:6px;">'+icon+'</div>' +
+    '<div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--smoke);font-weight:700;margin-bottom:4px;">'+label+'</div>' +
+    '<div style="font-family:var(--font-heading);font-size:.95rem;font-weight:600;color:var(--bark);line-height:1.2;">'+big+'</div>' +
+    (sub?'<div style="font-size:.76rem;color:var(--amber);margin-top:2px;">'+sub+'</div>':'') +
+    '</div>';
+}
+// ── END STATISTICS ───────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
   renderFindPanel();
