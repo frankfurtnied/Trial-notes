@@ -56,24 +56,37 @@ header p{
   margin-top:6px;
 }
 .divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:14px auto 0;}
+.welcome-msg{
+  font-family:var(--font-heading);
+  font-style:italic;
+  font-size:1.05rem;
+  color:var(--cream);
+  margin-top:14px;
+  opacity:.92;
+}
 
 /* ── STATS BAR ── */
 .stats-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
 .stat{
-  background:rgba(245,237,216,.08);
-  border:1px solid rgba(245,237,216,.12);
-  border-radius:6px;
-  padding:14px 16px;
+  background:rgba(245,237,216,.1);
+  border:1px solid rgba(245,237,216,.14);
+  border-radius:10px;
+  padding:16px 14px;
   flex:1;
-  min-width:90px;
+  min-width:92px;
   text-align:center;
-  transition:background .2s;
+  transition:transform .15s, background .2s, box-shadow .2s;
 }
-.stat:hover{background:rgba(245,237,216,.13);}
+.stat:hover{background:rgba(245,237,216,.15);transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.18);}
+.stat-icon{
+  font-size:1.5rem;
+  line-height:1;
+  margin-bottom:7px;
+}
 .stat-num{
   font-family:var(--font-heading);
-  font-size:1.9rem;
-  font-weight:600;
+  font-size:1.95rem;
+  font-weight:700;
   color:var(--amber);
   line-height:1;
   letter-spacing:-.01em;
@@ -83,9 +96,15 @@ header p{
   font-size:.62rem;
   font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.14em;
+  letter-spacing:.13em;
   color:var(--smoke);
   margin-top:5px;
+}
+.stat-sub{
+  font-family:var(--font-body);
+  font-size:.74rem;
+  color:var(--smoke);
+  line-height:1.3;
 }
 
 /* ── TABS ── */
@@ -371,6 +390,7 @@ html { -webkit-overflow-scrolling: touch; }
 <header>
   <div class="logo-row"><span style="font-size:1.9rem">🌲</span><h1><em>Trail Notes</em></h1><span style="font-size:1.9rem">🌲</span></div>
   <p>Camping Diary · 2012 – <span id="currentYear">2026</span></p><div class="divider"></div>
+  <div id="welcomeMsg" class="welcome-msg"></div>
 </header>
 
 <!-- Cloud user bar -->
@@ -7314,7 +7334,27 @@ function refreshUpcomingDropdown() {
 // ═══════════════════════════════════════════════════════
 // STATS
 // ═══════════════════════════════════════════════════════
+
+function renderWelcome() {
+  var el = document.getElementById('welcomeMsg');
+  if (!el) return;
+  var hour = new Date().getHours();
+  var greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  var quotes = [
+    'Plan more adventures. Make more memories.',
+    'The mountains are calling and you must go.',
+    'Not all those who wander are lost.',
+    'Wherever you go, go with all your heart.',
+    'Adventure is worthwhile.',
+    'The journey is the reward.',
+    'Find joy in the journey.'
+  ];
+  var quote = quotes[new Date().getDate() % quotes.length];
+  el.innerHTML = greeting + ', Martin! &nbsp;·&nbsp; <span style="opacity:.8;font-size:.92rem;">' + quote + '</span>';
+}
+
 function renderStats() {
+  renderWelcome();
   const parks = allParks();
   const allTrips = getAllTripsSorted();
   const totalTrips = allTrips.length;
@@ -7351,13 +7391,13 @@ function renderStats() {
   const totalMilesDriven = getTotalMilesDriven();
 
   document.getElementById('statsBar').innerHTML = `
-    <div class="stat"><div class="stat-num">${parks.length}</div><div class="stat-label">Parks Listed</div></div>
-    <div class="stat"><div class="stat-num">${totalTrips}</div><div class="stat-label">Trips Logged</div></div>
-    <div class="stat"><div class="stat-num">${totalNights}</div><div class="stat-label">Nights Camped</div></div>
-    <div class="stat"><div class="stat-num">${totalMilesDriven>0?totalMilesDriven.toLocaleString():'—'}</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;">${calcBtn}</div></div>
-    <div class="stat"><div class="stat-num">${upcomingCount}</div><div class="stat-label">Upcoming</div></div>
-    ${mostVisited?`<div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(mostVisited)}</div><div class="stat-sub">${mostVisitedCount} trips</div></div>`:''}
-    ${bestRated?`<div class="stat" style="min-width:130px"><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(bestRated)}</div><div class="stat-sub" style="letter-spacing:2px">${stars(bestRating)}</div></div>`:''}`;
+    <div class="stat"><div class="stat-icon">⛺</div><div class="stat-num">${parks.length}</div><div class="stat-label">Parks Listed</div></div>
+    <div class="stat"><div class="stat-icon">🔥</div><div class="stat-num">${totalTrips}</div><div class="stat-label">Trips Logged</div></div>
+    <div class="stat"><div class="stat-icon">🌙</div><div class="stat-num">${totalNights}</div><div class="stat-label">Nights Camped</div></div>
+    <div class="stat"><div class="stat-icon">🛣️</div><div class="stat-num">${totalMilesDriven>0?totalMilesDriven.toLocaleString():'—'}</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;">${calcBtn}</div></div>
+    <div class="stat"><div class="stat-icon">📅</div><div class="stat-num">${upcomingCount}</div><div class="stat-label">Upcoming</div></div>
+    ${mostVisited?`<div class="stat" style="min-width:130px"><div class="stat-icon">🏆</div><div class="stat-label" style="margin-bottom:4px">Most Visited</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(mostVisited)}</div><div class="stat-sub">${mostVisitedCount} trips</div></div>`:''}
+    ${bestRated?`<div class="stat" style="min-width:130px"><div class="stat-icon">⭐</div><div class="stat-label" style="margin-bottom:4px">Best Rated</div><div class="stat-sub" style="color:var(--amber);font-size:.8rem;font-weight:600">${esc(bestRated)}</div><div class="stat-sub" style="letter-spacing:2px">${stars(bestRating)}</div></div>`:''}`;
 }
 
 // ═══════════════════════════════════════════════════════
