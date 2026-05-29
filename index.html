@@ -407,6 +407,7 @@ html { -webkit-overflow-scrolling: touch; }
     <button class="btn-amber" style="background:rgba(200,135,42,.55)" onclick="exportData()">⬆️ Export</button>
     <button class="btn-amber" style="background:rgba(200,135,42,.55)" onclick="document.getElementById(&#39;importFile&#39;).click()">⬇️ Import</button>
     <button class="btn-amber" style="background:rgba(100,80,60,.65)" onclick="renumberAllTrips()" title="Fix duplicate or out-of-order trip numbers">🔢 Re-number Trips</button>
+    <button class="btn-amber" style="background:rgba(61,90,42,.7)" onclick="printDiary()" title="Print or save your diary as a PDF">🖨️ Print / PDF</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
   <div class="filter-bar">
@@ -9969,6 +9970,112 @@ function viewPhoto(parkId, idx) {
   bg.style.display = 'flex';
 }
 // ── END PHOTOS ───────────────────────────────────
+
+
+// ── PRINT / PDF EXPORT ───────────────────────────
+function printDiary() {
+  var parks = allParks();
+  var allTrips = getAllTripsSorted();
+
+  // Calculate summary stats
+  var totalTrips = allTrips.length;
+  var totalNights = 0;
+  allTrips.forEach(function(t){
+    if (t.date && t.depart) {
+      var d1 = new Date(t.date), d2 = new Date(t.depart);
+      var n = Math.round((d2-d1)/(1000*60*60*24));
+      if (n > 0) totalNights += n;
+    }
+  });
+  var visitedParks = parks.filter(function(p){ return getTrips(p.id).length > 0; });
+  var totalMiles = (typeof getTotalMilesDriven === 'function') ? getTotalMilesDriven() : 0;
+
+  var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function fmtDate(d) {
+    if (!d) return '';
+    var parts = d.split('-');
+    if (parts.length !== 3) return d;
+    return monthNames[parseInt(parts[1])-1] + ' ' + parseInt(parts[2]) + ', ' + parts[0];
+  }
+
+  var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Trail Notes — Camping Diary</title>';
+  html += '<style>';
+  html += '@page { margin: 2cm; }';
+  html += 'body { font-family: Georgia, serif; color: #2C1A0E; line-height: 1.5; max-width: 800px; margin: 0 auto; padding: 20px; }';
+  html += 'h1 { font-size: 32px; text-align: center; margin-bottom: 4px; color: #3D5A2A; }';
+  html += '.subtitle { text-align: center; color: #6B4226; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px; }';
+  html += '.summary { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 16px; padding: 20px; background: #F5EDD8; border-radius: 8px; margin-bottom: 30px; }';
+  html += '.summary-item { text-align: center; }';
+  html += '.summary-num { font-size: 26px; font-weight: bold; color: #C8872A; }';
+  html += '.summary-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6B4226; }';
+  html += '.park { margin-bottom: 24px; page-break-inside: avoid; border-bottom: 1px solid #ddd; padding-bottom: 16px; }';
+  html += '.park-name { font-size: 18px; font-weight: bold; color: #3D5A2A; margin-bottom: 2px; }';
+  html += '.park-meta { font-size: 12px; color: #888; margin-bottom: 8px; }';
+  html += '.trip { font-size: 13px; margin: 4px 0; padding-left: 16px; }';
+  html += '.trip-date { font-weight: bold; color: #C8872A; }';
+  html += '.trip-detail { color: #555; }';
+  html += '.stars { color: #C8872A; }';
+  html += '@media print { body { padding: 0; } .no-print { display: none; } }';
+  html += '.print-btn { display: block; margin: 20px auto; padding: 12px 30px; background: #3D5A2A; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-family: Georgia, serif; }';
+  html += '</style></head><body>';
+
+  html += '<h1>🌲 Trail Notes 🌲</h1>';
+  html += '<div class="subtitle">Camping Diary · 2012 – 2026</div>';
+
+  html += '<div class="summary">';
+  html += '<div class="summary-item"><div class="summary-num">' + visitedParks.length + '</div><div class="summary-label">Parks Visited</div></div>';
+  html += '<div class="summary-item"><div class="summary-num">' + totalTrips + '</div><div class="summary-label">Total Trips</div></div>';
+  if (totalNights > 0) html += '<div class="summary-item"><div class="summary-num">' + totalNights + '</div><div class="summary-label">Nights Camped</div></div>';
+  if (totalMiles > 0) html += '<div class="summary-item"><div class="summary-num">' + totalMiles.toLocaleString() + '</div><div class="summary-label">Miles Driven</div></div>';
+  html += '</div>';
+
+  html += '<button class="print-btn no-print" onclick="window.print()">🖨️ Save as PDF / Print</button>';
+
+  // Sort parks by trip count (most visited first)
+  var sortedParks = visitedParks.slice().sort(function(a,b){
+    return getTrips(b.id).length - getTrips(a.id).length;
+  });
+
+  sortedParks.forEach(function(p){
+    var trips = getTrips(p.id);
+    var rating = (state.ratings && state.ratings[p.id]) || 0;
+    html += '<div class="park">';
+    html += '<div class="park-name">' + escapeHtmlP(p.name);
+    if (rating) html += ' <span class="stars">' + '★'.repeat(rating) + '</span>';
+    html += '</div>';
+    var meta = [];
+    if (p.address) meta.push(p.address);
+    if (p.drive) meta.push('🚗 ' + p.drive);
+    meta.push(trips.length + ' trip' + (trips.length !== 1 ? 's' : ''));
+    html += '<div class="park-meta">' + escapeHtmlP(meta.join('  ·  ')) + '</div>';
+
+    trips.forEach(function(t){
+      html += '<div class="trip"><span class="trip-date">' + fmtDate(t.date);
+      if (t.depart && t.depart !== t.date) html += ' → ' + fmtDate(t.depart);
+      html += '</span>';
+      var det = [];
+      if (t.site) det.push('Site ' + t.site);
+      if (t.note) det.push(t.note);
+      if (t.driveLog) det.push('🚗 ' + t.driveLog.miles + 'mi');
+      if (det.length) html += ' <span class="trip-detail">— ' + escapeHtmlP(det.join(' · ')) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  html += '<div style="text-align:center;color:#888;font-size:11px;margin-top:30px;">Generated by Trail Notes · ' + fmtDate(new Date().toISOString().slice(0,10)) + '</div>';
+  html += '</body></html>';
+
+  var win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+}
+
+function escapeHtmlP(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+// ── END PRINT ────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
   renderFindPanel();
