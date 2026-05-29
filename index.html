@@ -7512,6 +7512,15 @@ function renderParks() {
           </div>
         </div>
 
+        <div class="park-photos" style="margin-top:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-family:var(--font-heading);font-size:.92rem;color:var(--bark);">📷 Photos</span>
+            <button onclick="document.getElementById('photo-input-${p.id}').click()" style="font-size:.74rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">+ Add Photo</button>
+            <input type="file" id="photo-input-${p.id}" accept="image/*" style="display:none" onchange="handlePhotoUpload(${p.id}, this)">
+          </div>
+          <div id="photo-gallery-${p.id}" class="photo-gallery">${renderPhotoGallery(p.id)}</div>
+        </div>
+
         <div class="park-actions">
           <button class="btn-g" onclick="logVisit('${esc(p.name)}')">📓 Journal Entry</button>
           <button class="btn-o" onclick="openEditPark(${p.id})">✏️ Edit</button>
@@ -7933,6 +7942,7 @@ async function syncToCloud() {
     savedRoutes: getSavedRoutes(),
     parkMileage: state.parkMileage||{},
     parkCoords: state.parkCoords||{},
+    parkPhotos: state.parkPhotos||{},
     lifetimeMiles: state.lifetimeMiles||0,
   };
   try {
@@ -8000,6 +8010,7 @@ async function loadFromCloud() {
       }
       if (d.parkMileage !== undefined) state.parkMileage = d.parkMileage;
       if (d.parkCoords !== undefined) state.parkCoords = d.parkCoords;
+      if (d.parkPhotos !== undefined) state.parkPhotos = d.parkPhotos;
       if (d.lifetimeMiles) state.lifetimeMiles = d.lifetimeMiles;
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
@@ -9870,6 +9881,94 @@ function statCard(icon, big, sub, label) {
     '</div>';
 }
 // ── END STATISTICS ───────────────────────────────
+
+
+// ── PHOTOS ───────────────────────────────────────
+function renderPhotoGallery(parkId) {
+  var photos = (state.parkPhotos && state.parkPhotos[parkId]) || [];
+  if (!photos.length) {
+    return '<div style="font-size:.8rem;color:var(--smoke);font-style:italic;padding:4px 0;">No photos yet. Add memories from your trips!</div>';
+  }
+  var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+  photos.forEach(function(photo, idx){
+    html += '<div style="position:relative;width:100px;height:100px;border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.3);">' +
+      '<img src="'+photo.data+'" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="viewPhoto(\''+parkId+'\','+idx+')">' +
+      '<button onclick="deletePhoto(\''+parkId+'\','+idx+')" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:.8rem;line-height:1;">×</button>' +
+      '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function handlePhotoUpload(parkId, input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showToast('Please select an image file.'); return; }
+
+  showToast('Processing photo...');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    compressImage(e.target.result, function(compressed) {
+      if (!state.parkPhotos) state.parkPhotos = {};
+      if (!state.parkPhotos[parkId]) state.parkPhotos[parkId] = [];
+      state.parkPhotos[parkId].push({data: compressed, date: new Date().toISOString().slice(0,10)});
+      saveState();
+      scheduleSyncToCloud();
+      // Refresh just this gallery
+      var gal = document.getElementById('photo-gallery-'+parkId);
+      if (gal) gal.innerHTML = renderPhotoGallery(parkId);
+      showToast('Photo added! 📷');
+    });
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function compressImage(dataUrl, callback) {
+  var img = new Image();
+  img.onload = function() {
+    var maxDim = 900;
+    var w = img.width, h = img.height;
+    if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+    else if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+    var canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL('image/jpeg', 0.65));
+  };
+  img.src = dataUrl;
+}
+
+function deletePhoto(parkId, idx) {
+  if (!confirm('Delete this photo?')) return;
+  if (state.parkPhotos && state.parkPhotos[parkId]) {
+    state.parkPhotos[parkId].splice(idx, 1);
+    if (!state.parkPhotos[parkId].length) delete state.parkPhotos[parkId];
+    saveState();
+    scheduleSyncToCloud();
+    var gal = document.getElementById('photo-gallery-'+parkId);
+    if (gal) gal.innerHTML = renderPhotoGallery(parkId);
+    showToast('Photo deleted.');
+  }
+}
+
+function viewPhoto(parkId, idx) {
+  var photos = (state.parkPhotos && state.parkPhotos[parkId]) || [];
+  var photo = photos[idx];
+  if (!photo) return;
+  var bg = document.getElementById('photoViewBg');
+  if (!bg) {
+    bg = document.createElement('div');
+    bg.id = 'photoViewBg';
+    bg.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2000;align-items:center;justify-content:center;cursor:pointer;padding:20px;';
+    bg.onclick = function(){ bg.style.display='none'; };
+    document.body.appendChild(bg);
+  }
+  bg.innerHTML = '<img src="'+photo.data+'" style="max-width:95%;max-height:95%;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.8);">';
+  bg.style.display = 'flex';
+}
+// ── END PHOTOS ───────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
   renderFindPanel();
