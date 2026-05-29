@@ -7335,6 +7335,16 @@ function refreshUpcomingDropdown() {
 // STATS
 // ═══════════════════════════════════════════════════════
 
+
+function getParkThumb(parkId) {
+  var photos = (state.parkPhotos && state.parkPhotos[parkId]) || [];
+  if (photos.length) {
+    return '<div style="width:54px;height:54px;border-radius:8px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.25);"><img src="'+photos[0].data+'" style="width:100%;height:100%;object-fit:cover;"></div>';
+  }
+  // Placeholder with tree icon when no photo
+  return '<div style="width:54px;height:54px;border-radius:8px;flex-shrink:0;background:rgba(61,90,42,.18);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🌲</div>';
+}
+
 function renderWelcome() {
   var el = document.getElementById('welcomeMsg');
   if (!el) return;
@@ -7510,10 +7520,13 @@ function renderParks() {
 
     return `<div class="park-card" id="pc${p.id}" style="animation-delay:${Math.min(i,14)*.025}s">
       <div class="park-header ${been?'been':''} ${isC?'custom-h':''}" onclick="toggleCard(${p.id})">
-        <div>
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+          ${getParkThumb(p.id)}
+          <div style="min-width:0;">
           <div class="park-name">${esc(p.name)}</div>
           <div class="park-sub">${p.address?`📍 <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.address)}" target="_blank" style="color:inherit;text-decoration:underline dotted;cursor:pointer" onclick="event.stopPropagation()" title="Get directions">${esc(p.address)}</a>`:''} ${p.drive?' · 🚗 '+esc(p.drive):''}</div>
           ${p.website?`<div class="park-sub"><a href="${esc(p.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline dotted">🌐 ${esc(p.website.replace(/^https?:\/\//,''))}</a></div>`:''}
+          </div>
         </div>
         <div class="park-right">
           <button class="btn-fav" onclick="toggleFavorite(${p.id},event)" title="${state.favorites.includes(p.id)?'Remove from favorites':'Add to favorites'}">${state.favorites.includes(p.id)?'❤️':'🤍'}</button>
