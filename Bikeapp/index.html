@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Cadence</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Cadence">
+  <meta name="theme-color" content="#14171D">
+  <style>
+    :root {
+      --bg: #14171D; --panel: #1D2129; --panel2: #242935; --line: #2F3542;
+      --text: #EDEFF3; --dim: #8B93A3; --celeste: #53D6C5; --coral: #FF7A59; --amber: #FFC53D;
+      --mono: 'SF Mono','Cascadia Mono','Roboto Mono',Menlo,Consolas,monospace;
+      --sans: 'Avenir Next','Segoe UI',system-ui,-apple-system,sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); overscroll-behavior: none; }
+    #app { max-width: 460px; margin: 0 auto; padding: 16px 14px calc(90px + env(safe-area-inset-bottom)); }
+
+    /* Header */
+    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .logo { font-size:18px; font-weight:800; letter-spacing:0.02em; }
+    .dot { color:var(--celeste); }
+    .unit-toggle { background:var(--panel); color:var(--dim); border:1px solid var(--line); border-radius:10px; padding:6px 12px; font-family:var(--mono); font-size:12px; cursor:pointer; }
+
+    /* Speed */
+    .speed-box { background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px 16px 18px; text-align:center; margin-bottom:12px; }
+    .speed-label { font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--dim); }
+    .speed-big { font-family:var(--mono); font-size:72px; font-weight:700; line-height:1.05; font-variant-numeric:tabular-nums; transition:color 0.3s; }
+    .speed-unit { color:var(--dim); font-family:var(--mono); font-size:13px; }
+
+    /* Stats */
+    .stat-row { display:flex; gap:8px; margin-bottom:8px; }
+    .stat-tile { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px 14px; flex:1; min-width:0; }
+    .stat-label { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); }
+    .stat-value { font-family:var(--mono); font-size:22px; font-weight:600; color:var(--text); margin-top:4px; font-variant-numeric:tabular-nums; }
+    .stat-unit { font-size:12px; color:var(--dim); margin-left:4px; font-weight:400; }
+
+    /* Route */
+    .route-box { background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+    .route-empty { height:200px; display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:13px; }
+
+    /* Controls */
+    .controls { display:flex; gap:10px; margin-top:16px; }
+    .btn { font-family:var(--sans); font-weight:700; font-size:16px; border:none; border-radius:14px; padding:16px 0; flex:1; cursor:pointer; }
+    .btn-primary { background:var(--celeste); color:#10141A; }
+    .btn-secondary { background:var(--panel2); color:var(--text); border:1px solid var(--line); }
+    .btn-amber { background:var(--amber); color:#10141A; }
+    .btn-coral { background:var(--coral); color:#fff; }
+
+    /* Alerts */
+    .alert { margin-top:12px; border-radius:12px; padding:12px 14px; font-size:14px; line-height:1.4; }
+    .alert-error { background:#2A1E1B; border:1px solid #4A2E26; color:#FFB59F; }
+    .alert-success { background:#16302C; border:1px solid #1F4A43; color:var(--celeste); }
+
+    /* Tab bar */
+    .tab-bar { position:fixed; bottom:0; left:0; right:0; background:rgba(20,23,29,0.96); border-top:1px solid var(--line); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:100; }
+    .tab-bar-inner { max-width:460px; margin:0 auto; display:flex; }
+    .tab-btn { flex:1; background:none; border:none; border-top:2px solid transparent; padding:14px 0 calc(16px + env(safe-area-inset-bottom)); cursor:pointer; color:var(--dim); font-family:var(--sans); font-weight:700; font-size:14px; }
+    .tab-btn.active { color:var(--celeste); border-top-color:var(--celeste); }
+
+    /* History */
+    .chart-box { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 8px 6px; margin-bottom:14px; }
+    .chart-title { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); padding:0 8px 8px; }
+    .ride-row { display:flex; width:100%; text-align:left; align-items:center; justify-content:space-between; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:8px; cursor:pointer; color:var(--text); }
+    .ride-row-date { font-weight:700; font-size:14px; }
+    .ride-row-sub { color:var(--dim); font-size:12px; margin-top:2px; }
+    .ride-row-dist { font-family:var(--mono); font-size:18px; font-weight:700; color:var(--celeste); white-space:nowrap; }
+    .ride-row-unit { font-size:11px; color:var(--dim); margin-left:3px; font-family:var(--sans); }
+    .empty-state { color:var(--dim); text-align:center; padding:28px 16px; background:var(--panel); border-radius:14px; border:1px solid var(--line); font-size:14px; line-height:1.5; }
+    .back-btn { background:none; border:none; color:var(--celeste); font-size:14px; font-weight:700; cursor:pointer; padding:0; margin-bottom:10px; font-family:var(--sans); }
+    .detail-title { font-size:16px; font-weight:700; margin-bottom:2px; }
+    .detail-sub { color:var(--dim); font-size:13px; margin-bottom:12px; }
+    .btn-delete { margin-top:16px; width:100%; background:none; border:1px solid #4A2E26; color:var(--coral); border-radius:12px; padding:12px 0; font-weight:700; font-size:14px; cursor:pointer; font-family:var(--sans); }
+    .dim { color:var(--dim); font-weight:400; }
+
+    /* Pulse animation for live dot */
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .live-dot { animation: pulse 1.6s infinite; }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+
+// ── Storage keys ─────────────────────────────────────────────────────────────
+const KEY_RIDES = 'cadence_rides';
+const KEY_UNITS = 'cadence_units';
+
+// ── State ────────────────────────────────────────────────────────────────────
+const S = {
+  tab: 'ride',
+  units: localStorage.getItem(KEY_UNITS) || 'km',
+  status: 'idle',        // idle | recording | paused
+  points: [],
+  distance: 0,           // meters
+  elapsed: 0,            // seconds
+  speed: 0,              // m/s current
+  maxSpeed: 0,           // m/s
+  gpsError: null,
+  isDemo: false,
+  rides: [],
+  selectedId: null,
+  justSaved: false,
+};
+try { S.rides = JSON.parse(localStorage.getItem(KEY_RIDES) || '[]'); } catch(e) {}
+
+// ── Runtime handles ──────────────────────────────────────────────────────────
+let watchId = null, demoTimer = null, tickTimer = null, wakeLock = null;
+let lastPt = null, demoAngle = 0;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const toRad = d => d * Math.PI / 180;
+
+function haversine(a, b) {
+  const R = 6371000;
+  const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const s = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+function fmtTime(s) {
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = Math.floor(s%60);
+  return (h>0 ? h+':' : '') + String(m).padStart(h>0?2:1,'0') + ':' + String(ss).padStart(2,'0');
+}
+
+const toKmh  = ms => ms * 3.6;
+const toMph  = ms => ms * 2.237;
+const toKm   = m  => m / 1000;
+const toMi   = m  => m / 1609.344;
+
+const speedVal  = ms => S.units==='km' ? toKmh(ms)  : toMph(ms);
+const distVal   = m  => S.units==='km' ? toKm(m)    : toMi(m);
+const speedUnit = () => S.units==='km' ? 'km/h' : 'mph';
+const distUnit  = () => S.units==='km' ? 'km'   : 'mi';
+
+function downsample(pts, max=400) {
+  if (pts.length <= max) return pts;
+  const step = pts.length / max, out = [];
+  for (let i=0; i<max; i++) out.push(pts[Math.floor(i*step)]);
+  out.push(pts[pts.length-1]);
+  return out;
+}
+
+function saveRides() {
+  try { localStorage.setItem(KEY_RIDES, JSON.stringify(S.rides)); } catch(e) {}
+}
+
+// ── Route SVG ────────────────────────────────────────────────────────────────
+function routeSVG(pts, h=200, live=false) {
+  if (!pts || pts.length < 2)
+    return `<div class="route-empty">${live ? 'Route appears here as you ride' : 'No route data'}</div>`;
+  const W=320, H=h, PAD=16;
+  const lats=pts.map(p=>p.lat), lngs=pts.map(p=>p.lng);
+  const minLat=Math.min(...lats), maxLat=Math.max(...lats);
+  const minLng=Math.min(...lngs), maxLng=Math.max(...lngs);
+  const latMid=(minLat+maxLat)/2;
+  const lngSc=Math.cos(toRad(latMid));
+  const spanX=Math.max((maxLng-minLng)*lngSc,1e-5), spanY=Math.max(maxLat-minLat,1e-5);
+  const sc=Math.min((W-2*PAD)/spanX,(H-2*PAD)/spanY);
+  const px=p=>PAD+((p.lng-minLng)*lngSc-(spanX-(W-2*PAD)/sc)/2)*sc;
+  const py=p=>H-PAD-((p.lat-minLat)-(spanY-(H-2*PAD)/sc)/2)*sc;
+  const d=pts.map((p,i)=>`${i?'L':'M'}${px(p).toFixed(1)},${py(p).toFixed(1)}`).join(' ');
+  const f=pts[0], l=pts[pts.length-1];
+  const pulse=live?`<animate attributeName="opacity" values="1;0.3;1" dur="1.6s" repeatCount="indefinite"/>`:'';
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px;display:block;">
+    <path d="${d}" fill="none" stroke="#53D6C5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${px(f).toFixed(1)}" cy="${py(f).toFixed(1)}" r="4" fill="#14171D" stroke="#53D6C5" stroke-width="2"/>
+    <circle cx="${px(l).toFixed(1)}" cy="${py(l).toFixed(1)}" r="5" fill="#53D6C5">${pulse}</circle>
+  </svg>`;
+}
+
+// ── Bar chart SVG ────────────────────────────────────────────────────────────
+function barSVG(data) {
+  const W=320,H=100,PL=26,PB=20,PT=6,PR=6,bw=(W-PL-PR)/data.length,GAP=5,ch=H-PT-PB;
+  const mx=Math.max(...data.map(d=>d.v),0.01);
+  let bars='',labs='';
+  data.forEach((d,i)=>{
+    const x=PL+i*bw+GAP/2, bW=bw-GAP, bH=Math.max(2,(d.v/mx)*ch), y=PT+ch-bH;
+    bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bW.toFixed(1)}" height="${bH.toFixed(1)}" rx="3" fill="#53D6C5"/>`;
+    labs+=`<text x="${(x+bW/2).toFixed(1)}" y="${H}" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">${d.l}</text>`;
+  });
+  const tick=`<text x="${PL-3}" y="${PT+ch}" text-anchor="end" fill="#8B93A3" font-size="9" font-family="system-ui">0</text>
+    <text x="${PL-3}" y="${PT+8}" text-anchor="end" fill="#8B93A3" font-size="9" font-family="system-ui">${mx.toFixed(1)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px;display:block;">${bars}${labs}${tick}</svg>`;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const ride = S.rides.find(r=>r.id===S.selectedId);
+  document.getElementById('app').innerHTML =
+    header() +
+    (S.tab==='ride' ? rideTab() : histTab(ride)) +
+    tabs();
+  wire();
+}
+
+function header() {
+  return `<div class="header">
+    <div class="logo"><span class="dot">●</span> Cadence</div>
+    <button class="unit-toggle" id="bUnits">${S.units.toUpperCase()}</button>
+  </div>`;
+}
+
+function rideTab() {
+  const avg = S.elapsed>0 ? S.distance/S.elapsed : 0;
+  const label = S.status==='recording' ? (S.isDemo?'Demo ride · recording':'Recording') : S.status==='paused' ? 'Paused' : 'Current speed';
+  const color = S.status==='paused' ? 'var(--dim)' : 'var(--celeste)';
+  const btns = S.status==='idle'
+    ? `<button class="btn btn-primary" id="bStart">Start ride</button><button class="btn btn-secondary" id="bDemo">Demo ride</button>`
+    : `<button class="btn btn-amber" id="bPause">${S.status==='paused'?'Resume':'Pause'}</button><button class="btn btn-coral" id="bFinish">Finish</button>`;
+  const err = S.gpsError ? `<div class="alert alert-error">${S.gpsError}</div>` : '';
+  const saved = S.justSaved&&S.status==='idle' ? `<div class="alert alert-success">Ride saved — view it in History.</div>` : '';
+  return `
+    <div class="speed-box">
+      <div class="speed-label">${label}</div>
+      <div class="speed-big" style="color:${color}">${speedVal(S.speed).toFixed(1)}</div>
+      <div class="speed-unit">${speedUnit()}</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">Distance</div><div class="stat-value">${distVal(S.distance).toFixed(2)}<span class="stat-unit">${distUnit()}</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Time</div><div class="stat-value">${fmtTime(S.elapsed)}</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">Avg speed</div><div class="stat-value">${speedVal(avg).toFixed(1)}<span class="stat-unit">${speedUnit()}</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Max speed</div><div class="stat-value" style="color:var(--coral)">${speedVal(S.maxSpeed).toFixed(1)}<span class="stat-unit">${speedUnit()}</span></div></div>
+    </div>
+    <div class="route-box">${routeSVG(S.points,200,S.status!=='idle')}</div>
+    ${err}${saved}
+    <div class="controls">${btns}</div>`;
+}
+
+function histTab(selected) {
+  if (selected) return detailView(selected);
+  const totDist = S.rides.reduce((s,r)=>s+r.distance,0);
+  const totTime = S.rides.reduce((s,r)=>s+r.duration,0);
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+    const n=new Date(d); n.setDate(d.getDate()+1);
+    const sum=S.rides.filter(r=>{const t=new Date(r.date);return t>=d&&t<n;}).reduce((s,r)=>s+r.distance,0);
+    days.push({l:d.toLocaleDateString(undefined,{weekday:'narrow'}),v:+distVal(sum).toFixed(1)});
+  }
+  const list = S.rides.length===0
+    ? `<div class="empty-state">No rides yet. Tap Start ride on the Ride tab, or try the demo ride first.</div>`
+    : S.rides.map(r=>`
+      <button class="ride-row" data-id="${r.id}">
+        <div class="ride-row-left">
+          <div class="ride-row-date">${new Date(r.date).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}${r.demo?'<span class="dim"> · demo</span>':''}</div>
+          <div class="ride-row-sub">${fmtTime(r.duration)} &middot; avg ${speedVal(r.avgSpeed).toFixed(1)} ${speedUnit()}</div>
+        </div>
+        <div class="ride-row-dist">${distVal(r.distance).toFixed(1)}<span class="ride-row-unit">${distUnit()}</span></div>
+      </button>`).join('');
+  return `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">Rides</div><div class="stat-value">${S.rides.length}</div></div>
+      <div class="stat-tile"><div class="stat-label">Total dist</div><div class="stat-value">${distVal(totDist).toFixed(1)}<span class="stat-unit">${distUnit()}</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Total time</div><div class="stat-value">${fmtTime(totTime)}</div></div>
+    </div>
+    <div class="chart-box"><div class="chart-title">Last 7 days &middot; ${distUnit()}</div>${barSVG(days)}</div>
+    ${list}`;
+}
+
+function detailView(r) {
+  return `
+    <button class="back-btn" id="bBack">← All rides</button>
+    <div class="detail-title">${new Date(r.date).toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}${r.demo?'<span class="dim"> · demo</span>':''}</div>
+    <div class="detail-sub">${new Date(r.date).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}</div>
+    <div class="route-box">${routeSVG(r.route,220,false)}</div>
+    <div class="stat-row" style="margin-top:12px">
+      <div class="stat-tile"><div class="stat-label">Distance</div><div class="stat-value">${distVal(r.distance).toFixed(2)}<span class="stat-unit">${distUnit()}</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Time</div><div class="stat-value">${fmtTime(r.duration)}</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">Avg speed</div><div class="stat-value">${speedVal(r.avgSpeed).toFixed(1)}<span class="stat-unit">${speedUnit()}</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Max speed</div><div class="stat-value" style="color:var(--coral)">${speedVal(r.maxSpeed).toFixed(1)}<span class="stat-unit">${speedUnit()}</span></div></div>
+    </div>
+    <button class="btn-delete" data-id="${r.id}">Delete ride</button>`;
+}
+
+function tabs() {
+  return `<div class="tab-bar"><div class="tab-bar-inner">
+    <button class="tab-btn${S.tab==='ride'?' active':''}" data-tab="ride">Ride</button>
+    <button class="tab-btn${S.tab==='history'?' active':''}" data-tab="history">History</button>
+  </div></div>`;
+}
+
+// ── Wire up events ────────────────────────────────────────────────────────────
+function wire() {
+  const $ = id => document.getElementById(id);
+  const on = (id,ev,fn) => { const el=$(id); if(el) el.addEventListener(ev,fn); };
+  on('bUnits','click',toggleUnits);
+  on('bStart','click',()=>startRide(false));
+  on('bDemo','click',()=>startRide(true));
+  on('bPause','click',pauseRide);
+  on('bFinish','click',finishRide);
+  on('bBack','click',()=>{ S.selectedId=null; render(); });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{ S.tab=b.dataset.tab; S.selectedId=null; render(); }));
+  document.querySelectorAll('.ride-row').forEach(b=>b.addEventListener('click',()=>{ S.selectedId=parseInt(b.dataset.id); render(); }));
+  document.querySelectorAll('.btn-delete').forEach(b=>b.addEventListener('click',()=>{ S.rides=S.rides.filter(r=>r.id!==parseInt(b.dataset.id)); S.selectedId=null; saveRides(); render(); }));
+}
+
+// ── Ride logic ────────────────────────────────────────────────────────────────
+function toggleUnits() {
+  S.units = S.units==='km' ? 'mi' : 'km';
+  try { localStorage.setItem(KEY_UNITS, S.units); } catch(e) {}
+  render();
+}
+
+function ingestPoint(lat, lng, gpsSpd) {
+  if (S.status!=='recording') return;
+  const pt={lat,lng,t:Date.now()};
+  let spd=gpsSpd;
+  if (lastPt) {
+    const d=haversine(lastPt,pt), dt=(pt.t-lastPt.t)/1000;
+    if (d<2) return;
+    S.distance+=d;
+    if (spd==null && dt>0) spd=d/dt;
+  }
+  lastPt=pt;
+  S.points=[...S.points,pt];
+  if (spd!=null&&spd>=0) { S.speed=spd; if(spd>S.maxSpeed) S.maxSpeed=spd; }
+  render();
+}
+
+function stopAll() {
+  if (watchId!=null) { try{navigator.geolocation.clearWatch(watchId);}catch(e){} watchId=null; }
+  if (demoTimer) { clearInterval(demoTimer); demoTimer=null; }
+  if (tickTimer) { clearInterval(tickTimer); tickTimer=null; }
+  if (wakeLock) { try{wakeLock.release();}catch(e){} wakeLock=null; }
+}
+
+async function startRide(demo) {
+  stopAll();
+  Object.assign(S,{points:[],distance:0,elapsed:0,speed:0,maxSpeed:0,gpsError:null,justSaved:false,isDemo:demo,status:'recording'});
+  lastPt=null;
+  tickTimer=setInterval(()=>{ if(S.status==='recording'){S.elapsed++;render();} },1000);
+  if ('wakeLock' in navigator) try { wakeLock=await navigator.wakeLock.request('screen'); } catch(e) {}
+
+  if (demo) {
+    demoAngle=0;
+    const base={lat:37.7749,lng:-122.4194};
+    demoTimer=setInterval(()=>{
+      demoAngle+=0.055+Math.random()*0.015;
+      const a=demoAngle, r=0.004+0.001*Math.sin(a*2.1);
+      ingestPoint(base.lat+r*Math.sin(a)+0.00008*Math.sin(a*9), base.lng+r*1.3*Math.cos(a*0.85)+0.00008*Math.cos(a*6), 4+3*Math.abs(Math.sin(a*1.9)));
+    },1000);
+    render(); return;
+  }
+
+  if (!navigator.geolocation) {
+    Object.assign(S,{gpsError:"Location isn't available here. Try the demo ride to see how it works.",status:'idle'});
+    stopAll(); render(); return;
+  }
+  watchId=navigator.geolocation.watchPosition(
+    p=>ingestPoint(p.coords.latitude,p.coords.longitude,p.coords.speed),
+    e=>{ S.gpsError=e.code===1?'Location permission denied. Allow access and try again, or use the demo ride.':'GPS fix failed. Step outside and try again, or use the demo ride.'; S.status='idle'; stopAll(); render(); },
+    {enableHighAccuracy:true,maximumAge:1000,timeout:15000}
+  );
+  render();
+}
+
+function pauseRide() {
+  S.status=S.status==='paused'?'recording':'paused';
+  if(S.status==='recording') lastPt=null;
+  render();
+}
+
+function finishRide() {
+  stopAll();
+  const dur=S.elapsed, dist=S.distance, pts=S.points, mx=S.maxSpeed;
+  S.status='idle'; S.speed=0;
+  if (dist>=10&&pts.length>=2) {
+    S.rides=[{id:Date.now(),date:new Date().toISOString(),duration:dur,distance:dist,avgSpeed:dur>0?dist/dur:0,maxSpeed:mx,demo:S.isDemo,route:downsample(pts).map(p=>({lat:+p.lat.toFixed(5),lng:+p.lng.toFixed(5)}))}, ...S.rides];
+    S.justSaved=true;
+    saveRides();
+  }
+  render();
+}
+
+// ── PWA manifest (for Android/Chrome home screen) ────────────────────────────
+(function(){
+  try {
+    const m={name:'Cadence',short_name:'Cadence',start_url:location.href,display:'standalone',background_color:'#14171D',theme_color:'#14171D'};
+    const blob=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});
+    const link=document.createElement('link'); link.rel='manifest'; link.href=URL.createObjectURL(blob);
+    document.head.appendChild(link);
+  } catch(e) {}
+})();
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
