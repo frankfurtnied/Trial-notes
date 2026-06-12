@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
+<!-- saved from url=(0050)file:///Users/martinfelkel/Downloads/index_10.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Cadence</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Cadence">
   <meta name="theme-color" content="#14171D">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src * data: blob:; connect-src *; worker-src blob:;">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src &#39;self&#39;; script-src &#39;self&#39; &#39;unsafe-inline&#39; https://unpkg.com; style-src &#39;self&#39; &#39;unsafe-inline&#39; https://unpkg.com; img-src * data: blob:; connect-src *; worker-src blob:;">
+  <link rel="stylesheet" href="./index_files/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="./index_files/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     :root {
       --bg: #14171D; --panel: #1D2129; --panel2: #242935; --line: #2F3542;
@@ -41,10 +41,24 @@
     .stat-unit { font-size:12px; color:var(--dim); margin-left:4px; font-weight:400; }
     .max-col { color: var(--coral) !important; }
 
-    .map-box { background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; position:relative; }
+    .map-box { background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; position:relative; cursor:pointer; }
     .map { height:240px; width:100%; background:#0F1217; }
     .map-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:13px; pointer-events:none; z-index:500; background:rgba(20,23,29,0.55); }
+    .map-hint { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(20,23,29,0.75); color:var(--dim); font-size:11px; font-family:var(--sans); padding:4px 12px; border-radius:20px; pointer-events:none; z-index:501; white-space:nowrap; backdrop-filter:blur(4px); }
     .leaflet-container { font-family: var(--sans); }
+
+    /* Fullscreen map overlay */
+    #mapOverlay { display:none; position:fixed; inset:0; z-index:2000; background:var(--bg); flex-direction:column; }
+    #mapOverlay.open { display:flex; }
+    #overlayHeader { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--panel); border-bottom:1px solid var(--line); flex-shrink:0; }
+    #overlayStats { display:flex; gap:16px; align-items:center; }
+    .ov-stat { text-align:center; }
+    .ov-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim); }
+    .ov-val { font-family:var(--mono); font-size:18px; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
+    .ov-speed { font-family:var(--mono); font-size:36px; font-weight:700; color:var(--celeste); font-variant-numeric:tabular-nums; line-height:1; }
+    .ov-unit { font-size:11px; color:var(--dim); margin-left:3px; }
+    #overlayClose { background:var(--panel2); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:8px 14px; font-family:var(--sans); font-weight:700; font-size:13px; cursor:pointer; flex-shrink:0; }
+    #overlayMap { flex:1; width:100%; min-height:0; }
 
     .controls { display:flex; gap:10px; margin-top:16px; }
     .btn { font-family:var(--sans); font-weight:700; font-size:16px; border:none; border-radius:14px; padding:16px 0; flex:1; cursor:pointer; }
@@ -77,46 +91,47 @@
     .dim { color:var(--dim); font-weight:400; }
     .hidden { display:none !important; }
   </style>
-</head>
+<link rel="manifest" href="blob:null/584a2966-cb71-4005-8f86-aab39bcc2db5"></head>
 <body>
 <div class="wrap">
   <div class="header">
     <div class="logo"><span class="dot">●</span> Cadence</div>
-    <button class="unit-toggle" id="bUnits">KM</button>
+    <button class="unit-toggle" id="bUnits">MI</button>
   </div>
 
   <!-- ───────── RIDE VIEW ───────── -->
-  <div id="viewRide">
+  <div id="viewRide" class="">
     <div class="speed-box">
       <div class="speed-label" id="speedLabel">Current speed</div>
       <div class="speed-big" id="speedBig">0.0</div>
-      <div class="speed-unit" id="speedUnit">km/h</div>
+      <div class="speed-unit" id="speedUnit">mph</div>
       <div class="gps-pill hidden" id="gpsPill">GPS ±–</div>
     </div>
     <div class="stat-row">
-      <div class="stat-tile"><div class="stat-label">Distance</div><div class="stat-value" id="vDist">0.00<span class="stat-unit" id="uDist">km</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Distance</div><div class="stat-value" id="vDist">0.00<span class="stat-unit" id="uDist">mi</span></div></div>
       <div class="stat-tile"><div class="stat-label">Time</div><div class="stat-value" id="vTime">0:00</div></div>
     </div>
     <div class="stat-row">
-      <div class="stat-tile"><div class="stat-label">Avg speed</div><div class="stat-value" id="vAvg">0.0<span class="stat-unit" id="uAvg">km/h</span></div></div>
-      <div class="stat-tile"><div class="stat-label">Max speed</div><div class="stat-value max-col" id="vMax">0.0<span class="stat-unit" id="uMax">km/h</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Avg speed</div><div class="stat-value" id="vAvg">0.0<span class="stat-unit" id="uAvg">mph</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Max speed</div><div class="stat-value max-col" id="vMax">0.0<span class="stat-unit" id="uMax">mph</span></div></div>
     </div>
-    <div class="map-box">
-      <div class="map" id="liveMap"></div>
+    <div class="map-box" id="liveMapBox">
+      <div class="map leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" id="liveMap" tabindex="0" style="position: relative;"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(139px, 86px, 0px) scale(0.5);"></div><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(139px, 86px, 0px) scale(1);"><img alt="" src="./index_files/2@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-101px, -207px, 0px); opacity: 1;"><img alt="" src="./index_files/2@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(155px, -207px, 0px); opacity: 1;"><img alt="" src="./index_files/3@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-101px, 49px, 0px); opacity: 1;"><img alt="" src="./index_files/3@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(155px, 49px, 0px); opacity: 1;"><img alt="" src="./index_files/2@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-357px, -207px, 0px); opacity: 1;"><img alt="" src="./index_files/3@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-357px, 49px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"><svg pointer-events="none" class="leaflet-zoom-animated" width="516" height="288" viewBox="-43 -24 516 288" style="transform: translate3d(-43px, -24px, 0px);"><g><path class="leaflet-interactive" stroke="#53D6C5" stroke-opacity="0.95" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M0 0"></path></g></svg></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(432.75px, 753.449px, 0px) scale(4);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control">© OpenStreetMap © CARTO</div></div></div></div>
       <div class="map-empty" id="liveMapEmpty">Your route will appear here once GPS locks on</div>
+      <div class="map-hint" id="liveMapHint">Tap to expand</div>
     </div>
     <div id="alerts"></div>
-    <div class="controls" id="controls"></div>
+    <div class="controls" id="controls"><button class="btn btn-primary" id="bStart">Start ride</button><button class="btn btn-secondary" id="bDemo">Demo ride</button></div>
   </div>
 
   <!-- ───────── HISTORY VIEW ───────── -->
   <div id="viewHistory" class="hidden">
-    <div id="histList"></div>
+    <div id="histList"><div class="stat-row"><div class="stat-tile"><div class="stat-label">Rides</div><div class="stat-value">0</div></div><div class="stat-tile"><div class="stat-label">Total dist</div><div class="stat-value">0.0<span class="stat-unit">mi</span></div></div><div class="stat-tile"><div class="stat-label">Total time</div><div class="stat-value">0:00</div></div></div><div class="chart-box"><div class="chart-title">Last 7 days · mi</div><svg viewBox="0 0 320 100" style="width:100%;height:100px;display:block;"><rect x="28.5" y="78.0" width="36.1" height="2.0" rx="3" fill="#53D6C5"></rect><rect x="69.6" y="78.0" width="36.1" height="2.0" rx="3" fill="#53D6C5"></rect><rect x="110.8" y="78.0" width="36.1" height="2.0" rx="3" fill="#53D6C5"></rect><rect x="151.9" y="78.0" width="36.1" height="2.0" rx="3" fill="#53D6C5"></rect><rect x="193.1" y="78.0" width="36.1" height="2.0" rx="3" fill="#53D6C5"></rect><rect x="234.2" y="78.0" width="36.1" height="2.0" rx="3" fill="#53D6C5"></rect><rect x="275.4" y="78.0" width="36.1" height="2.0" rx="3" fill="#53D6C5"></rect><text x="46.6" y="100" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">S</text><text x="87.7" y="100" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">S</text><text x="128.9" y="100" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">M</text><text x="170.0" y="100" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">T</text><text x="211.1" y="100" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">W</text><text x="252.3" y="100" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">T</text><text x="293.4" y="100" text-anchor="middle" fill="#8B93A3" font-size="10" font-family="system-ui">F</text><text x="23" y="80" text-anchor="end" fill="#8B93A3" font-size="9" font-family="system-ui">0</text><text x="23" y="14" text-anchor="end" fill="#8B93A3" font-size="9" font-family="system-ui">0.0</text></svg></div><div class="empty-state">No rides yet. Tap Start ride on the Ride tab, or try the demo first.</div></div>
     <div id="histDetail" class="hidden">
       <button class="back-btn" id="bBack">← All rides</button>
       <div class="detail-title" id="dTitle"></div>
       <div class="detail-sub" id="dSub"></div>
-      <div class="map-box"><div class="map" id="detailMap" style="height:260px"></div></div>
+      <div class="map-box" id="detailMapBox"><div class="map" id="detailMap" style="height:260px"></div><div class="map-hint">Tap to expand</div></div>
       <div class="stat-row" style="margin-top:12px">
         <div class="stat-tile"><div class="stat-label">Distance</div><div class="stat-value" id="dDist"></div></div>
         <div class="stat-tile"><div class="stat-label">Time</div><div class="stat-value" id="dTime"></div></div>
@@ -130,10 +145,36 @@
   </div>
 </div>
 
-<div class="tab-bar"><div class="tab-bar-inner">
+<div class="tab-bar" style=""><div class="tab-bar-inner">
   <button class="tab-btn active" id="tabRide">Ride</button>
   <button class="tab-btn" id="tabHistory">History</button>
 </div></div>
+
+<!-- Fullscreen map overlay -->
+<div id="mapOverlay" class="">
+  <div id="overlayHeader">
+    <div id="overlayStats">
+      <div class="ov-stat">
+        <div class="ov-label" id="ovLabel">Speed</div>
+        <div><span class="ov-speed" id="ovSpeed" style="color: var(--celeste);">0.0</span><span class="ov-unit" id="ovSpeedUnit">mph</span></div>
+      </div>
+      <div class="ov-stat">
+        <div class="ov-label">Dist</div>
+        <div><span class="ov-val" id="ovDist">0.00</span><span class="ov-unit" id="ovDistUnit">mi</span></div>
+      </div>
+      <div class="ov-stat">
+        <div class="ov-label">Time</div>
+        <div><span class="ov-val" id="ovTime">0:00</span></div>
+      </div>
+      <div class="ov-stat">
+        <div class="ov-label">Avg</div>
+        <div><span class="ov-val" id="ovAvg">0.0</span><span class="ov-unit" id="ovAvgUnit">mph</span></div>
+      </div>
+    </div>
+    <button id="overlayClose">✕ Close</button>
+  </div>
+  <div id="overlayMap" class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0" style="position: relative;"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="./index_files/5@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(472px, 8px, 0px); opacity: 1;"><img alt="" src="./index_files/5@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(728px, 8px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(472px, 264px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(728px, 264px, 0px); opacity: 1;"><img alt="" src="./index_files/4@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(472px, -248px, 0px); opacity: 1;"><img alt="" src="./index_files/4@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(728px, -248px, 0px); opacity: 1;"><img alt="" src="./index_files/5@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(216px, 8px, 0px); opacity: 1;"><img alt="" src="./index_files/5@2x(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(984px, 8px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(216px, 264px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(984px, 264px, 0px); opacity: 1;"><img alt="" src="./index_files/7@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(472px, 520px, 0px); opacity: 1;"><img alt="" src="./index_files/7@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(728px, 520px, 0px); opacity: 1;"><img alt="" src="./index_files/4@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(216px, -248px, 0px); opacity: 1;"><img alt="" src="./index_files/4@2x(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(984px, -248px, 0px); opacity: 1;"><img alt="" src="./index_files/7@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(216px, 520px, 0px); opacity: 1;"><img alt="" src="./index_files/7@2x(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(984px, 520px, 0px); opacity: 1;"><img alt="" src="./index_files/5@2x(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-40px, 8px, 0px); opacity: 1;"><img alt="" src="./index_files/5@2x(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1240px, 8px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-40px, 264px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1240px, 264px, 0px); opacity: 1;"><img alt="" src="./index_files/4@2x(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-40px, -248px, 0px); opacity: 1;"><img alt="" src="./index_files/4@2x(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1240px, -248px, 0px); opacity: 1;"><img alt="" src="./index_files/7@2x(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-40px, 520px, 0px); opacity: 1;"><img alt="" src="./index_files/7@2x(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1240px, 520px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"><svg pointer-events="none" class="leaflet-zoom-animated" width="1518" height="688" viewBox="-126 -57 1518 688" style="transform: translate3d(-126px, -57px, 0px);"><g><path class="leaflet-interactive" stroke="#53D6C5" stroke-opacity="0.95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M0 0"></path></g></svg></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(928.996px, 1558.06px, 0px) scale(8);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control">© OpenStreetMap © CARTO</div></div></div></div>
+</div>
 
 <script>
 'use strict';
@@ -243,6 +284,7 @@ function updateStats(){
   const pill=$('gpsPill');
   if(S.status!=='idle'&&!S.isDemo&&S.accuracy!=null){pill.classList.remove('hidden');pill.textContent='GPS ±'+Math.round(S.accuracy)+' m';}
   else pill.classList.add('hidden');
+  updateOverlayStats();
 }
 function renderControls(){
   $('controls').innerHTML=S.status==='idle'
@@ -397,6 +439,8 @@ function openDetail(id){
   $('dAvg').innerHTML=speedVal(r.avgSpeed).toFixed(1)+'<span class="stat-unit">'+speedUnit()+'</span>';
   $('dMax').innerHTML=speedVal(r.maxSpeed).toFixed(1)+'<span class="stat-unit">'+speedUnit()+'</span>';
   showDetailMap(r.route);
+  // wire fullscreen tap on detail map
+  setTimeout(()=>{const b=$('detailMapBox');if(b)b.onclick=()=>openOverlay('detail');},100);
 }
 function closeDetail(){
   S.selectedId=null;
@@ -437,10 +481,96 @@ $('bUnits').onclick=()=>{
   document.head.appendChild(link);
 }catch(e){}})();
 
+// ───────── Fullscreen map overlay ─────────
+let overlayMap=null, overlayPoly=null, overlayMarker=null, overlayMode=null;
+
+function openOverlay(mode){
+  overlayMode=mode;
+  const ov=$('mapOverlay');
+  ov.classList.add('open');
+  // hide tab bar
+  document.querySelector('.tab-bar').style.display='none';
+
+  if(!overlayMap){
+    overlayMap=makeMap('overlayMap');
+    overlayPoly=L.polyline([],{color:'#53D6C5',weight:5,opacity:0.95}).addTo(overlayMap);
+    overlayMarker=L.circleMarker([0,0],{radius:9,color:'#fff',weight:2,fillColor:'#53D6C5',fillOpacity:1});
+  }
+  setTimeout(()=>overlayMap.invalidateSize(),80);
+
+  if(mode==='live'){
+    // copy current route into overlay
+    const latlngs=S.points.map(p=>[p.lat,p.lng]);
+    overlayPoly.setLatLngs(latlngs);
+    if(latlngs.length>=2){
+      overlayMarker.setLatLng(latlngs[latlngs.length-1]);
+      if(!overlayMap.hasLayer(overlayMarker))overlayMarker.addTo(overlayMap);
+      overlayMap.fitBounds(L.latLngBounds(latlngs),{padding:[40,40]});
+    } else {
+      overlayMap.setView([39.5,-98.35],4);
+    }
+    updateOverlayStats();
+  } else if(mode==='detail'){
+    const r=S.rides.find(x=>x.id===S.selectedId);
+    if(r&&r.route&&r.route.length>=2){
+      const ll=r.route.map(p=>[p.lat,p.lng]);
+      overlayPoly.setLatLngs(ll);
+      if(overlayMap.hasLayer(overlayMarker))overlayMarker.remove();
+      overlayMap.fitBounds(L.latLngBounds(ll),{padding:[40,40]});
+    }
+    $('overlayStats').style.display='none';
+  }
+}
+
+function closeOverlay(){
+  $('mapOverlay').classList.remove('open');
+  document.querySelector('.tab-bar').style.display='';
+  overlayMode=null;
+  $('overlayStats').style.display='';
+  // sync live map back if recording
+  if(liveMap&&S.points.length>0){
+    const ll=S.points.map(p=>[p.lat,p.lng]);
+    liveMap.fitBounds(L.latLngBounds(ll),{padding:[20,20]});
+    setTimeout(()=>liveMap.invalidateSize(),60);
+  }
+}
+
+function updateOverlayStats(){
+  if(overlayMode!=='live')return;
+  const avg=S.elapsed>0?S.distance/S.elapsed:0;
+  $('ovSpeed').textContent=speedVal(S.speed).toFixed(1);
+  $('ovDist').textContent=distVal(S.distance).toFixed(2);
+  $('ovTime').textContent=fmtTime(S.elapsed);
+  $('ovAvg').textContent=speedVal(avg).toFixed(1);
+  $('ovLabel').textContent=S.status==='paused'?'Paused':'Speed';
+  $('ovSpeed').style.color=S.status==='paused'?'var(--dim)':'var(--celeste)';
+  $('ovSpeedUnit').textContent=speedUnit();
+  $('ovDistUnit').textContent=distUnit();
+  $('ovAvgUnit').textContent=speedUnit();
+  // push new point to overlay map
+  if(S.points.length>0){
+    const ll=S.points.map(p=>[p.lat,p.lng]);
+    overlayPoly.setLatLngs(ll);
+    const last=ll[ll.length-1];
+    overlayMarker.setLatLng(last);
+    if(!overlayMap.hasLayer(overlayMarker))overlayMarker.addTo(overlayMap);
+    overlayMap.panTo(last,{animate:true,duration:0.5});
+  }
+}
+
+$('overlayClose').onclick=closeOverlay;
+
 // ───────── Boot ─────────
 updateUnits();updateStats();renderControls();
-if(hasLeaflet)initLiveMap();
-else $('liveMapEmpty').textContent='Map unavailable (offline) — stats still record fine';
+if(hasLeaflet){
+  initLiveMap();
+  $('liveMapBox').addEventListener('click',()=>openOverlay('live'));
+  $('detailMapBox') && $('detailMapBox').addEventListener('click',()=>openOverlay('detail'));
+} else {
+  $('liveMapEmpty').textContent='Map unavailable (offline) — stats still record fine';
+  $('liveMapHint').style.display='none';
+}
 </script>
-</body>
-</html>
+
+
+</body></html>
