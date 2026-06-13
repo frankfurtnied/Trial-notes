@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/martinfelkel/Downloads/index_14.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -11,8 +11,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Cadence">
   <meta name="theme-color" content="#14171D">
-  <link rel="stylesheet" href="./index_files/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <script src="./index_files/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
       --bg: #14171D; --panel: #1D2129; --panel2: #242935; --line: #2F3542;
@@ -93,12 +93,12 @@
     .dim { color:var(--dim); font-weight:400; }
     .hidden { display:none !important; }
   </style>
-<link rel="manifest" href="blob:null/ae72fa92-c376-4466-a139-b93e7bc571fc"></head>
+</head>
 <body>
 <div class="wrap">
   <div class="header">
     <div class="logo"><span class="dot">●</span> Cadence</div>
-    <button class="unit-toggle" id="bUnits">MI</button>
+    <button class="unit-toggle" id="bUnits">KM</button>
   </div>
 
   <!-- ───────── RIDE VIEW ───────── -->
@@ -106,24 +106,24 @@
     <div class="speed-box">
       <div class="speed-label" id="speedLabel">Current speed</div>
       <div class="speed-big" id="speedBig">0.0</div>
-      <div class="speed-unit" id="speedUnit">mph</div>
+      <div class="speed-unit" id="speedUnit">km/h</div>
       <div class="gps-pill hidden" id="gpsPill">GPS ±–</div>
     </div>
     <div class="stat-row">
-      <div class="stat-tile"><div class="stat-label">Distance</div><div class="stat-value" id="vDist">0.00<span class="stat-unit" id="uDist">mi</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Distance</div><div class="stat-value" id="vDist">0.00<span class="stat-unit" id="uDist">km</span></div></div>
       <div class="stat-tile"><div class="stat-label">Time</div><div class="stat-value" id="vTime">0:00</div></div>
     </div>
     <div class="stat-row">
-      <div class="stat-tile"><div class="stat-label">Avg speed</div><div class="stat-value" id="vAvg">0.0<span class="stat-unit" id="uAvg">mph</span></div></div>
-      <div class="stat-tile"><div class="stat-label">Max speed</div><div class="stat-value max-col" id="vMax">0.0<span class="stat-unit" id="uMax">mph</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Avg speed</div><div class="stat-value" id="vAvg">0.0<span class="stat-unit" id="uAvg">km/h</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Max speed</div><div class="stat-value max-col" id="vMax">0.0<span class="stat-unit" id="uMax">km/h</span></div></div>
     </div>
     <div class="map-box" id="liveMapBox">
-      <div class="map leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" id="liveMap" tabindex="0" style="position: relative;"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="./index_files/5@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(54px, -158px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(54px, 98px, 0px); opacity: 1;"><img alt="" src="./index_files/5@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-202px, -158px, 0px); opacity: 1;"><img alt="" src="./index_files/5@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(310px, -158px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-202px, 98px, 0px); opacity: 1;"><img alt="" src="./index_files/6@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(310px, 98px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"><svg pointer-events="none" class="leaflet-zoom-animated" width="516" height="288" viewBox="-43 -24 516 288" style="transform: translate3d(-43px, -24px, 0px);"><g><path class="leaflet-interactive" stroke="#53D6C5" stroke-opacity="0.95" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M0 0"></path></g></svg></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(928.996px, 1558.06px, 0px) scale(8);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control">© OpenStreetMap © CARTO</div></div></div></div>
+      <div class="map" id="liveMap"></div>
       <div class="map-empty" id="liveMapEmpty">Your route will appear here once GPS locks on</div>
       <div class="map-hint" id="liveMapHint">Tap to expand</div>
     </div>
     <div id="alerts"></div>
-    <div class="controls" id="controls"><button class="btn btn-primary" id="bStart">Start ride</button><button class="btn btn-secondary" id="bDemo">Demo ride</button></div>
+    <div class="controls" id="controls"></div>
   </div>
 
   <!-- ───────── HISTORY VIEW ───────── -->
@@ -573,6 +573,5 @@ if(hasLeaflet){
   $('liveMapHint').style.display='none';
 }
 </script>
-
-
-</body></html>
+</body>
+</html>
