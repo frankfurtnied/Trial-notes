@@ -11491,20 +11491,28 @@ function renderStats() {
 
   const totalMilesDriven = getTotalMilesDriven();
 
-  // Total spent — sum sitefee + fuel from all trips and upcoming drive logs
-  let totalSpent = 0;
-  allTrips.forEach(t => { totalSpent += (t.sitefee||0) + (t.fuel||0); });
+  // Total spent — split into site fees and fuel
+  let totalFees = 0, totalFuel = 0;
+  allTrips.forEach(t => { totalFees += (t.sitefee||0); totalFuel += (t.fuel||0); });
   (state.upcoming||[]).forEach(u => {
-    if (u.driveLog) { totalSpent += (u.driveLog.sitefee||0) + (u.driveLog.fuel||0); }
+    if (u.driveLog) { totalFees += (u.driveLog.sitefee||0); totalFuel += (u.driveLog.fuel||0); }
   });
-  const spentStr = totalSpent > 0 ? '$' + totalSpent.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
+  const fmt = n => n > 0 ? '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
+  const costTile = `<div class="stat"><div class="stat-icon">💰</div>
+    <div style="margin-top:4px;">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin-bottom:2px;">Park Fees</div>
+      <div class="stat-num" style="font-size:1.6rem;">${fmt(totalFees)}</div>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin:6px 0 2px;">Fuel</div>
+      <div class="stat-num" style="font-size:1.6rem;">${fmt(totalFuel)}</div>
+    </div>
+    <div class="stat-label">Trip Costs</div></div>`;
 
   document.getElementById('statsBar').innerHTML = `
     <div class="stat"><div class="stat-icon">⛺</div><div class="stat-num">${parks.length}</div><div class="stat-label">Parks Listed</div></div>
     <div class="stat"><div class="stat-icon">🔥</div><div class="stat-num">${totalTrips}</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-icon">🌙</div><div class="stat-num">${totalNights}</div><div class="stat-label">Nights Camped</div></div>
     <div class="stat"><div class="stat-icon">🛣️</div><div class="stat-num">${totalMilesDriven>0?totalMilesDriven.toLocaleString():'—'}</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;">${calcBtn}</div></div>
-    <div class="stat"><div class="stat-icon">💰</div><div class="stat-num">${spentStr}</div><div class="stat-label">Total Spent</div></div>
+    ${costTile}
     <div class="stat"><div class="stat-icon">📅</div><div class="stat-num">${upcomingCount}</div><div class="stat-label">Upcoming</div></div>`;
 }
 
