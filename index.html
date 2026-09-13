@@ -67,7 +67,7 @@ header p{
 }
 
 /* ── STATS BAR ── */
-.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:28px;}
+.stats-bar{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:28px;}
 .stat{
   background:rgba(245,237,216,.1);
   border:1px solid rgba(245,237,216,.14);
@@ -429,7 +429,7 @@ header p{margin-top:8px;color:rgba(255,247,232,.72);}
   border-radius:6px!important;
   color:var(--cream)!important;
 }
-.stats-bar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:18px 0 24px;}
+.stats-bar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;margin:18px 0 24px;}
 .stat{
   min-width:0;
   border-radius:12px;
@@ -758,7 +758,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 <header>
   <div class="logo-row"><span style="font-size:1.9rem">🌲</span><h1><em>Trail Notes</em></h1><span style="font-size:1.9rem">🌲</span></div>
   <p>Camping Diary · 2012 – <span id="currentYear">2026</span></p><div class="divider"></div>
-  <div id="welcomeMsg" class="welcome-msg">Good evening, Martin! &nbsp;·&nbsp; <span style="opacity:.8;font-size:.92rem;">The journey is the reward.</span></div>
+  <div id="welcomeMsg" class="welcome-msg">Good morning, Martin! &nbsp;·&nbsp; <span style="opacity:.8;font-size:.92rem;">Find joy in the journey.</span></div>
 </header>
 
 <!-- Cloud user bar -->
@@ -771,9 +771,17 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-icon">⛺</div><div class="stat-num">49</div><div class="stat-label">Parks Listed</div></div>
-    <div class="stat"><div class="stat-icon">🔥</div><div class="stat-num">154</div><div class="stat-label">Trips Logged</div></div>
-    <div class="stat"><div class="stat-icon">🌙</div><div class="stat-num">487</div><div class="stat-label">Nights Camped</div></div>
-    <div class="stat"><div class="stat-icon">🛣️</div><div class="stat-num">7,124</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;"><button id="calc-miles-btn" onclick="calculateAllMileage()" style="font-size:.58rem;padding:1px 6px;background:transparent;border:1px solid rgba(200,135,42,.5);color:var(--amber);border-radius:3px;cursor:pointer;font-family:-apple-system,Georgia,serif;">🔄 recalc</button><div id="calc-miles-prog" style="font-size:.58rem;color:var(--smoke);margin-top:1px;"></div></div></div>
+    <div class="stat"><div class="stat-icon">🔥</div><div class="stat-num">155</div><div class="stat-label">Trips Logged</div></div>
+    <div class="stat"><div class="stat-icon">🌙</div><div class="stat-num">491</div><div class="stat-label">Nights Camped</div></div>
+    <div class="stat"><div class="stat-icon">🛣️</div><div class="stat-num">7,304</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;"><button id="calc-miles-btn" onclick="calculateAllMileage()" style="font-size:.58rem;padding:1px 6px;background:transparent;border:1px solid rgba(200,135,42,.5);color:var(--amber);border-radius:3px;cursor:pointer;font-family:-apple-system,Georgia,serif;">🔄 recalc</button><div id="calc-miles-prog" style="font-size:.58rem;color:var(--smoke);margin-top:1px;"></div></div></div>
+    <div class="stat"><div class="stat-icon">💰</div>
+    <div style="margin-top:4px;">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin-bottom:2px;">Park Fees</div>
+      <div class="stat-num" style="font-size:1.6rem;">$3,078</div>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin:6px 0 2px;">Fuel</div>
+      <div class="stat-num" style="font-size:1.6rem;">$170</div>
+    </div>
+    <div class="stat-label">Trip Costs</div></div>
     <div class="stat"><div class="stat-icon">📅</div><div class="stat-num">5</div><div class="stat-label">Upcoming</div></div></div>
 
 <div class="tabs">
@@ -810,7 +818,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div style="min-width:0;">
           <div class="park-name">Anastasia State Park</div>
           <div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
-            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 77 Miles · 1 hr 45 min</span>
+            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 77 Miles</span>
             <a href="https://www.google.com/maps/dir/?api=1&amp;destination=300%20Anastasia%20Park%20Road%2C%20St.%20Augustine%20FL%2032080" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">📍 Address</a>
             <a href="https://www.floridastateparks.org/anastasia" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">🌐 Website</a>
           </div>
@@ -2495,7 +2503,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
             <span class="trip-count-badge">1 trip</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#150</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#151</span>
         <span class="trip-date-badge">📅 Mar 12, 2026 → Mar 15, 2026</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
         <span class="trip-site">Site 37</span>
@@ -2968,7 +2976,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <button class="btn-del-trip" onclick="deleteBaseTrip(29,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#152</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#153</span>
         <span class="trip-date-badge">📅 May 10, 2026 → May 14, 2026</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 2</span>
@@ -3343,7 +3351,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
         </div>
       </div><div class="trip-entry">
         <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#145</span>
-        <span class="trip-date-badge">📅 Mar 23, 2025 → Mar 27, 2025</span>
+        <span class="trip-date-badge">📅 Mar 19, 2025 → Mar 23, 2025</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 3</span>
         <span class="trip-note">Trip #145 — not bad, ok site</span>
@@ -3529,7 +3537,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <button class="btn-del-trip" onclick="deleteBaseTrip(27,1)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#151</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#152</span>
         <span class="trip-date-badge">📅 Apr 11, 2026 → Apr 18, 2026</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
         <span class="trip-site">Site 104</span>
@@ -3609,7 +3617,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
         <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#1</span>
         <span class="trip-date-badge">📅 Aug 19, 2012 → Aug 21, 2012</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
-        <span class="trip-site">Site ?</span>
+        <span class="trip-site">Site 71</span>
         
         
         <div class="trip-actions">
@@ -3903,7 +3911,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <button class="btn-del-trip" onclick="deleteBaseTrip(28,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#149</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#150</span>
         <span class="trip-date-badge">📅 Feb 19, 2026 → Feb 23, 2026</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 29</span>
@@ -4145,12 +4153,12 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <button class="btn-del-trip" onclick="deleteBaseTrip(12,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#153</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#154</span>
         <span class="trip-date-badge">📅 Jun 24, 2026 → Jun 28, 2026</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
         <span class="trip-site">Site 46</span>
         <span class="trip-note">Booked with Keeners</span>
-        <span style="font-size:.75rem;color:var(--moss);white-space:nowrap;">🚗 120mi · 2h 25min</span>
+        
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(12,1)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteTrip(12,0)" title="Remove">✕</button>
@@ -4264,7 +4272,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div style="min-width:0;">
           <div class="park-name">Rodman Campground</div>
           <div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
-            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 92 Miles · 1 hr 45 min</span>
+            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 92 Miles</span>
             <a href="https://www.google.com/maps/dir/?api=1&amp;destination=410%20Rodman%20Dam%20Road%2C%20Palatka%20FL%2032177" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">📍 Address</a>
             <a href="https://www.floridastateparks.org/parks-and-trails/rodman-campground" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">🌐 Website</a>
           </div>
@@ -4605,7 +4613,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div style="min-width:0;">
           <div class="park-name">Silver Springs State Park</div>
           <div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
-            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 90 Miles · 1 hr 50 min</span>
+            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 90 Miles</span>
             <a href="https://www.google.com/maps/dir/?api=1&amp;destination=1425%20NE%2058th%20Avenue%2C%20Ocala%20FL%2034470" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">📍 Address</a>
             <a href="https://www.floridastateparks.org/silversprings" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">🌐 Website</a>
           </div>
@@ -4615,7 +4623,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <button class="btn-fav" onclick="toggleFavorite(8,event)" title="Remove from favorites">❤️</button>
           <span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="Great">★★★★</span>
           
-          <span class="badge bv">🏕 10 trips</span>
+          <span class="badge bv">🏕 11 trips</span>
           <span class="chevron">▾</span>
         </div>
       </div>
@@ -4637,7 +4645,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
         <div class="trip-log">
           <div class="trip-log-title">
             🗓 Trip History
-            <span class="trip-count-badge">10 trips</span>
+            <span class="trip-count-badge">11 trips</span>
           </div>
           <div class="trip-entries"><div class="trip-entry">
         <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#7</span>
@@ -4742,12 +4750,23 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
         <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#143</span>
         <span class="trip-date-badge">📅 Dec 3, 2024 → Dec 7, 2024</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
-        <span class="trip-site">Site 12+13</span>
+        <span class="trip-site">Site 19</span>
         <span class="trip-note">Trip #142-buddy sites 12 &amp; 13, excellent esp 13</span>
         
         <div class="trip-actions">
           <button class="btn-edit-trip" onclick="openET(8,9)" title="Edit">✏️</button>
           <button class="btn-del-trip" onclick="deleteBaseTrip(8,9)" title="Remove">✕</button>
+        </div>
+      </div><div class="trip-entry">
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#149</span>
+        <span class="trip-date-badge">📅 Dec 3, 2025 → Dec 7, 2025</span>
+        <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
+        <span class="trip-site">Site 13</span>
+        <span class="trip-note">buddy sites 12 &amp; 13, excellent esp 13</span>
+        
+        <div class="trip-actions">
+          <button class="btn-edit-trip" onclick="openET(8,10)" title="Edit">✏️</button>
+          <button class="btn-del-trip" onclick="deleteTrip(8,0)" title="Remove">✕</button>
         </div>
       </div></div>
           <div class="add-trip-row">
@@ -4904,10 +4923,10 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <button class="btn-del-trip" onclick="deleteBaseTrip(13,0)" title="Remove">✕</button>
         </div>
       </div><div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#154</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#155</span>
         <span class="trip-date-badge">📅 Sep 3, 2026 → Sep 7, 2026</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
-        <span class="trip-site">Site 4</span>
+        <span class="trip-site">Site 25</span>
         <span class="trip-note">Booked with Keeners</span>
         
         <div class="trip-actions">
@@ -4946,7 +4965,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div style="min-width:0;">
           <div class="park-name">Tomoka State Park</div>
           <div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
-            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 37 Miles · 45 min</span>
+            <span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 37 Miles</span>
             <a href="https://www.google.com/maps/dir/?api=1&amp;destination=2099%20North%20Beach%20Street%2C%20Ormond%20Beach%20FL%2032174" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">📍 Address</a>
             <a href="https://www.floridastateparks.org/Tomoka" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">🌐 Website</a>
           </div>
@@ -5746,12 +5765,13 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Skidaway Island State Park, GA</div>
           <div class="card-date">Oct 3, 2026 – Oct 10, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 21 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 20 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      
       
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1779843134788)">✏️ Edit</button>
@@ -5764,12 +5784,13 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Anastasia State Park</div>
           <div class="card-date">Nov 4, 2026 – Nov 8, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 53 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 52 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 97</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      <div style="font-size:.78rem;color:var(--moss);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:4px;">🚗 Actual drive: <strong>77 miles</strong> · 💰 $100</div>
       
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1776894047340)">✏️ Edit</button>
@@ -5782,12 +5803,13 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Silver Springs State Park</div>
           <div class="card-date">Dec 16, 2026 – Dec 20, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 95 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 94 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      <div style="font-size:.78rem;color:var(--moss);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:4px;">🚗 Actual drive: <strong>90 miles</strong> · 💰 $91</div>
       
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1776893176171)">✏️ Edit</button>
@@ -5800,12 +5822,13 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Rodman Campground</div>
           <div class="card-date">Feb 3, 2027 – Feb 7, 2027</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 144 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 143 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 66</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      <div style="font-size:.78rem;color:var(--moss);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:4px;">🚗 Actual drive: <strong>92 miles</strong> · 💰 $89</div>
       
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1788130017100)">✏️ Edit</button>
@@ -5818,12 +5841,13 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Tomoka State Park</div>
           <div class="card-date">May 27, 2027 – May 31, 2027</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 257 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 256 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 86</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
+      <div style="font-size:.78rem;color:var(--moss);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:4px;">🚗 Actual drive: <strong>37 miles</strong> · 💰 $89</div>
       
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1788129937717)">✏️ Edit</button>
@@ -5967,7 +5991,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
   </div>
   <div class="entries-header">
     <span class="entries-title">All Trips</span>
-    <span class="entry-count" id="triplogCount">154 trips</span>
+    <span class="entry-count" id="triplogCount">155 trips</span><button onclick="window._tripLogSort = window._tripLogSort==='park'?'date':'park'; renderTripLog();" style="font-size:.75rem;padding:3px 10px;background:transparent;border:1px solid var(--fog);border-radius:4px;cursor:pointer;color:var(--fog);font-family:-apple-system,Georgia,serif;margin-left:8px;" id="triplog-sort-btn">Sort: Date ↕</button>
   </div>
   <div id="triplogList">
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -5975,7 +5999,8 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Manatee Hammock Campground</span>
       <span class="trip-date-badge">📅 Aug 19, 2012 → Aug 21, 2012</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
-      <span class="trip-site">Site ?</span>
+      <span class="trip-site">Site 71</span>
+      
       
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776821921700,0)" title="Edit">✏️</button>
     </div>
@@ -5985,6 +6010,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 7, 2012 → Sep 9, 2012</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site ?</span>
+      
       <span class="trip-note">Trip #2</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,0)" title="Edit">✏️</button>
     </div>
@@ -5994,6 +6020,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 4, 2012 → Oct 7, 2012</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 45?</span>
+      
       <span class="trip-note">Trip #3</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,0)" title="Edit">✏️</button>
     </div>
@@ -6002,6 +6029,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Nov 16, 2012 → Nov 18, 2012</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
+      
       
       <span class="trip-note">Trip #4</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,0)" title="Edit">✏️</button>
@@ -6012,6 +6040,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 28, 2012 → Jan 1, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 41</span>
+      
       <span class="trip-note">Trip #5</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(6,0)" title="Edit">✏️</button>
     </div>
@@ -6020,6 +6049,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Tomoka State Park</span>
       <span class="trip-date-badge">📅 Jan 25, 2013 → Jan 27, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
+      
       
       <span class="trip-note">Trip #6</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,0)" title="Edit">✏️</button>
@@ -6030,6 +6060,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 1, 2013 → Mar 3, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       
+      
       <span class="trip-note">Trip #7</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,0)" title="Edit">✏️</button>
     </div>
@@ -6038,6 +6069,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Griffin State Park</span>
       <span class="trip-date-badge">📅 Apr 10, 2013 → Apr 14, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
+      
       
       <span class="trip-note">Trip #8 not very nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(21,0)" title="Edit">✏️</button>
@@ -6048,6 +6080,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 17, 2013 → May 19, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       
+      
       <span class="trip-note">Trip #9</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(16,0)" title="Edit">✏️</button>
     </div>
@@ -6056,6 +6089,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Mike Roess Gold Head Branch State Park</span>
       <span class="trip-date-badge">📅 Jun 13, 2013 → Jun 16, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
+      
       
       <span class="trip-note">Trip #10</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,0)" title="Edit">✏️</button>
@@ -6066,6 +6100,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 18, 2013 → Jul 21, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       
+      
       <span class="trip-note">Trip #11</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,1)" title="Edit">✏️</button>
     </div>
@@ -6074,6 +6109,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Tomoka State Park</span>
       <span class="trip-date-badge">📅 Aug 29, 2013 → Sep 1, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
+      
       
       <span class="trip-note">Trip #12</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,1)" title="Edit">✏️</button>
@@ -6084,6 +6120,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 13, 2013 → Sep 15, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       
+      
       <span class="trip-note">Trip #13</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(9,0)" title="Edit">✏️</button>
     </div>
@@ -6093,6 +6130,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 18, 2013 → Oct 20, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 29</span>
+      
       <span class="trip-note">Trip #14</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(20,0)" title="Edit">✏️</button>
     </div>
@@ -6102,6 +6140,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 1, 2013 → Nov 3, 2013</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 30</span>
+      
       <span class="trip-note">Trip #15 — fall weekend</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,2)" title="Edit">✏️</button>
     </div>
@@ -6110,6 +6149,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Fort Clinch State Park</span>
       <span class="trip-date-badge">📅 Dec 28, 2013 → Jan 5, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 8 nights</span>
+      
       
       <span class="trip-note">Trip #16 , cold!</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(6,1)" title="Edit">✏️</button>
@@ -6120,6 +6160,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 7, 2014 → Feb 9, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       
+      
       <span class="trip-note">trip #17</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,1)" title="Edit">✏️</button>
     </div>
@@ -6129,6 +6170,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 7, 2014 → Mar 9, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 53</span>
+      
       <span class="trip-note">Very nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,0)" title="Edit">✏️</button>
     </div>
@@ -6137,6 +6179,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Hillsborough River State Park</span>
       <span class="trip-date-badge">📅 Apr 10, 2014 → Apr 13, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
+      
       
       <span class="trip-note">Trip #19</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,0)" title="Edit">✏️</button>
@@ -6147,6 +6190,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 9, 2014 → May 11, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 18</span>
+      
       <span class="trip-note">Trip #20</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,3)" title="Edit">✏️</button>
     </div>
@@ -6156,6 +6200,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 25, 2014 → Jul 27, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #21</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,1)" title="Edit">✏️</button>
     </div>
@@ -6165,6 +6210,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 4, 2014 → Sep 7, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 36</span>
+      
       <span class="trip-note">Trip #22</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,2)" title="Edit">✏️</button>
     </div>
@@ -6174,6 +6220,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 3, 2014 → Oct 5, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 30</span>
+      
       <span class="trip-note">Trip #23 nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,4)" title="Edit">✏️</button>
     </div>
@@ -6183,6 +6230,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 7, 2014 → Nov 9, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #24 — best site, cold</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,2)" title="Edit">✏️</button>
     </div>
@@ -6192,6 +6240,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 19, 2014 → Dec 21, 2014</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 36</span>
+      
       <span class="trip-note">Trip #25 — Dec getaway</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,3)" title="Edit">✏️</button>
     </div>
@@ -6201,6 +6250,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jan 23, 2015 → Jan 25, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 63</span>
+      
       <span class="trip-note">Trip #26 — nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,2)" title="Edit">✏️</button>
     </div>
@@ -6210,6 +6260,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 20, 2015 → Feb 22, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 65</span>
+      
       <span class="trip-note">Trip #27 — nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,5)" title="Edit">✏️</button>
     </div>
@@ -6219,6 +6270,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 20, 2015 → Mar 22, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 24</span>
+      
       <span class="trip-note">Trip #28 was canceled Martin in hospital</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,1)" title="Edit">✏️</button>
     </div>
@@ -6228,6 +6280,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 24, 2015 → Apr 26, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #29 great</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,3)" title="Edit">✏️</button>
     </div>
@@ -6237,6 +6290,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 21, 2015 → May 25, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 49</span>
+      
       <span class="trip-note">Trip #30 — not great park</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(19,0)" title="Edit">✏️</button>
     </div>
@@ -6246,6 +6300,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 12, 2015 → Jun 14, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 28</span>
+      
       <span class="trip-note">Trip #31 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(16,1)" title="Edit">✏️</button>
     </div>
@@ -6255,6 +6310,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 3, 2015 → Jul 5, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 43</span>
+      
       <span class="trip-note">Trip #32 — ok</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,6)" title="Edit">✏️</button>
     </div>
@@ -6264,6 +6320,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 7, 2015 → Aug 9, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #33 — best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,4)" title="Edit">✏️</button>
     </div>
@@ -6273,6 +6330,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 9, 2015 → Sep 13, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 28</span>
+      
       <span class="trip-note">Trip #34 — good, small</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,2)" title="Edit">✏️</button>
     </div>
@@ -6282,6 +6340,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 9, 2015 → Oct 11, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 90</span>
+      
       <span class="trip-note">Trip #35 — just ok, small</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,3)" title="Edit">✏️</button>
     </div>
@@ -6291,6 +6350,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 13, 2015 → Nov 15, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 18</span>
+      
       <span class="trip-note">Trip #36 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,7)" title="Edit">✏️</button>
     </div>
@@ -6300,6 +6360,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 25, 2015 → Nov 30, 2015</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 5 nights</span>
       <span class="trip-site">Site 93</span>
+      
       <span class="trip-note">Trip #37 — good, Thanksgiving weekend</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,4)" title="Edit">✏️</button>
     </div>
@@ -6309,6 +6370,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 5, 2016 → Feb 7, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 71</span>
+      
       <span class="trip-note">Trip #38</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,1)" title="Edit">✏️</button>
     </div>
@@ -6318,6 +6380,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 18, 2016 → Mar 20, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 17</span>
+      
       <span class="trip-note">Trip #39 — ok</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,8)" title="Edit">✏️</button>
     </div>
@@ -6327,6 +6390,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 8, 2016 → Apr 10, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #40 — great</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,5)" title="Edit">✏️</button>
     </div>
@@ -6336,6 +6400,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 6, 2016 → May 8, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 36</span>
+      
       <span class="trip-note">Trip #41 — best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,4)" title="Edit">✏️</button>
     </div>
@@ -6345,6 +6410,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 3, 2016 → Jun 5, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 88</span>
+      
       <span class="trip-note">Trip #42 — best site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,9)" title="Edit">✏️</button>
     </div>
@@ -6354,6 +6420,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 8, 2016 → Jul 10, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 33</span>
+      
       <span class="trip-note">Trip #43 — ok site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,5)" title="Edit">✏️</button>
     </div>
@@ -6363,6 +6430,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 2, 2016 → Aug 7, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 5 nights</span>
       <span class="trip-site">Site 75</span>
+      
       <span class="trip-note">Trip #44 — not a good site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,5)" title="Edit">✏️</button>
     </div>
@@ -6372,6 +6440,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 4, 2016 → Sep 11, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
       <span class="trip-site">Site 41+42</span>
+      
       <span class="trip-note">Trip #45 — excellent</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(6,2)" title="Edit">✏️</button>
     </div>
@@ -6381,6 +6450,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 21, 2016 → Oct 23, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 8</span>
+      
       <span class="trip-note">Trip #46 — great</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(9,1)" title="Edit">✏️</button>
     </div>
@@ -6390,6 +6460,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 10, 2016 → Nov 13, 2016</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 11</span>
+      
       <span class="trip-note">Trip #47</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(10,0)" title="Edit">✏️</button>
     </div>
@@ -6399,6 +6470,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 30, 2016 → Jan 1, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 36</span>
+      
       <span class="trip-note">Trip #48 — great</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,6)" title="Edit">✏️</button>
     </div>
@@ -6408,6 +6480,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 3, 2017 → Feb 5, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 65</span>
+      
       <span class="trip-note">Trip #49 — nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,10)" title="Edit">✏️</button>
     </div>
@@ -6417,6 +6490,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 3, 2017 → Mar 5, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #50 — best site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,6)" title="Edit">✏️</button>
     </div>
@@ -6426,6 +6500,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 7, 2017 → Apr 9, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 12</span>
+      
       <span class="trip-note">Trip #51 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,0)" title="Edit">✏️</button>
     </div>
@@ -6435,6 +6510,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 4, 2017 → May 7, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 88</span>
+      
       <span class="trip-note">Trip #52 — best site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,11)" title="Edit">✏️</button>
     </div>
@@ -6444,6 +6520,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 2, 2017 → Jun 4, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 56</span>
+      
       <span class="trip-note">Trip #53 — large, not private.</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,7)" title="Edit">✏️</button>
     </div>
@@ -6453,6 +6530,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 15, 2017 → Jun 17, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 50</span>
+      
       <span class="trip-note">We picked up the new trailer</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776945920611,0)" title="Edit">✏️</button>
     </div>
@@ -6463,6 +6541,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 1 night</span>
       <span class="trip-site">Site 50</span>
       
+      
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776907371154,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -6471,6 +6550,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 7, 2017 → Jul 9, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #56</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,8)" title="Edit">✏️</button>
     </div>
@@ -6480,6 +6560,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 2, 2017 → Aug 6, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 22</span>
+      
       <span class="trip-note">Trip #58 — no shade</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,1)" title="Edit">✏️</button>
     </div>
@@ -6489,6 +6570,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 26, 2017 → Oct 1, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 5 nights</span>
       <span class="trip-site">Site best site</span>
+      
       <span class="trip-note">Trip #59</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(23,0)" title="Edit">✏️</button>
     </div>
@@ -6498,6 +6580,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 14, 2017 → Oct 21, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
       <span class="trip-site">Site C23</span>
+      
       <span class="trip-note">Trip #60 — good site, NC.</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(37,0)" title="Edit">✏️</button>
     </div>
@@ -6507,6 +6590,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 17, 2017 → Nov 19, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 72</span>
+      
       <span class="trip-note">Trip #61 — best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,2)" title="Edit">✏️</button>
     </div>
@@ -6516,6 +6600,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 22, 2017 → Dec 24, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 96</span>
+      
       <span class="trip-note">Trip #62 — ok</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,12)" title="Edit">✏️</button>
     </div>
@@ -6525,6 +6610,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jan 5, 2018 → Jan 7, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 47</span>
+      
       <span class="trip-note">Trip #63 — not good, inside, exposed</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,9)" title="Edit">✏️</button>
     </div>
@@ -6534,6 +6620,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 9, 2018 → Feb 11, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 42</span>
+      
       <span class="trip-note">Trip #64 — narrow, just ok</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,13)" title="Edit">✏️</button>
     </div>
@@ -6543,6 +6630,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 23, 2018 → Mar 25, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 36</span>
+      
       <span class="trip-note">Trip #65 — not fit, ok</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,7)" title="Edit">✏️</button>
     </div>
@@ -6552,6 +6640,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 11, 2018 → Apr 14, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 28</span>
+      
       <span class="trip-note">Trip #66 — great</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,3)" title="Edit">✏️</button>
     </div>
@@ -6561,6 +6650,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 3, 2018 → May 6, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 22</span>
+      
       <span class="trip-note">Trip #67 — no shade. Site 24 is best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,2)" title="Edit">✏️</button>
     </div>
@@ -6570,6 +6660,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 1, 2018 → Jun 3, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #68 — best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,10)" title="Edit">✏️</button>
     </div>
@@ -6579,6 +6670,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 6, 2018 → Jul 8, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 1</span>
+      
       <span class="trip-note">Trip #69 — great view</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(9,2)" title="Edit">✏️</button>
     </div>
@@ -6588,6 +6680,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 10, 2018 → Aug 12, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 48</span>
+      
       <span class="trip-note">Trip #70 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,6)" title="Edit">✏️</button>
     </div>
@@ -6597,6 +6690,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 30, 2018 → Sep 3, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 43</span>
+      
       <span class="trip-note">Trip #71 — with sewer</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,3)" title="Edit">✏️</button>
     </div>
@@ -6606,6 +6700,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 19, 2018 → Sep 23, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 88</span>
+      
       <span class="trip-note">Trip #72</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,14)" title="Edit">✏️</button>
     </div>
@@ -6615,6 +6710,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 17, 2018 → Oct 21, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 46</span>
+      
       <span class="trip-note">#73</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,0)" title="Edit">✏️</button>
     </div>
@@ -6624,6 +6720,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 5, 2018 → Dec 9, 2018</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 22</span>
+      
       <span class="trip-note">Trip #74</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,4)" title="Edit">✏️</button>
     </div>
@@ -6633,6 +6730,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jan 25, 2019 → Jan 27, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 21</span>
+      
       <span class="trip-note">Trip #75 — not private</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(22,0)" title="Edit">✏️</button>
     </div>
@@ -6642,6 +6740,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 22, 2019 → Feb 24, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 60</span>
+      
       <span class="trip-note">Trip #76</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,1)" title="Edit">✏️</button>
     </div>
@@ -6651,6 +6750,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 5, 2019 → Apr 7, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #77 — best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,11)" title="Edit">✏️</button>
     </div>
@@ -6660,6 +6760,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 31, 2019 → Jun 2, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #78 I don't have actual date</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,12)" title="Edit">✏️</button>
     </div>
@@ -6669,6 +6770,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 5, 2019 → Jul 7, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #79  I don't have actual date</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,13)" title="Edit">✏️</button>
     </div>
@@ -6678,6 +6780,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 2, 2019 → Aug 4, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 44</span>
+      
       <span class="trip-note">Trip #80 — wet</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,14)" title="Edit">✏️</button>
     </div>
@@ -6687,6 +6790,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 12, 2019 → Sep 15, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 24</span>
+      
       <span class="trip-note">Trip #81 — best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,5)" title="Edit">✏️</button>
     </div>
@@ -6696,6 +6800,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 4, 2019 → Oct 6, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 36</span>
+      
       <span class="trip-note">Trip #82</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,8)" title="Edit">✏️</button>
     </div>
@@ -6704,6 +6809,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Blue Spring State Park</span>
       <span class="trip-date-badge">📅 Dec 3, 2019 → Dec 5, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
+      
       
       <span class="trip-note">Trip #83</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,9)" title="Edit">✏️</button>
@@ -6714,6 +6820,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 19, 2019 → Dec 23, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 49</span>
+      
       <span class="trip-note">Trip #84 — With Mother</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(24,0)" title="Edit">✏️</button>
     </div>
@@ -6723,6 +6830,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jan 6, 2020 → Jan 9, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 21</span>
+      
       <span class="trip-note">good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776961962322,0)" title="Edit">✏️</button>
     </div>
@@ -6732,6 +6840,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 20, 2020 → Feb 23, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 47</span>
+      
       <span class="trip-note">Trip #86 — very good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,1)" title="Edit">✏️</button>
     </div>
@@ -6741,6 +6850,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 21, 2020 → May 24, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 108</span>
+      
       <span class="trip-note">Trip #87 — just good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,7)" title="Edit">✏️</button>
     </div>
@@ -6751,6 +6861,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 101</span>
       
+      
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776906864399,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -6759,6 +6870,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 28, 2020 → Aug 30, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 48</span>
+      
       <span class="trip-note">Trip #90 — very good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(4,8)" title="Edit">✏️</button>
     </div>
@@ -6768,6 +6880,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 4, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 1 night</span>
       <span class="trip-site">Site 28</span>
+      
       <span class="trip-note">Trip #91 — very good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,4)" title="Edit">✏️</button>
     </div>
@@ -6777,6 +6890,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 11, 2020 → Sep 13, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 36</span>
+      
       <span class="trip-note">Trip #91 — too small</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,10)" title="Edit">✏️</button>
     </div>
@@ -6786,6 +6900,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 1, 2020 → Oct 4, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 56</span>
+      
       <span class="trip-note">Trip #92 — hard to get in, nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,5)" title="Edit">✏️</button>
     </div>
@@ -6795,6 +6910,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 19, 2020 → Nov 22, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 12</span>
+      
       <span class="trip-note">Trip #93 — very good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(25,0)" title="Edit">✏️</button>
     </div>
@@ -6804,6 +6920,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 2, 2020 → Dec 6, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 38</span>
+      
       <span class="trip-note">Trip #94 — excellent</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,6)" title="Edit">✏️</button>
     </div>
@@ -6813,6 +6930,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 11, 2020 → Dec 13, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 60</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $56 (site $56)</span>
       <span class="trip-note">Trip #99</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,2)" title="Edit">✏️</button>
     </div>
@@ -6822,6 +6940,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jan 24, 2021 → Feb 8, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 15 nights</span>
       <span class="trip-site">Site 40</span>
+      
       <span class="trip-note">Trip #95 — best</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(6,3)" title="Edit">✏️</button>
     </div>
@@ -6831,6 +6950,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 5, 2021 → Mar 7, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 11</span>
+      
       <span class="trip-note">Trip #96 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,3)" title="Edit">✏️</button>
     </div>
@@ -6840,6 +6960,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 1, 2021 → Apr 4, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 60</span>
+      
       <span class="trip-note">Trip #97</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,3)" title="Edit">✏️</button>
     </div>
@@ -6849,6 +6970,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 21, 2021 → May 23, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $61 (site $61)</span>
       <span class="trip-note">Trip #98</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,15)" title="Edit">✏️</button>
     </div>
@@ -6858,6 +6980,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 13, 2021 → Jun 19, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 6 nights</span>
       <span class="trip-site">Site 93</span>
+      
       <span class="trip-note">Trip #100</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(36,0)" title="Edit">✏️</button>
     </div>
@@ -6867,6 +6990,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 9, 2021 → Jul 11, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 46</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $61 (site $61)</span>
       <span class="trip-note">Trip #101</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,16)" title="Edit">✏️</button>
     </div>
@@ -6876,6 +7000,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 29, 2021 → Aug 1, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 20</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $60 (site $60)</span>
       <span class="trip-note">It was way out there for stargazing nothing special</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776963732011,0)" title="Edit">✏️</button>
     </div>
@@ -6885,6 +7010,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 27, 2021 → Aug 29, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 60</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $56 (site $56)</span>
       <span class="trip-note">Trip #102</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,4)" title="Edit">✏️</button>
     </div>
@@ -6894,6 +7020,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 23, 2021 → Sep 26, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 44</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $88 (site $88)</span>
       <span class="trip-note">Trip #103 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,17)" title="Edit">✏️</button>
     </div>
@@ -6903,6 +7030,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 21, 2021 → Oct 24, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 47</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $74 (site $74)</span>
       <span class="trip-note">Trip #104 — excellent</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,2)" title="Edit">✏️</button>
     </div>
@@ -6912,6 +7040,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 12, 2021 → Nov 14, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 62</span>
+      
       <span class="trip-note">Trip #105 — excellent</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,5)" title="Edit">✏️</button>
     </div>
@@ -6921,6 +7050,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 1, 2021 → Dec 5, 2021</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 36</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $113 (site $113)</span>
       <span class="trip-note">Trip #106</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,7)" title="Edit">✏️</button>
     </div>
@@ -6930,6 +7060,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 17, 2022 → Feb 20, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 43</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $112 (site $112)</span>
       <span class="trip-note">Trip #107</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(5,6)" title="Edit">✏️</button>
     </div>
@@ -6939,6 +7070,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 12, 2022 → Apr 18, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 6 nights</span>
       <span class="trip-site">Site 24</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $74 (site $74)</span>
       <span class="trip-note">Trip #108 — great, April 12–18</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(33,0)" title="Edit">✏️</button>
     </div>
@@ -6948,6 +7080,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 8, 2022 → May 11, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 46</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $67 (site $67)</span>
       <span class="trip-note">Trip #109 — great</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,3)" title="Edit">✏️</button>
     </div>
@@ -6957,6 +7090,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 14, 2022 → Jul 17, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 60</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $67 (site $67)</span>
       <span class="trip-note">Trip #110 — beautiful</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,6)" title="Edit">✏️</button>
     </div>
@@ -6966,6 +7100,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 18, 2022 → Aug 21, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 29</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $74 (site $74)</span>
       <span class="trip-note">Trip #111 — a little narrow but nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,11)" title="Edit">✏️</button>
     </div>
@@ -6975,6 +7110,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 8, 2022 → Sep 11, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 16</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $92 (site $92)</span>
       <span class="trip-note">Trip #112 — ok but not private</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,15)" title="Edit">✏️</button>
     </div>
@@ -6984,6 +7120,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 15, 2022 → Oct 22, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
       <span class="trip-site">Site 96</span>
+      
       <span class="trip-note">Trip #113 — best site, lakefront, beautiful</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(15,0)" title="Edit">✏️</button>
     </div>
@@ -6993,6 +7130,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 22, 2022 → Oct 25, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 77</span>
+      
       <span class="trip-note">Trip #114 — top site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(14,0)" title="Edit">✏️</button>
     </div>
@@ -7002,6 +7140,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 30, 2022 → Dec 4, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 7</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $91 (site $91)</span>
       <span class="trip-note">Trip #115</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,8)" title="Edit">✏️</button>
     </div>
@@ -7011,6 +7150,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 22, 2022 → Dec 26, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 16</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $83 (site $83)</span>
       <span class="trip-note">Trip #116 — Xmas</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,4)" title="Edit">✏️</button>
     </div>
@@ -7020,6 +7160,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jan 11, 2023 → Jan 13, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $38 (site $38)</span>
       <span class="trip-note">Trip #117 — best site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,18)" title="Edit">✏️</button>
     </div>
@@ -7029,6 +7170,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 20, 2023 → Feb 23, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 72</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $64 (site $64)</span>
       <span class="trip-note">Trip #118 — good, hard to park</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(17,5)" title="Edit">✏️</button>
     </div>
@@ -7038,6 +7180,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 23, 2023 → Mar 27, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 55</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $78 (site $78)</span>
       <span class="trip-note">Trip #119 — tight spot</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(11,0)" title="Edit">✏️</button>
     </div>
@@ -7047,6 +7190,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 9, 2023 → Apr 13, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 60</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $87 (site $87)</span>
       <span class="trip-note">Trip #120</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,7)" title="Edit">✏️</button>
     </div>
@@ -7056,6 +7200,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 2, 2023 → May 7, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 5 nights</span>
       <span class="trip-site">Site 41</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $114 (site $114)</span>
       <span class="trip-note">Trip #121 — very nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,19)" title="Edit">✏️</button>
     </div>
@@ -7065,6 +7210,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 1, 2023 → Jun 6, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 5 nights</span>
       <span class="trip-site">Site 12</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $97 (site $97)</span>
       <span class="trip-note">Trip #122 — not best, own 6 sites</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(12,0)" title="Edit">✏️</button>
     </div>
@@ -7074,6 +7220,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 13, 2023 → Jul 16, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 6</span>
+      
       <span class="trip-note">Trip #123</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(34,0)" title="Edit">✏️</button>
     </div>
@@ -7083,6 +7230,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 1, 2023 → Sep 4, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 53</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $64 (site $64)</span>
       <span class="trip-note">Trip #125 — very nice</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,16)" title="Edit">✏️</button>
     </div>
@@ -7092,6 +7240,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 14, 2023 → Oct 21, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
       <span class="trip-site">Site 53</span>
+      
       <span class="trip-note">Trip #127 — very nice, Oct 14–21</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(30,0)" title="Edit">✏️</button>
     </div>
@@ -7101,6 +7250,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 21, 2023 → Oct 25, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 32</span>
+      
       <span class="trip-note">Trip #128 — ok. Beautiful park, odd layout, confusing signs, nice trails</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(31,0)" title="Edit">✏️</button>
     </div>
@@ -7110,6 +7260,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 25, 2023 → Oct 27, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 15</span>
+      
       <span class="trip-note">Trip #129 — not our favorite park</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(32,0)" title="Edit">✏️</button>
     </div>
@@ -7119,6 +7270,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 8, 2023 → Nov 12, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 60</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $87 (site $87)</span>
       <span class="trip-note">Trip #141 — beautiful fall colors</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(7,8)" title="Edit">✏️</button>
     </div>
@@ -7128,6 +7280,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 7, 2023 → Dec 11, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 37</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $92 (site $92)</span>
       <span class="trip-note">Trip #130 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(3,20)" title="Edit">✏️</button>
     </div>
@@ -7137,6 +7290,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jan 21, 2024 → Jan 26, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 5 nights</span>
       <span class="trip-site">Site 31</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $83 (site $83)</span>
       <span class="trip-note">Trip #131 — private</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,4)" title="Edit">✏️</button>
     </div>
@@ -7146,6 +7300,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Mar 5, 2024 → Mar 9, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 24</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $85 (site $85)</span>
       <span class="trip-note">Trip #132 — good!</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(13,0)" title="Edit">✏️</button>
     </div>
@@ -7155,6 +7310,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 17, 2024 → Apr 21, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 67</span>
+      
       <span class="trip-note">Trip #133 — waterfront</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,1)" title="Edit">✏️</button>
     </div>
@@ -7164,6 +7320,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 May 24, 2024 → May 27, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 53</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $71 (site $71)</span>
       <span class="trip-note">Trip #134 — very nice, waterfront</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1,17)" title="Edit">✏️</button>
     </div>
@@ -7173,6 +7330,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 12, 2024 → Jun 16, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 172</span>
+      
       <span class="trip-note">Trip #135 — waterfront, June 12–16</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(35,0)" title="Edit">✏️</button>
     </div>
@@ -7182,6 +7340,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 2, 2024 → Jul 5, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 3</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $71 (site $71)</span>
       <span class="trip-note">Trip #136 — shade, excellent</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(2,12)" title="Edit">✏️</button>
     </div>
@@ -7191,6 +7350,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Aug 26, 2024 → Aug 29, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 2</span>
+      
       <span class="trip-note">Trip #137 — very good, great tubing, kayaking, cheap</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(29,0)" title="Edit">✏️</button>
     </div>
@@ -7200,6 +7360,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Sep 18, 2024 → Sep 22, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 71</span>
+      
       <span class="trip-note">Trip #138 — pull through</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(38,0)" title="Edit">✏️</button>
     </div>
@@ -7209,6 +7370,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 17, 2024 → Oct 21, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 25</span>
+      
       <span class="trip-note">Trip #139 — good, South Carolina</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(39,0)" title="Edit">✏️</button>
     </div>
@@ -7218,6 +7380,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 21, 2024 → Oct 27, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 6 nights</span>
       <span class="trip-site">Site 38</span>
+      
       <span class="trip-note">Trip #140 — Satterwhite Point JC Cooper Camp. LOVED this waterfront!</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(40,0)" title="Edit">✏️</button>
     </div>
@@ -7227,6 +7390,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 27, 2024 → Nov 4, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 8 nights</span>
       <span class="trip-site">Site 35E</span>
+      
       <span class="trip-note">Trip #141</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776970763557,0)" title="Edit">✏️</button>
     </div>
@@ -7235,6 +7399,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Carolina Beach State Park</span>
       <span class="trip-date-badge">📅 Nov 4, 2024 → Nov 6, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
+      
       
       
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776905736791,0)" title="Edit">✏️</button>
@@ -7246,6 +7411,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 1 night</span>
       <span class="trip-site">Site 11</span>
       
+      
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776905257701,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -7253,7 +7419,8 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
       <span class="trip-date-badge">📅 Dec 3, 2024 → Dec 7, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
-      <span class="trip-site">Site 12+13</span>
+      <span class="trip-site">Site 19</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $112 (site $112)</span>
       <span class="trip-note">Trip #142-buddy sites 12 &amp; 13, excellent esp 13</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,9)" title="Edit">✏️</button>
     </div>
@@ -7263,15 +7430,17 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Feb 14, 2025 → Feb 16, 2025</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 45</span>
+      
       <span class="trip-note">Trip #144 — valentines weekend</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,5)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#145</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Lake Kissimmee State Park</span>
-      <span class="trip-date-badge">📅 Mar 23, 2025 → Mar 27, 2025</span>
+      <span class="trip-date-badge">📅 Mar 19, 2025 → Mar 23, 2025</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 3</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $83 (site $83)</span>
       <span class="trip-note">Trip #145 — not bad, ok site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(18,6)" title="Edit">✏️</button>
     </div>
@@ -7281,6 +7450,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Apr 14, 2025 → Apr 20, 2025</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 6 nights</span>
       <span class="trip-site">Site 104</span>
+      
       <span class="trip-note">Trip #146 — April 14–20</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,2)" title="Edit">✏️</button>
     </div>
@@ -7290,6 +7460,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 1, 2025 → Jun 5, 2025</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 28</span>
+      
       <span class="trip-note">Trip #147 — June 1–5</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(28,0)" title="Edit">✏️</button>
     </div>
@@ -7299,60 +7470,77 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 21, 2025 → Jul 25, 2025</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 5</span>
+      
       <span class="trip-note">Trip #148 — good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(29,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#149</span>
+      <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Silver Springs State Park</span>
+      <span class="trip-date-badge">📅 Dec 3, 2025 → Dec 7, 2025</span>
+      <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
+      <span class="trip-site">Site 13</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $91 (site $91)</span>
+      <span class="trip-note">buddy sites 12 &amp; 13, excellent esp 13</span>
+      <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(8,10)" title="Edit">✏️</button>
+    </div>
+    <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#150</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Moss Park</span>
       <span class="trip-date-badge">📅 Feb 19, 2026 → Feb 23, 2026</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 29</span>
+      
       <span class="trip-note">Trip #151 — excellent! Go for 25 next.</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(28,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#150</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#151</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Harddee Lakes Park</span>
       <span class="trip-date-badge">📅 Mar 12, 2026 → Mar 15, 2026</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 37</span>
       
+      
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1777632922321,0)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#151</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#152</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Long Point Campground</span>
       <span class="trip-date-badge">📅 Apr 11, 2026 → Apr 18, 2026</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
       <span class="trip-site">Site 104</span>
+      
       <span class="trip-note">With Mark &amp; Sheryl in Site 103</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(27,3)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#152</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#153</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Kelly Park</span>
       <span class="trip-date-badge">📅 May 10, 2026 → May 14, 2026</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 2</span>
+      
       <span class="trip-note">we met Canadians</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(29,2)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#153</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#154</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Paynes Prairie State Park</span>
       <span class="trip-date-badge">📅 Jun 24, 2026 → Jun 28, 2026</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 46</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $79 (site $79)</span>
       <span class="trip-note">Booked with Keeners</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(12,1)" title="Edit">✏️</button>
     </div>
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#154</span>
+      <span style="min-width:36px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:2px 9px;font-size:.8rem;flex-shrink:0;font-family:-apple-system,Georgia,serif">#155</span>
       <span style="font-family:-apple-system,Georgia,serif;color:var(--bark);font-size:.95rem;font-weight:600;flex-shrink:0">Stephen Foster Folk Culture State Park</span>
       <span class="trip-date-badge">📅 Sep 3, 2026 → Sep 7, 2026</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
-      <span class="trip-site">Site 4</span>
+      <span class="trip-site">Site 25</span>
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $255 (site $85) + fuel $170</span>
       <span class="trip-note">Booked with Keeners</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(13,1)" title="Edit">✏️</button>
     </div></div>
@@ -7364,8 +7552,8 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <h2>Trip Timeline</h2>
       <p>A chronological view of every camping trip, grouped by year so the diary reads like a real travel history.</p>
       <div class="timeline-metrics" id="timelineMetrics">
-      <div class="timeline-metric"><strong>154</strong><span>Trips</span></div>
-      <div class="timeline-metric"><strong>487</strong><span>Nights</span></div>
+      <div class="timeline-metric"><strong>155</strong><span>Trips</span></div>
+      <div class="timeline-metric"><strong>491</strong><span>Nights</span></div>
       <div class="timeline-metric"><strong>49</strong><span>Parks</span></div></div>
     </div>
     <div class="timeline-summary">
@@ -7396,7 +7584,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
               <div class="timeline-meta">
                 <span class="timeline-pill">Aug</span>
                 <span class="timeline-pill">2 nights</span>
-                <span class="timeline-pill">Site ?</span>
+                <span class="timeline-pill">Site 71</span>
                 
               </div>
               
@@ -9776,7 +9964,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
               <div class="timeline-meta">
                 <span class="timeline-pill">Dec</span>
                 <span class="timeline-pill">4 nights</span>
-                <span class="timeline-pill">Site 12+13</span>
+                <span class="timeline-pill">Site 19</span>
                 
               </div>
               <div class="timeline-note">Trip #142-buddy sites 12 &amp; 13, excellent esp 13</div>
@@ -9786,7 +9974,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <section id="timeline-year-2025">
         <div class="timeline-year">
           <h3>2025</h3>
-          <span>5 trips · 20 nights</span>
+          <span>6 trips · 24 nights</span>
         </div>
         <div class="timeline-list">
           
@@ -9810,7 +9998,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
               <div class="timeline-card-head">
                 <div>
                   <div class="timeline-park">Lake Kissimmee State Park</div>
-                  <div class="timeline-date">Mar 23, 2025 → Mar 27, 2025</div>
+                  <div class="timeline-date">Mar 19, 2025 → Mar 23, 2025</div>
                 </div>
                 <button class="timeline-num" onclick="openET(18,6)" title="Edit trip">#145</button>
               </div>
@@ -9870,6 +10058,22 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
               </div>
               <div class="timeline-note">Trip #148 — good</div>
             </article>
+            <article class="timeline-card">
+              <div class="timeline-card-head">
+                <div>
+                  <div class="timeline-park">Silver Springs State Park</div>
+                  <div class="timeline-date">Dec 3, 2025 → Dec 7, 2025</div>
+                </div>
+                <button class="timeline-num" onclick="openET(8,10)" title="Edit trip">#149</button>
+              </div>
+              <div class="timeline-meta">
+                <span class="timeline-pill">Dec</span>
+                <span class="timeline-pill">4 nights</span>
+                <span class="timeline-pill">Site 13</span>
+                
+              </div>
+              <div class="timeline-note">buddy sites 12 &amp; 13, excellent esp 13</div>
+            </article>
         </div>
       </section>
       <section id="timeline-year-2026">
@@ -9885,7 +10089,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
                   <div class="timeline-park">Moss Park</div>
                   <div class="timeline-date">Feb 19, 2026 → Feb 23, 2026</div>
                 </div>
-                <button class="timeline-num" onclick="openET(28,1)" title="Edit trip">#149</button>
+                <button class="timeline-num" onclick="openET(28,1)" title="Edit trip">#150</button>
               </div>
               <div class="timeline-meta">
                 <span class="timeline-pill">Feb</span>
@@ -9901,7 +10105,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
                   <div class="timeline-park">Harddee Lakes Park</div>
                   <div class="timeline-date">Mar 12, 2026 → Mar 15, 2026</div>
                 </div>
-                <button class="timeline-num" onclick="openET(1777632922321,0)" title="Edit trip">#150</button>
+                <button class="timeline-num" onclick="openET(1777632922321,0)" title="Edit trip">#151</button>
               </div>
               <div class="timeline-meta">
                 <span class="timeline-pill">Mar</span>
@@ -9917,7 +10121,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
                   <div class="timeline-park">Long Point Campground</div>
                   <div class="timeline-date">Apr 11, 2026 → Apr 18, 2026</div>
                 </div>
-                <button class="timeline-num" onclick="openET(27,3)" title="Edit trip">#151</button>
+                <button class="timeline-num" onclick="openET(27,3)" title="Edit trip">#152</button>
               </div>
               <div class="timeline-meta">
                 <span class="timeline-pill">Apr</span>
@@ -9933,7 +10137,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
                   <div class="timeline-park">Kelly Park</div>
                   <div class="timeline-date">May 10, 2026 → May 14, 2026</div>
                 </div>
-                <button class="timeline-num" onclick="openET(29,2)" title="Edit trip">#152</button>
+                <button class="timeline-num" onclick="openET(29,2)" title="Edit trip">#153</button>
               </div>
               <div class="timeline-meta">
                 <span class="timeline-pill">May</span>
@@ -9949,7 +10153,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
                   <div class="timeline-park">Paynes Prairie State Park</div>
                   <div class="timeline-date">Jun 24, 2026 → Jun 28, 2026</div>
                 </div>
-                <button class="timeline-num" onclick="openET(12,1)" title="Edit trip">#153</button>
+                <button class="timeline-num" onclick="openET(12,1)" title="Edit trip">#154</button>
               </div>
               <div class="timeline-meta">
                 <span class="timeline-pill">Jun</span>
@@ -9965,12 +10169,12 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
                   <div class="timeline-park">Stephen Foster Folk Culture State Park</div>
                   <div class="timeline-date">Sep 3, 2026 → Sep 7, 2026</div>
                 </div>
-                <button class="timeline-num" onclick="openET(13,1)" title="Edit trip">#154</button>
+                <button class="timeline-num" onclick="openET(13,1)" title="Edit trip">#155</button>
               </div>
               <div class="timeline-meta">
                 <span class="timeline-pill">Sep</span>
                 <span class="timeline-pill">4 nights</span>
-                <span class="timeline-pill">Site 4</span>
+                <span class="timeline-pill">Site 25</span>
                 
               </div>
               <div class="timeline-note">Booked with Keeners</div>
@@ -10213,7 +10417,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
         </div>
     </div></div>
 
-<div class="toast" id="toast">Welcome back! 🌲</div>
+<div class="toast" id="toast">Synced! ✅ All up to date.</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -11468,6 +11672,84 @@ function renderWelcome() {
   el.innerHTML = greeting + ', Martin! &nbsp;·&nbsp; <span style="opacity:.8;font-size:.92rem;">' + quote + '</span>';
 }
 
+function showFeesBreakdown() {
+  const parkMap = {};
+  allParks().forEach(p => { parkMap[p.id] = p.name; });
+  const allTrips = getAllTripsSorted();
+
+  // Build per-park fee totals
+  const byPark = {};
+  allTrips.forEach(t => {
+    if (!t.sitefee && !t.fuel) return;
+    const name = parkMap[t._pid] || 'Unknown Park';
+    if (!byPark[name]) byPark[name] = {fees:0, fuel:0, trips:0};
+    byPark[name].fees  += (t.sitefee||0);
+    byPark[name].fuel  += (t.fuel||0);
+    byPark[name].trips += 1;
+  });
+  (state.upcoming||[]).forEach(u => {
+    if (!u.driveLog || (!u.driveLog.sitefee && !u.driveLog.fuel)) return;
+    const name = u.parkName || 'Unknown Park';
+    if (!byPark[name]) byPark[name] = {fees:0, fuel:0, trips:0};
+    byPark[name].fees  += (u.driveLog.sitefee||0);
+    byPark[name].fuel  += (u.driveLog.fuel||0);
+    byPark[name].trips += 1;
+  });
+
+  const rows = Object.entries(byPark)
+    .sort((a,b) => b[1].fees - a[1].fees);
+
+  const totalFees = rows.reduce((s,[,v]) => s+v.fees, 0);
+  const totalFuel = rows.reduce((s,[,v]) => s+v.fuel, 0);
+  const fmt = n => '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+
+  const rowsHtml = rows.map(([name, v]) => `
+    <tr style="border-bottom:1px solid var(--parchment);">
+      <td style="padding:7px 10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;color:var(--bark);">${esc(name)}</td>
+      <td style="padding:7px 10px;text-align:center;font-size:.8rem;color:var(--fog);">${v.trips}</td>
+      <td style="padding:7px 10px;text-align:right;font-weight:600;color:var(--moss);">${v.fees>0?fmt(v.fees):'—'}</td>
+      <td style="padding:7px 10px;text-align:right;color:var(--fog);">${v.fuel>0?fmt(v.fuel):'—'}</td>
+      <td style="padding:7px 10px;text-align:right;font-weight:600;color:var(--bark);">${fmt(v.fees+v.fuel)}</td>
+    </tr>`).join('');
+
+  const html = `
+    <div id="fees-modal-bg" onclick="if(event.target===this)this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;">
+      <div style="background:white;border-radius:12px;max-width:680px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <div style="padding:18px 20px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">🏕️ Park Fees Breakdown</div>
+            <div style="font-size:.78rem;color:var(--fog);margin-top:2px;">${rows.length} parks with logged costs</div>
+          </div>
+          <button onclick="document.getElementById('fees-modal-bg').remove()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--fog);">✕</button>
+        </div>
+        <div style="overflow-y:auto;flex:1;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:var(--parchment);position:sticky;top:0;">
+                <th style="padding:8px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Park</th>
+                <th style="padding:8px 10px;text-align:center;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Trips</th>
+                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Site Fees</th>
+                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Fuel</th>
+                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Total</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+            <tfoot>
+              <tr style="background:var(--pine);">
+                <td style="padding:10px;font-weight:700;color:var(--cream);font-family:-apple-system,Georgia,serif;" colspan="2">TOTAL</td>
+                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmt(totalFees)}</td>
+                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmt(totalFuel)}</td>
+                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmt(totalFees+totalFuel)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
 function renderStats() {
   renderWelcome();
   const parks = allParks();
@@ -11498,21 +11780,25 @@ function renderStats() {
     if (u.driveLog) { totalFees += (u.driveLog.sitefee||0); totalFuel += (u.driveLog.fuel||0); }
   });
   const fmt = n => n > 0 ? '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
-  const costTile = `<div class="stat"><div class="stat-icon">💰</div>
-    <div style="margin-top:4px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin-bottom:2px;">Park Fees</div>
-      <div class="stat-num" style="font-size:1.6rem;">${fmt(totalFees)}</div>
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin:6px 0 2px;">Fuel</div>
-      <div class="stat-num" style="font-size:1.6rem;">${fmt(totalFuel)}</div>
-    </div>
-    <div class="stat-label">Trip Costs</div></div>`;
+  const feesTile = `<div class="stat" onclick="showFeesBreakdown()" style="cursor:pointer;" title="Click to see breakdown">
+    <div class="stat-icon">🏕️</div>
+    <div class="stat-num">${fmt(totalFees)}</div>
+    <div class="stat-label">Park Fees</div>
+    <div style="font-size:.6rem;color:var(--smoke);margin-top:3px;">tap for details</div>
+  </div>`;
+  const fuelTile = `<div class="stat">
+    <div class="stat-icon">⛽</div>
+    <div class="stat-num">${fmt(totalFuel)}</div>
+    <div class="stat-label">Fuel Cost</div>
+  </div>`;
 
   document.getElementById('statsBar').innerHTML = `
     <div class="stat"><div class="stat-icon">⛺</div><div class="stat-num">${parks.length}</div><div class="stat-label">Parks Listed</div></div>
     <div class="stat"><div class="stat-icon">🔥</div><div class="stat-num">${totalTrips}</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-icon">🌙</div><div class="stat-num">${totalNights}</div><div class="stat-label">Nights Camped</div></div>
     <div class="stat"><div class="stat-icon">🛣️</div><div class="stat-num">${totalMilesDriven>0?totalMilesDriven.toLocaleString():'—'}</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;">${calcBtn}</div></div>
-    ${costTile}
+    ${feesTile}
+    ${fuelTile}
     <div class="stat"><div class="stat-icon">📅</div><div class="stat-num">${upcomingCount}</div><div class="stat-label">Upcoming</div></div>`;
 }
 
@@ -13972,7 +14258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 <div id="driveLogBg" style="display: none; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
   <div style="background:var(--parchment);border-radius:8px;padding:24px;max-width:380px;width:100%;font-family:-apple-system,Georgia,serif;">
     <h3 style="margin:0 0 4px;color:var(--bark);font-size:1.1rem;">🚗 Log actual drive</h3>
-    <p id="dl-park" style="margin:0 0 16px;font-size:.85rem;color:var(--fog);">Paynes Prairie State Park</p>
+    <p id="dl-park" style="margin:0 0 16px;font-size:.85rem;color:var(--fog);">Tomoka State Park</p>
     <div style="margin-bottom:12px;">
       <label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">Actual miles (one-way)</label>
       <input id="dl-miles" type="number" min="0" placeholder="e.g. 82" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:1rem;font-family:-apple-system,Georgia,serif;background:white;">
@@ -14007,4 +14293,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   </div>
 </div>
 </div><div id="photoViewBg" style="display: none; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.9); z-index: 2000; align-items: center; justify-content: center; cursor: pointer; padding: 20px;"><img src="./Trail Notes — Camping Diary_files/Trail Notes — Camping Diary.html" style="max-width:95%;max-height:95%;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.8);"></div>
-</body></html>
+<div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div></body></html>
