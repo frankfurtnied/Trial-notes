@@ -11677,69 +11677,92 @@ function showFeesBreakdown() {
   allParks().forEach(p => { parkMap[p.id] = p.name; });
   const allTrips = getAllTripsSorted();
 
-  // Build per-park fee totals
+  // Build per-park groups of individual trips
   const byPark = {};
   allTrips.forEach(t => {
     if (!t.sitefee && !t.fuel) return;
     const name = parkMap[t._pid] || 'Unknown Park';
-    if (!byPark[name]) byPark[name] = {fees:0, fuel:0, trips:0};
-    byPark[name].fees  += (t.sitefee||0);
-    byPark[name].fuel  += (t.fuel||0);
-    byPark[name].trips += 1;
+    if (!byPark[name]) byPark[name] = [];
+    byPark[name].push({date: t.date, depart: t.depart, sitefee: t.sitefee||0, fuel: t.fuel||0});
   });
   (state.upcoming||[]).forEach(u => {
     if (!u.driveLog || (!u.driveLog.sitefee && !u.driveLog.fuel)) return;
     const name = u.parkName || 'Unknown Park';
-    if (!byPark[name]) byPark[name] = {fees:0, fuel:0, trips:0};
-    byPark[name].fees  += (u.driveLog.sitefee||0);
-    byPark[name].fuel  += (u.driveLog.fuel||0);
-    byPark[name].trips += 1;
+    if (!byPark[name]) byPark[name] = [];
+    byPark[name].push({date: u.startDate, depart: u.endDate, sitefee: u.driveLog.sitefee||0, fuel: u.driveLog.fuel||0});
   });
 
-  const rows = Object.entries(byPark)
-    .sort((a,b) => b[1].fees - a[1].fees);
+  const fmt = n => n > 0 ? '$' + n.toFixed(2) : '—';
+  const fmtTotal = n => '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+  let grandFees = 0, grandFuel = 0;
 
-  const totalFees = rows.reduce((s,[,v]) => s+v.fees, 0);
-  const totalFuel = rows.reduce((s,[,v]) => s+v.fuel, 0);
-  const fmt = n => '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+  // Sort parks by total fees descending
+  const parks = Object.entries(byPark).sort((a,b) => {
+    const ta = a[1].reduce((s,t)=>s+t.sitefee+t.fuel,0);
+    const tb = b[1].reduce((s,t)=>s+t.sitefee+t.fuel,0);
+    return tb - ta;
+  });
 
-  const rowsHtml = rows.map(([name, v]) => `
-    <tr style="border-bottom:1px solid var(--parchment);">
-      <td style="padding:7px 10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;color:var(--bark);">${esc(name)}</td>
-      <td style="padding:7px 10px;text-align:center;font-size:.8rem;color:var(--fog);">${v.trips}</td>
-      <td style="padding:7px 10px;text-align:right;font-weight:600;color:var(--moss);">${v.fees>0?fmt(v.fees):'—'}</td>
-      <td style="padding:7px 10px;text-align:right;color:var(--fog);">${v.fuel>0?fmt(v.fuel):'—'}</td>
-      <td style="padding:7px 10px;text-align:right;font-weight:600;color:var(--bark);">${fmt(v.fees+v.fuel)}</td>
-    </tr>`).join('');
+  const rowsHtml = parks.map(([name, trips]) => {
+    const parkFees = trips.reduce((s,t)=>s+t.sitefee,0);
+    const parkFuel = trips.reduce((s,t)=>s+t.fuel,0);
+    grandFees += parkFees;
+    grandFuel += parkFuel;
+
+    // Sort trips by date
+    trips.sort((a,b) => a.date.localeCompare(b.date));
+
+    const tripRows = trips.map(t => {
+      const nights = t.depart && t.depart > t.date
+        ? Math.round((new Date(t.depart) - new Date(t.date)) / 86400000)
+        : 1;
+      const dateStr = t.depart && t.depart !== t.date
+        ? fmtDateShort(t.date) + ' → ' + fmtDateShort(t.depart)
+        : fmtDateShort(t.date);
+      return `<tr style="background:rgba(255,255,255,.5);">
+        <td style="padding:5px 10px 5px 28px;font-size:.78rem;color:var(--fog);">📅 ${dateStr} · ${nights} night${nights>1?'s':''}</td>
+        <td style="padding:5px 10px;text-align:right;font-size:.78rem;color:var(--moss);">${t.sitefee>0?fmt(t.sitefee):'—'}</td>
+        <td style="padding:5px 10px;text-align:right;font-size:.78rem;color:var(--fog);">${t.fuel>0?fmt(t.fuel):'—'}</td>
+        <td style="padding:5px 10px;text-align:right;font-size:.78rem;font-weight:600;color:var(--bark);">${fmt(t.sitefee+t.fuel)}</td>
+      </tr>`;
+    }).join('');
+
+    return `<tr style="background:var(--parchment);cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
+      <td style="padding:8px 10px;font-family:-apple-system,Georgia,serif;font-size:.9rem;font-weight:700;color:var(--bark);">▶ ${esc(name)}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:600;color:var(--moss);">${parkFees>0?fmtTotal(parkFees):'—'}</td>
+      <td style="padding:8px 10px;text-align:right;color:var(--fog);">${parkFuel>0?fmtTotal(parkFuel):'—'}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:700;color:var(--bark);">${fmtTotal(parkFees+parkFuel)}</td>
+    </tr>
+    <tr><td colspan="4" style="padding:0;"><table style="width:100%;border-collapse:collapse;">${tripRows}</table></td></tr>`;
+  }).join('');
 
   const html = `
     <div id="fees-modal-bg" onclick="if(event.target===this)this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;">
-      <div style="background:white;border-radius:12px;max-width:680px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);">
-        <div style="padding:18px 20px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;">
+      <div style="background:white;border-radius:12px;max-width:680px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <div style="padding:18px 20px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <div>
-            <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">🏕️ Park Fees Breakdown</div>
-            <div style="font-size:.78rem;color:var(--fog);margin-top:2px;">${rows.length} parks with logged costs</div>
+            <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">🏕️ Park Fees &amp; Fuel — Trip Detail</div>
+            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips</div>
           </div>
           <button onclick="document.getElementById('fees-modal-bg').remove()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--fog);">✕</button>
         </div>
         <div style="overflow-y:auto;flex:1;">
           <table style="width:100%;border-collapse:collapse;">
             <thead>
-              <tr style="background:var(--parchment);position:sticky;top:0;">
-                <th style="padding:8px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Park</th>
-                <th style="padding:8px 10px;text-align:center;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Trips</th>
-                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Site Fees</th>
-                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Fuel</th>
-                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);">Total</th>
+              <tr style="background:var(--pine);position:sticky;top:0;">
+                <th style="padding:8px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--smoke);">Park</th>
+                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--smoke);">Site Fees</th>
+                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--smoke);">Fuel</th>
+                <th style="padding:8px 10px;text-align:right;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--smoke);">Total</th>
               </tr>
             </thead>
             <tbody>${rowsHtml}</tbody>
             <tfoot>
               <tr style="background:var(--pine);">
-                <td style="padding:10px;font-weight:700;color:var(--cream);font-family:-apple-system,Georgia,serif;" colspan="2">TOTAL</td>
-                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmt(totalFees)}</td>
-                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmt(totalFuel)}</td>
-                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmt(totalFees+totalFuel)}</td>
+                <td style="padding:10px;font-weight:700;color:var(--cream);font-family:-apple-system,Georgia,serif;">GRAND TOTAL</td>
+                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmtTotal(grandFees)}</td>
+                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmtTotal(grandFuel)}</td>
+                <td style="padding:10px;text-align:right;font-weight:700;color:var(--amber);">${fmtTotal(grandFees+grandFuel)}</td>
               </tr>
             </tfoot>
           </table>
@@ -11747,6 +11770,9 @@ function showFeesBreakdown() {
       </div>
     </div>`;
 
+  // Remove any existing modal first
+  const existing = document.getElementById('fees-modal-bg');
+  if (existing) existing.remove();
   document.body.insertAdjacentHTML('beforeend', html);
 }
 
@@ -11782,13 +11808,13 @@ function renderStats() {
   const fmt = n => n > 0 ? '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
   const feesTile = `<div class="stat" onclick="showFeesBreakdown()" style="cursor:pointer;" title="Click to see breakdown">
     <div class="stat-icon">🏕️</div>
-    <div class="stat-num">${fmt(totalFees)}</div>
+    <div class="stat-num" style="font-size:clamp(1.1rem,2.5vw,2rem);word-break:break-all;">${fmt(totalFees)}</div>
     <div class="stat-label">Park Fees</div>
-    <div style="font-size:.6rem;color:var(--smoke);margin-top:3px;">tap for details</div>
+    <div style="font-size:.6rem;color:var(--smoke);margin-top:2px;">tap for details</div>
   </div>`;
   const fuelTile = `<div class="stat">
     <div class="stat-icon">⛽</div>
-    <div class="stat-num">${fmt(totalFuel)}</div>
+    <div class="stat-num" style="font-size:clamp(1.1rem,2.5vw,2rem);word-break:break-all;">${fmt(totalFuel)}</div>
     <div class="stat-label">Fuel Cost</div>
   </div>`;
 
