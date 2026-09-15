@@ -758,7 +758,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 <header>
   <div class="logo-row"><span style="font-size:1.9rem">🌲</span><h1><em>Trail Notes</em></h1><span style="font-size:1.9rem">🌲</span></div>
   <p>Camping Diary · 2012 – <span id="currentYear">2026</span></p><div class="divider"></div>
-  <div id="welcomeMsg" class="welcome-msg">Good morning, Martin! &nbsp;·&nbsp; <span style="opacity:.8;font-size:.92rem;">Find joy in the journey.</span></div>
+  <div id="welcomeMsg" class="welcome-msg">Good afternoon, Martin! &nbsp;·&nbsp; <span style="opacity:.8;font-size:.92rem;">Plan more adventures. Make more memories.</span></div>
 </header>
 
 <!-- Cloud user bar -->
@@ -774,14 +774,17 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
     <div class="stat"><div class="stat-icon">🔥</div><div class="stat-num">155</div><div class="stat-label">Trips Logged</div></div>
     <div class="stat"><div class="stat-icon">🌙</div><div class="stat-num">491</div><div class="stat-label">Nights Camped</div></div>
     <div class="stat"><div class="stat-icon">🛣️</div><div class="stat-num">7,304</div><div class="stat-label">Miles Driven</div><div style="margin-top:4px;"><button id="calc-miles-btn" onclick="calculateAllMileage()" style="font-size:.58rem;padding:1px 6px;background:transparent;border:1px solid rgba(200,135,42,.5);color:var(--amber);border-radius:3px;cursor:pointer;font-family:-apple-system,Georgia,serif;">🔄 recalc</button><div id="calc-miles-prog" style="font-size:.58rem;color:var(--smoke);margin-top:1px;"></div></div></div>
-    <div class="stat"><div class="stat-icon">💰</div>
-    <div style="margin-top:4px;">
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin-bottom:2px;">Park Fees</div>
-      <div class="stat-num" style="font-size:1.6rem;">$3,078</div>
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--smoke);margin:6px 0 2px;">Fuel</div>
-      <div class="stat-num" style="font-size:1.6rem;">$170</div>
-    </div>
-    <div class="stat-label">Trip Costs</div></div>
+    <div class="stat" onclick="showFeesBreakdown()" style="cursor:pointer;" title="Click to see breakdown">
+    <div class="stat-icon">🏕️</div>
+    <div class="stat-num" style="font-size:clamp(1.1rem,2.5vw,2rem);word-break:break-all;">$5,140</div>
+    <div class="stat-label">Park Fees</div>
+    <div style="font-size:.6rem;color:var(--smoke);margin-top:2px;">tap for details</div>
+  </div>
+    <div class="stat">
+    <div class="stat-icon">⛽</div>
+    <div class="stat-num" style="font-size:clamp(1.1rem,2.5vw,2rem);word-break:break-all;">$170</div>
+    <div class="stat-label">Fuel Cost</div>
+  </div>
     <div class="stat"><div class="stat-icon">📅</div><div class="stat-num">5</div><div class="stat-label">Upcoming</div></div></div>
 
 <div class="tabs">
@@ -801,6 +804,8 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
     <button class="btn-amber" onclick="openAddPark()">＋ Add Park</button>
     <button class="btn-amber" style="background:rgba(100,80,60,.65)" onclick="renumberAllTrips()" title="Fix duplicate or out-of-order trip numbers">🔢 Re-number Trips</button>
     <button class="btn-amber" style="background:rgba(61,90,42,.7)" onclick="printDiary()" title="Print or save your diary as a PDF">🖨️ Print / PDF</button>
+    <button class="btn-amber" style="background:rgba(42,80,90,.7)" onclick="exportData()" title="Save all your diary data (trips, photos, mileage, ratings, journal, wishlist, custom parks) to a file">⬇️ Export Backup</button>
+    <button class="btn-amber" style="background:rgba(90,70,42,.7)" onclick="document.getElementById('importFile').click()" title="Restore or merge a backup file — your current data is kept, not erased">⬆️ Import Backup</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
   <div class="filter-bar" style="flex-wrap:wrap;">
@@ -5765,13 +5770,13 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Skidaway Island State Park, GA</div>
           <div class="card-date">Oct 3, 2026 – Oct 10, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 20 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 19 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
         <div class="card-note">Booked with Keeners</div>
       </div>
-      
+      <div style="font-size:.78rem;color:var(--moss);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:4px;">🚗 Actual drive: <strong>252 miles</strong> · 💰 $345</div>
       
       <div class="card-foot">
         <button class="btn-sm" onclick="startEditUpcoming(1779843134788)">✏️ Edit</button>
@@ -5784,7 +5789,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Anastasia State Park</div>
           <div class="card-date">Nov 4, 2026 – Nov 8, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 52 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 51 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 97</strong></div>
@@ -5803,7 +5808,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Silver Springs State Park</div>
           <div class="card-date">Dec 16, 2026 – Dec 20, 2026</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 94 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 93 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 53</strong></div>
@@ -5822,7 +5827,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Rodman Campground</div>
           <div class="card-date">Feb 3, 2027 – Feb 7, 2027</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 143 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 142 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 66</strong></div>
@@ -5841,7 +5846,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
           <div class="card-loc">📍 Tomoka State Park</div>
           <div class="card-date">May 27, 2027 – May 31, 2027</div>
         </div>
-        <div class="card-badges"><span class="badge bn">In 256 days</span></div>
+        <div class="card-badges"><span class="badge bn">In 255 days</span></div>
       </div>
       <div class="card-body">
         <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site 86</strong></div>
@@ -6540,7 +6545,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jun 17, 2017 → Jun 18, 2017</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 1 night</span>
       <span class="trip-site">Site 50</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $32 (site $32)</span>
       
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776907371154,0)" title="Edit">✏️</button>
     </div>
@@ -6820,7 +6825,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Dec 19, 2019 → Dec 23, 2019</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 49</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $252 (site $252)</span>
       <span class="trip-note">Trip #84 — With Mother</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(24,0)" title="Edit">✏️</button>
     </div>
@@ -6860,7 +6865,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 23, 2020 → Jul 26, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 101</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $181 (site $181)</span>
       
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776906864399,0)" title="Edit">✏️</button>
     </div>
@@ -6910,7 +6915,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 19, 2020 → Nov 22, 2020</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 12</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $119 (site $119)</span>
       <span class="trip-note">Trip #93 — very good</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(25,0)" title="Edit">✏️</button>
     </div>
@@ -7120,7 +7125,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 15, 2022 → Oct 22, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
       <span class="trip-site">Site 96</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $287 (site $287)</span>
       <span class="trip-note">Trip #113 — best site, lakefront, beautiful</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(15,0)" title="Edit">✏️</button>
     </div>
@@ -7130,7 +7135,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 22, 2022 → Oct 25, 2022</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 77</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $99 (site $99)</span>
       <span class="trip-note">Trip #114 — top site</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(14,0)" title="Edit">✏️</button>
     </div>
@@ -7220,7 +7225,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Jul 13, 2023 → Jul 16, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 3 nights</span>
       <span class="trip-site">Site 6</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $50 (site $50)</span>
       <span class="trip-note">Trip #123</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(34,0)" title="Edit">✏️</button>
     </div>
@@ -7240,7 +7245,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 14, 2023 → Oct 21, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 7 nights</span>
       <span class="trip-site">Site 53</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $236 (site $236)</span>
       <span class="trip-note">Trip #127 — very nice, Oct 14–21</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(30,0)" title="Edit">✏️</button>
     </div>
@@ -7250,7 +7255,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 21, 2023 → Oct 25, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 4 nights</span>
       <span class="trip-site">Site 32</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $130 (site $130)</span>
       <span class="trip-note">Trip #128 — ok. Beautiful park, odd layout, confusing signs, nice trails</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(31,0)" title="Edit">✏️</button>
     </div>
@@ -7260,7 +7265,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 25, 2023 → Oct 27, 2023</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       <span class="trip-site">Site 15</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $60 (site $60)</span>
       <span class="trip-note">Trip #129 — not our favorite park</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(32,0)" title="Edit">✏️</button>
     </div>
@@ -7380,7 +7385,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Oct 21, 2024 → Oct 27, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 6 nights</span>
       <span class="trip-site">Site 38</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $162 (site $162)</span>
       <span class="trip-note">Trip #140 — Satterwhite Point JC Cooper Camp. LOVED this waterfront!</span>
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(40,0)" title="Edit">✏️</button>
     </div>
@@ -7400,7 +7405,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 4, 2024 → Nov 6, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 2 nights</span>
       
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $66 (site $66)</span>
       
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776905736791,0)" title="Edit">✏️</button>
     </div>
@@ -7410,7 +7415,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
       <span class="trip-date-badge">📅 Nov 6, 2024 → Nov 7, 2024</span>
       <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 1 night</span>
       <span class="trip-site">Site 11</span>
-      
+      <span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">💰 $44 (site $44)</span>
       
       <button class="btn-edit-trip" style="margin-left:auto;flex-shrink:0" onclick="openET(1776905257701,0)" title="Edit">✏️</button>
     </div>
@@ -10417,7 +10422,7 @@ Enchanted forest views and riverside adventures can be found at Audra State Park
         </div>
     </div></div>
 
-<div class="toast" id="toast">Synced! ✅ All up to date.</div>
+<div class="toast" id="toast">Sync exception: Failed to fetch</div>
 
 <script>
 // ── Baked-in upcoming trips (used to bootstrap a fresh device that has no localStorage) ──
@@ -12484,13 +12489,15 @@ function exportData() {
     favorites:   state.favorites,
     wishlist:    state.wishlist,
     hiddenParks: state.hiddenParks,
+    parkPhotos:  state.parkPhotos  || {},
+    parkMileage: state.parkMileage || {},
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href = url; a.download = 'trail-notes-' + new Date().toISOString().slice(0,10) + '.json';
+  a.href = url; a.download = 'trail-notes-backup-' + new Date().toISOString().slice(0,10) + '.json';
   a.click(); URL.revokeObjectURL(url);
-  showToast('Data exported! 📦');
+  showToast('Backup saved! 📦');
 }
 
 function importData(e) {
@@ -12500,8 +12507,8 @@ function importData(e) {
   reader.onload = function(ev) {
     try {
       const data = JSON.parse(ev.target.result);
-      if (!data.version) { showToast('Invalid file ❌'); return; }
-      if (!confirm('Merge imported data with your current data?')) return;
+      if (!data.version) { showToast('Invalid backup file ❌'); return; }
+      if (!confirm('Import this backup? It will be MERGED into your current data — nothing you already have will be erased or overwritten.')) return;
       if (data.customParks) {
         const existing = state.customParks.map(p => p.name);
         data.customParks.forEach(p => { if (!existing.includes(p.name)) state.customParks.push(p); });
@@ -12543,9 +12550,27 @@ function importData(e) {
         const merged = new Set([...state.hiddenParks, ...data.hiddenParks]);
         state.hiddenParks = [...merged];
       }
+      // Mileage: fill in only parks that don't already have a value locally — never overwrites what you have
+      if (data.parkMileage) {
+        if (!state.parkMileage) state.parkMileage = {};
+        Object.keys(data.parkMileage).forEach(pid => {
+          if (state.parkMileage[pid] === undefined) state.parkMileage[pid] = data.parkMileage[pid];
+        });
+      }
+      // Photos: append any photo not already present for that park (matched by image data)
+      if (data.parkPhotos) {
+        if (!state.parkPhotos) state.parkPhotos = {};
+        Object.keys(data.parkPhotos).forEach(pid => {
+          if (!state.parkPhotos[pid]) state.parkPhotos[pid] = [];
+          const existingData = new Set(state.parkPhotos[pid].map(p => p.data));
+          (data.parkPhotos[pid] || []).forEach(p => {
+            if (!existingData.has(p.data)) state.parkPhotos[pid].push(p);
+          });
+        });
+      }
       saveState(); renderAll();
-      showToast('Data imported! 🌲');
-    } catch(err) { showToast('Could not read file ❌'); }
+      showToast('Backup merged in! 🌲');
+    } catch(err) { showToast('Could not read backup file ❌'); }
     document.getElementById('importFile').value = '';
   };
   reader.readAsText(file);
