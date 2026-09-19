@@ -11771,6 +11771,19 @@ function milesToGallons(miles) {
   if (!m) return '';
   return Math.round((m / MPG) * 10) / 10; // one decimal place
 }
+function getParkOneWayMiles(pid) {
+  // Prefer the park's own "drive" text (one-way miles), checking overrides first,
+  // then the built-in default, then custom parks. Never doubles for round trip.
+  if (pid == null) return null;
+  const parse = s => { const m = /^\s*(\d+(?:\.\d+)?)\s*Miles?/i.exec(s||''); return m ? parseFloat(m[1]) : null; };
+  const ov = state.overrides[pid];
+  if (ov && ov.drive) { const m = parse(ov.drive); if (m) return m; }
+  const base = BASE_PARKS.find(p => String(p.id) === String(pid));
+  if (base && base.drive) { const m = parse(base.drive); if (m) return m; }
+  const cp = (state.customParks||[]).find(p => String(p.id) === String(pid));
+  if (cp && cp.drive) { const m = parse(cp.drive); if (m) return m; }
+  return null;
+}
 
 function startLogDrive(id) {
   window._loggingDriveId = id;
@@ -11785,14 +11798,14 @@ function startLogDrive(id) {
     document.getElementById('dl-minutes').value = existing.minutes||'';
     document.getElementById('dl-note').value = existing.note||'';
     document.getElementById('dl-sitefee').value = existing.sitefee != null ? existing.sitefee : '';
-    document.getElementById('dl-fuel').value = existing.fuel != null ? existing.fuel : (existing.miles ? milesToGallons(existing.miles*2) : '');
+    document.getElementById('dl-fuel').value = existing.fuel != null ? existing.fuel : (existing.miles ? milesToGallons(existing.miles) : '');
     bg.style.display = 'flex';
     document.getElementById('dl-miles').focus();
     document.getElementById('dl-miles').oninput = function(){
       const fuelEl = document.getElementById('dl-fuel');
       if (fuelEl.dataset.userEdited === '1') return; // don't clobber a manual edit
       const m = parseInt(this.value)||0;
-      fuelEl.value = m ? milesToGallons(m*2) : '';
+      fuelEl.value = m ? milesToGallons(m) : '';
     };
     document.getElementById('dl-fuel').dataset.userEdited = '0';
     document.getElementById('dl-fuel').oninput = function(){ this.dataset.userEdited = '1'; };
@@ -12082,7 +12095,7 @@ function showFuelBreakdown() {
         <div style="padding:18px 20px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <div>
             <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">⛽ Fuel — Trip Detail</div>
-            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · estimated @ ${MPG} mpg from trip mileage</div>
+            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · estimated @ ${MPG} mpg from one-way mileage</div>
           </div>
           <button onclick="document.getElementById('fuel-modal-bg').remove()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--fog);">✕</button>
         </div>
@@ -12149,7 +12162,7 @@ function renderStats() {
     <div class="stat-label">Park Fees</div>
     <div style="font-size:.6rem;color:var(--smoke);margin-top:2px;">tap for details</div>
   </div>`;
-  const fuelTile = `<div class="stat" onclick="showFuelBreakdown()" style="cursor:pointer;" title="Click to see breakdown · estimated at ${MPG} mpg from trip mileage">
+  const fuelTile = `<div class="stat" onclick="showFuelBreakdown()" style="cursor:pointer;" title="Click to see breakdown · estimated at ${MPG} mpg from one-way mileage">
     <div class="stat-icon">⛽</div>
     <div class="stat-num" style="font-size:clamp(1.1rem,2.5vw,2rem);word-break:break-all;">${fmtGal1(totalFuel)}</div>
     <div class="stat-label">Fuel (gal)</div>
@@ -12694,7 +12707,7 @@ function openET(parkId, idx) {
   document.getElementById('et-site').value   = t.site   || '';
   document.getElementById('et-note').value   = t.note   || '';
   document.getElementById('et-sitefee').value = t.sitefee != null ? t.sitefee : '';
-  document.getElementById('et-fuel').value    = t.fuel    != null ? t.fuel    : (state.parkMileage[parkId] ? milesToGallons(state.parkMileage[parkId]) : '');
+  document.getElementById('et-fuel').value    = t.fuel    != null ? t.fuel    : (getParkOneWayMiles(parkId) ? milesToGallons(getParkOneWayMiles(parkId)) : '');
   document.getElementById('et-fuel').dataset.userEdited = '0';
   document.getElementById('et-fuel').oninput = function(){ this.dataset.userEdited = '1'; };
   // Show custom num if set, else compute it
@@ -14600,7 +14613,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="fl"><label>Notes</label><input type="text" id="et-note" placeholder="e.g. great weather, very quiet"></div>
     <div class="fg2">
       <div><label>💰 Site Fee ($)</label><input type="number" id="et-sitefee" placeholder="e.g. 35" min="0" step="0.01" style="width:100%"></div>
-      <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from miles @ 9 mpg" min="0" step="0.1" style="width:100%"></div>
+      <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from one-way miles @ 9 mpg" min="0" step="0.1" style="width:100%"></div>
     </div>
     <div class="fl">
       <label>📷 Photo</label>
@@ -14669,7 +14682,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
       <div style="flex:1;">
         <label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">⛽ Fuel (gallons)</label>
-        <input id="dl-fuel" type="number" min="0" step="0.1" placeholder="auto from miles @ 9 mpg" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
+        <input id="dl-fuel" type="number" min="0" step="0.1" placeholder="auto from one-way miles @ 9 mpg" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
       </div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
