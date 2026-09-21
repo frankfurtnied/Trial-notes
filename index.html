@@ -749,6 +749,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 #userBar{ flex-wrap:wrap; row-gap:6px; }
 #userBar button{ white-space:nowrap; }
 #userEmail{ overflow-wrap:anywhere; }
+.trip-fee{ font-size:.72rem; color:var(--moss); font-weight:600; white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -769,6 +770,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 
 <!-- Cloud user bar -->
 <div id="userBar" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 10px; min-height: 22px; visibility: hidden;">
+  <button id="photoMigBtn" onclick="migratePhotosToCloud()" style="display:none;background:none;border:1px solid rgba(200,135,42,.6);color:var(--amber);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;">🖼️ Move photos</button>
   <button onclick="setHomeAddress()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--smoke);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Set the starting address used to measure drive distances">🏠 Home</button>
   <button onclick="manualSync()" style="background:none;border:1px solid rgba(245,237,216,.2);color:var(--smoke);border-radius:3px;padding:3px 10px;font-family:-apple-system,Georgia,serif;font-size:.73rem;cursor:pointer;" title="Sync now">🔄 Sync</button>
   <span id="syncDot" style="font-size: 0.72rem; color: var(--amber); opacity: 0; transition: opacity 0.5s;">☁️ Saved</span>
@@ -2229,10 +2231,66 @@ function refreshUpcomingDropdown() {
 // ═══════════════════════════════════════════════════════
 
 
+// ── Site fees, shown on park cards and on every trip ──
+function fmtFee(n){
+  n = Number(n) || 0;
+  return '$' + (Math.abs(n - Math.round(n)) < 0.005
+    ? Math.round(n).toLocaleString()
+    : n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+}
+function tripFeeHtml(t){
+  return (t && t.sitefee > 0) ? '<span class="trip-fee" title="Site fee for this trip">💰 ' + fmtFee(t.sitefee) + '</span>' : '';
+}
+// Fees paid at one park (same rules as the Park Fees tile: trips, plus drives already logged on upcoming trips)
+function parkFeeStats(pid){
+  var total = 0, histTotal = 0, paid = 0, nights = 0;
+  getTrips(pid).forEach(function(t){
+    if (t.sitefee > 0) {
+      total += t.sitefee; histTotal += t.sitefee; paid++;
+      nights += (t.depart && t.depart > t.date) ? Math.round((new Date(t.depart) - new Date(t.date)) / 86400000) : 1;
+    }
+  });
+  (state.upcoming || []).forEach(function(u){
+    if (u.driveLog && u.driveLog.sitefee > 0 && String(u.parkId) === String(pid)) { total += u.driveLog.sitefee; paid++; }
+  });
+  return { total: total, histTotal: histTotal, paid: paid, nights: nights };
+}
+function parkFeeChip(pid){
+  var s = parkFeeStats(pid);
+  return s.total > 0
+    ? '<span class="park-fee-chip" style="font-size:.78rem;color:var(--moss);font-weight:600;" title="Total site fees paid here (' + s.paid + ' trip' + (s.paid !== 1 ? 's' : '') + ')">💰 ' + fmtFee(s.total) + '</span>'
+    : '';
+}
+function parkFeeSummaryBadge(pid){
+  var s = parkFeeStats(pid);
+  if (!(s.total > 0)) return '';
+  var per = s.nights > 0 ? ' · ' + fmtFee(s.histTotal / s.nights) + '/night' : '';
+  return '<span class="trip-count-badge" style="background:var(--moss);" title="Site fees paid at this park">💰 ' + fmtFee(s.total) + ' total' + per + '</span>';
+}
+
+// ── Park Fees / Fuel pop-ups: park rows start collapsed and open on click ──
+function toggleBreakdownRow(row){
+  var detail = row.nextElementSibling; if (!detail) return;
+  var open = detail.style.display === 'none';
+  detail.style.display = open ? '' : 'none';
+  var arrow = row.querySelector('.bd-arrow'); if (arrow) arrow.textContent = open ? '▼' : '▶';
+}
+function toggleAllBreakdown(btn){
+  var modal = btn.closest('[id$="modal-bg"]'); if (!modal) return;
+  var expand = btn.dataset.open !== '1';
+  modal.querySelectorAll('.bd-arrow').forEach(function(a){
+    var row = a.closest('tr'), detail = row && row.nextElementSibling;
+    if (detail) detail.style.display = expand ? '' : 'none';
+    a.textContent = expand ? '▼' : '▶';
+  });
+  btn.dataset.open = expand ? '1' : '';
+  btn.textContent = expand ? 'Collapse all' : 'Expand all';
+}
+
 function getParkThumb(parkId) {
   var photos = (state.parkPhotos && state.parkPhotos[parkId]) || [];
   if (photos.length) {
-    return '<div style="width:54px;height:54px;border-radius:8px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.25);"><img src="'+photos[0].data+'" style="width:100%;height:100%;object-fit:cover;"></div>';
+    return '<div style="width:54px;height:54px;border-radius:8px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.25);"><img src="'+(photos[0].thumb||photos[0].data)+'" style="width:100%;height:100%;object-fit:cover;"></div>';
   }
   // Placeholder with tree icon when no photo
   return '<div style="width:54px;height:54px;border-radius:8px;flex-shrink:0;background:rgba(61,90,42,.18);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🌲</div>';
@@ -2278,7 +2336,7 @@ function showFeesBreakdown() {
 
   const fmt = n => n > 0 ? '$' + n.toFixed(2) : '—';
   const fmtGal = n => n > 0 ? n.toFixed(1) + ' gal' : '—';
-  const fmtTotal = n => '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+  const fmtTotal = n => fmtFee(n);
   let grandFees = 0, grandFuel = 0;
 
   // Sort parks by total site fees descending (fuel is gallons, not dollars, so it's excluded from cost totals)
@@ -2312,13 +2370,13 @@ function showFeesBreakdown() {
       </tr>`;
     }).join('');
 
-    return `<tr style="background:var(--parchment);cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
-      <td style="padding:8px 10px;font-family:-apple-system,Georgia,serif;font-size:.9rem;font-weight:700;color:var(--bark);">▶ ${esc(name)}</td>
+    return `<tr style="background:var(--parchment);cursor:pointer;" onclick="toggleBreakdownRow(this)">
+      <td style="padding:8px 10px;font-family:-apple-system,Georgia,serif;font-size:.9rem;font-weight:700;color:var(--bark);"><span class="bd-arrow">▶</span> ${esc(name)}</td>
       <td style="padding:8px 10px;text-align:right;font-weight:600;color:var(--moss);">${parkFees>0?fmtTotal(parkFees):'—'}</td>
       <td style="padding:8px 10px;text-align:right;color:var(--fog);">${parkFuel>0?fmtGal(parkFuel):'—'}</td>
       <td style="padding:8px 10px;text-align:right;font-weight:700;color:var(--bark);">${fmtTotal(parkFees)}</td>
     </tr>
-    <tr><td colspan="4" style="padding:0;"><table style="width:100%;border-collapse:collapse;">${tripRows}</table></td></tr>`;
+    <tr style="display:none"><td colspan="4" style="padding:0;"><table style="width:100%;border-collapse:collapse;">${tripRows}</table></td></tr>`;
   }).join('');
 
   const html = `
@@ -2327,7 +2385,7 @@ function showFeesBreakdown() {
         <div style="padding:18px 20px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <div>
             <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">🏕️ Park Fees &amp; Fuel — Trip Detail</div>
-            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · Fuel is estimated in gallons @ ${MPG} mpg, not included in $ totals</div>
+            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · <button onclick="toggleAllBreakdown(this)" style="background:none;border:none;color:var(--moss);font-size:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;">Expand all</button> · Fuel is estimated in gallons @ ${MPG} mpg, not included in $ totals</div>
           </div>
           <button onclick="document.getElementById('fees-modal-bg').remove()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--fog);">✕</button>
         </div>
@@ -2411,11 +2469,11 @@ function showFuelBreakdown() {
       </tr>`;
     }).join('');
 
-    return `<tr style="background:var(--parchment);cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
-      <td style="padding:8px 10px;font-family:-apple-system,Georgia,serif;font-size:.9rem;font-weight:700;color:var(--bark);">▶ ${esc(name)}</td>
+    return `<tr style="background:var(--parchment);cursor:pointer;" onclick="toggleBreakdownRow(this)">
+      <td style="padding:8px 10px;font-family:-apple-system,Georgia,serif;font-size:.9rem;font-weight:700;color:var(--bark);"><span class="bd-arrow">▶</span> ${esc(name)}</td>
       <td style="padding:8px 10px;text-align:right;font-weight:700;color:var(--bark);">${fmtGal(parkFuel)}</td>
     </tr>
-    <tr><td colspan="2" style="padding:0;"><table style="width:100%;border-collapse:collapse;">${tripRows}</table></td></tr>`;
+    <tr style="display:none"><td colspan="2" style="padding:0;"><table style="width:100%;border-collapse:collapse;">${tripRows}</table></td></tr>`;
   }).join('');
 
   const html = `
@@ -2424,7 +2482,7 @@ function showFuelBreakdown() {
         <div style="padding:18px 20px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <div>
             <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">⛽ Fuel — Trip Detail</div>
-            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · estimated @ ${MPG} mpg from one-way mileage</div>
+            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · <button onclick="toggleAllBreakdown(this)" style="background:none;border:none;color:var(--moss);font-size:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;">Expand all</button> · estimated @ ${MPG} mpg from one-way mileage</div>
           </div>
           <button onclick="document.getElementById('fuel-modal-bg').remove()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--fog);">✕</button>
         </div>
@@ -2634,11 +2692,11 @@ function renderParks() {
           var dn=t.num!=null?t.num:cn;
           var ds=t.depart?fmtDateShort(t.date)+' → '+fmtDateShort(t.depart):fmtDateShort(t.date);
           var ni=t.depart&&t.depart>t.date?Math.round((new Date(t.depart)-new Date(t.date))/86400000):1;
-          var th=t.photo?'<br><img class="trip-thumb" src="'+t.photo+'" onclick="openLB(this.src)">':'';
+          var th=t.photo?'<br><img class="trip-thumb" src="'+t.photo+'"'+(t.photoPath?' data-path="'+esc(t.photoPath)+'"':'')+' onclick="openLB(this.src,this.dataset.path)">':'';
           var db=t._isBase?'<button class="btn-del-trip" onclick="deleteBaseTrip('+p.id+','+t._baseIdx+')">✕</button>':'<button class="btn-del-trip" onclick="deleteTrip('+p.id+','+t._userIdx+')">✕</button>';
-          return '<div class="trip-entry"><span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;">#'+dn+'</span><span class="trip-date-badge">📅 '+ds+'</span><span style="font-size:.72rem;color:var(--fog);">🌙 '+ni+' night'+(ni>1?'s':'')+'</span>'+(t.site?'<span class="trip-site">Site '+esc(t.site)+'</span>':'')+(t.note?'<span class="trip-note">'+esc(t.note)+'</span>':'')+'<div class="trip-actions"><button class="btn-edit-trip" onclick="openET('+p.id+','+ti+')">✏️</button>'+db+'</div>'+th+'</div>';
+          return '<div class="trip-entry"><span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;">#'+dn+'</span><span class="trip-date-badge">📅 '+ds+'</span><span style="font-size:.72rem;color:var(--fog);">🌙 '+ni+' night'+(ni>1?'s':'')+'</span>'+tripFeeHtml(t)+(t.site?'<span class="trip-site">Site '+esc(t.site)+'</span>':'')+(t.note?'<span class="trip-note">'+esc(t.note)+'</span>':'')+'<div class="trip-actions"><button class="btn-edit-trip" onclick="openET('+p.id+','+ti+')">✏️</button>'+db+'</div>'+th+'</div>';
         }).join('');
-        return '<div class="park-card" id="pc'+p.id+'" style="animation-delay:'+Math.min(i,14)*.025+'s"><div class="park-header '+(been?'been':'')+' '+(isC?'custom-h':'')+'" onclick="toggleCard('+p.id+')"><div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">'+getParkThumb(p.id)+'<div style="min-width:0;"><div class="park-name">'+esc(p.name)+'</div><div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'+(p.drive?'<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 '+esc(p.drive)+'</span>':'')+(p.drive&&milesToGallons(parseDriveMiles(p.drive))?'<span style="font-size:.78rem;color:var(--moss);font-weight:600;" title="Estimated one-way @ '+MPG+' mpg">⛽ '+milesToGallons(parseDriveMiles(p.drive))+' gal</span>':'')+(p.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#fff;border-radius:20px;text-decoration:none;">📍 Address</a>':'')+(p.website?'<a href="'+esc(p.website)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#fff;border-radius:20px;text-decoration:none;">🌐 Website</a>':'')+'</div></div></div><div class="park-right"><button class="btn-fav" onclick="toggleFavorite('+p.id+',event)">'+(state.favorites.includes(p.id)?'❤️':'🤍')+'</button>'+(state.ratings[p.id]?'<span style="color:var(--amber);font-size:.8rem;">'+'★'.repeat(state.ratings[p.id])+'</span>':'')+(isC?'<span class="badge bc">★ Mine</span>':'')+(trips.length?'<span class="badge bv">🏕 '+trips.length+' trip'+(trips.length>1?'s':'')+'</span>':'<span class="badge bn">New</span>')+'<span class="chevron">▾</span></div></div><div class="park-body"><div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px"><span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)">Overall Rating</span><div class="star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star '+((state.ratings[p.id]||0)>=n?'on':'')+'" onclick="setRating('+p.id+','+n+',event)">★</span>';}).join('')+'</div>'+(state.ratings[p.id]?'<span style="font-size:.75rem;color:var(--fog)">'+['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]+'</span>':'')+'</div><div class="info-grid">'+(p.goodSites?'<div class="info-block"><label>✅ Good Sites</label><p>'+esc(p.goodSites)+'</p></div>':'')+(p.stayedSites?'<div class="info-block"><label>🏕 Sites Stayed</label><p>'+esc(p.stayedSites)+'</p></div>':'')+(p.avoidSites?'<div class="info-block"><label>🚫 Avoid</label><p>'+esc(p.avoidSites)+'</p></div>':'')+(p.bigRig?'<div class="info-block"><label>🚐 Big Rig</label><p>'+esc(p.bigRig)+'</p></div>':'')+(p.phone?'<div class="info-block"><label>📞 Phone</label><p>'+esc(p.phone)+'</p></div>':'')+(p.notes?'<div class="info-block" style="grid-column:1/-1"><label>📝 Notes</label><p>'+esc(p.notes)+'</p></div>':'')+'</div><div class="trip-log"><div class="trip-log-title">🗓 Trip History<span class="trip-count-badge">'+trips.length+' trip'+(trips.length!==1?'s':'')+'</span></div><div class="trip-entries">'+(tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;">No trips logged yet.</div>')+'</div><div class="add-trip-row"><div class="field"><label>Arrival</label><input type="date" id="td-date-'+p.id+'"></div><div class="field"><label>Departure</label><input type="date" id="td-depart-'+p.id+'"></div><div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-'+p.id+'" placeholder="e.g. 45"></div><div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-'+p.id+'" placeholder="great weather..."></div><button class="btn-add-trip" onclick="addTrip('+p.id+')">＋ Add Trip</button></div></div>'+(isC?'<div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--fog);margin-top:8px"><button class="btn-amber" style="font-size:.78rem;padding:4px 12px" onclick="openEditPark('+p.id+')">✏️ Edit</button><button class="btn-amber" style="font-size:.78rem;padding:4px 12px;background:rgba(180,60,40,.7)" onclick="deleteCustomPark('+p.id+')">🗑 Delete</button></div>':'')+'</div></div>';
+        return '<div class="park-card" id="pc'+p.id+'" style="animation-delay:'+Math.min(i,14)*.025+'s"><div class="park-header '+(been?'been':'')+' '+(isC?'custom-h':'')+'" onclick="toggleCard('+p.id+')"><div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">'+getParkThumb(p.id)+'<div style="min-width:0;"><div class="park-name">'+esc(p.name)+'</div><div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'+(p.drive?'<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 '+esc(p.drive)+'</span>':'')+(p.drive&&milesToGallons(parseDriveMiles(p.drive))?'<span style="font-size:.78rem;color:var(--moss);font-weight:600;" title="Estimated one-way @ '+MPG+' mpg">⛽ '+milesToGallons(parseDriveMiles(p.drive))+' gal</span>':'')+parkFeeChip(p.id)+(p.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#fff;border-radius:20px;text-decoration:none;">📍 Address</a>':'')+(p.website?'<a href="'+esc(p.website)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#fff;border-radius:20px;text-decoration:none;">🌐 Website</a>':'')+'</div></div></div><div class="park-right"><button class="btn-fav" onclick="toggleFavorite('+p.id+',event)">'+(state.favorites.includes(p.id)?'❤️':'🤍')+'</button>'+(state.ratings[p.id]?'<span style="color:var(--amber);font-size:.8rem;">'+'★'.repeat(state.ratings[p.id])+'</span>':'')+(isC?'<span class="badge bc">★ Mine</span>':'')+(trips.length?'<span class="badge bv">🏕 '+trips.length+' trip'+(trips.length>1?'s':'')+'</span>':'<span class="badge bn">New</span>')+'<span class="chevron">▾</span></div></div><div class="park-body"><div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px"><span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)">Overall Rating</span><div class="star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star '+((state.ratings[p.id]||0)>=n?'on':'')+'" onclick="setRating('+p.id+','+n+',event)">★</span>';}).join('')+'</div>'+(state.ratings[p.id]?'<span style="font-size:.75rem;color:var(--fog)">'+['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]+'</span>':'')+'</div><div class="info-grid">'+(p.goodSites?'<div class="info-block"><label>✅ Good Sites</label><p>'+esc(p.goodSites)+'</p></div>':'')+(p.stayedSites?'<div class="info-block"><label>🏕 Sites Stayed</label><p>'+esc(p.stayedSites)+'</p></div>':'')+(p.avoidSites?'<div class="info-block"><label>🚫 Avoid</label><p>'+esc(p.avoidSites)+'</p></div>':'')+(p.bigRig?'<div class="info-block"><label>🚐 Big Rig</label><p>'+esc(p.bigRig)+'</p></div>':'')+(p.phone?'<div class="info-block"><label>📞 Phone</label><p>'+esc(p.phone)+'</p></div>':'')+(p.notes?'<div class="info-block" style="grid-column:1/-1"><label>📝 Notes</label><p>'+esc(p.notes)+'</p></div>':'')+'</div><div class="trip-log"><div class="trip-log-title">🗓 Trip History<span class="trip-count-badge">'+trips.length+' trip'+(trips.length!==1?'s':'')+'</span>'+parkFeeSummaryBadge(p.id)+'</div><div class="trip-entries">'+(tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;">No trips logged yet.</div>')+'</div><div class="add-trip-row"><div class="field"><label>Arrival</label><input type="date" id="td-date-'+p.id+'"></div><div class="field"><label>Departure</label><input type="date" id="td-depart-'+p.id+'"></div><div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-'+p.id+'" placeholder="e.g. 45"></div><div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-'+p.id+'" placeholder="great weather..."></div><button class="btn-add-trip" onclick="addTrip('+p.id+')">＋ Add Trip</button></div></div>'+'<div class="park-photos" style="margin-top:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-family:var(--font-heading);font-size:.92rem;color:var(--bark);">📷 Photos</span><button onclick="document.getElementById(\'photo-input-'+p.id+'\').click()" style="font-size:.74rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">+ Add Photo</button><input type="file" id="photo-input-'+p.id+'" accept="image/*" style="display:none" onchange="handlePhotoUpload('+p.id+', this)"></div><div id="photo-gallery-'+p.id+'" class="photo-gallery">'+renderPhotoGallery(p.id)+'</div></div>'+(isC?'<div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--fog);margin-top:8px"><button class="btn-amber" style="font-size:.78rem;padding:4px 12px" onclick="openEditPark('+p.id+')">✏️ Edit</button><button class="btn-amber" style="font-size:.78rem;padding:4px 12px;background:rgba(180,60,40,.7)" onclick="deleteCustomPark('+p.id+')">🗑 Delete</button></div>':'')+'</div></div>';
       }).join('');
     });
     return;
@@ -2656,7 +2714,7 @@ function renderParks() {
       const nights = t.depart && t.depart > t.date
         ? Math.round((new Date(t.depart) - new Date(t.date)) / 86400000)
         : 1;
-      const thumb = t.photo ? `<br><img class="trip-thumb" src="${t.photo}" onclick="openLB(this.src)" title="View photo">` : '';
+      const thumb = t.photo ? `<br><img class="trip-thumb" src="${t.photo}"${t.photoPath?` data-path="${esc(t.photoPath)}"`:''} onclick="openLB(this.src,this.dataset.path)" title="View photo">` : '';
       const delBtn = t._isBase
         ? `<button class="btn-del-trip" onclick="deleteBaseTrip(${p.id},${t._baseIdx})" title="Remove">✕</button>`
         : `<button class="btn-del-trip" onclick="deleteTrip(${p.id},${t._userIdx})" title="Remove">✕</button>`;
@@ -2664,6 +2722,7 @@ function renderParks() {
         <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#${displayNum}</span>
         <span class="trip-date-badge">📅 ${dateStr}</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 ${nights} night${nights>1?'s':''}</span>
+        ${tripFeeHtml(t)}
         ${t.site?`<span class="trip-site">Site ${esc(t.site)}</span>`:''}
         ${t.note?`<span class="trip-note">${esc(t.note)}</span>`:''}
         ${t.driveLog?`<span style="font-size:.75rem;color:var(--moss);white-space:nowrap;">🚗 ${t.driveLog.miles}mi${(t.driveLog.hours||t.driveLog.minutes)?' · '+(t.driveLog.hours?t.driveLog.hours+'h ':'')+( t.driveLog.minutes?t.driveLog.minutes+'min':''):''}${t.driveLog.note?' · '+esc(t.driveLog.note):''}</span>`:''}
@@ -2683,6 +2742,7 @@ function renderParks() {
           <div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
             ${p.drive?`<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 ${esc(p.drive)}</span>`:''}
             ${p.drive?(()=>{const g=milesToGallons(parseDriveMiles(p.drive));return g?`<span style="font-size:.78rem;color:var(--moss);font-weight:600;" title="Estimated one-way @ ${MPG} mpg">⛽ ${g} gal</span>`:'';})():''}
+            ${parkFeeChip(p.id)}
             ${p.address?`<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.address)}" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">📍 Address</a>`:''}
             ${safeUrl(p.website)?`<a href="${esc(safeUrl(p.website))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">🌐 Website</a>`:''}
           </div>
@@ -2715,6 +2775,7 @@ function renderParks() {
           <div class="trip-log-title">
             🗓 Trip History
             <span class="trip-count-badge">${trips.length} trip${trips.length!==1?'s':''}</span>
+            ${parkFeeSummaryBadge(p.id)}
           </div>
           <div class="trip-entries">${tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;padding:4px 0">No trips logged yet.</div>'}</div>
           <div class="add-trip-row">
@@ -2890,7 +2951,7 @@ function renderTripLog() {
 
   document.getElementById('triplogList').innerHTML = rows.map(r => {
     const costStr = (r.tripCost > 0 || r.fuel > 0)
-      ? `<span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">${r.tripCost>0?`💰 $${r.tripCost.toFixed(0)}`:''}${r.fuel?`${r.tripCost>0?' · ':''}⛽ ${r.fuel.toFixed(1)} gal`:''}</span>`
+      ? `<span style="font-size:.72rem;color:var(--moss);white-space:nowrap;">${r.tripCost>0?`💰 ${fmtFee(r.tripCost)}`:''}${r.fuel?`${r.tripCost>0?' · ':''}⛽ ${r.fuel.toFixed(1)} gal`:''}</span>`
       : '';
     return `
     <div class="trip-entry" style="background:var(--parchment);border-radius:4px;margin-bottom:6px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -2930,6 +2991,7 @@ function timelineRows() {
       nights,
       site: t.site || '',
       note: t.note || '',
+      sitefee: t.sitefee || 0,
       _pid: t._pid,
       _ti: t._ti
     };
@@ -3000,6 +3062,7 @@ function renderTimeline() {
                 ${r.month ? `<span class="timeline-pill">${esc(r.month)}</span>` : ''}
                 <span class="timeline-pill">${r.nights} night${r.nights !== 1 ? 's' : ''}</span>
                 ${r.site ? `<span class="timeline-pill">Site ${esc(r.site)}</span>` : ''}
+                ${r.sitefee > 0 ? `<span class="timeline-pill">💰 ${fmtFee(r.sitefee)}</span>` : ''}
                 ${r.state ? `<span class="timeline-pill">${esc(r.state)}</span>` : ''}
               </div>
               ${r.note ? `<div class="timeline-note">${esc(r.note)}</div>` : ''}
@@ -3015,7 +3078,7 @@ function timelineJumpYear(year) {
 }
 
 function renderAll() {
-  try { migrateExpired(); renderStats(); renderParks(); refreshDropdown(); refreshUpcomingDropdown(); renderUpcoming(); renderEntries(); renderTripLog(); renderTimeline(); }
+  try { migrateExpired(); renderStats(); renderParks(); refreshDropdown(); refreshUpcomingDropdown(); renderUpcoming(); renderEntries(); renderTripLog(); renderTimeline(); updatePhotoMigrateButton(); }
   catch(e) { console.error('renderAll error:', e); }
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
@@ -3038,6 +3101,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 // EDIT TRIP + PHOTO + LIGHTBOX
 // ═══════════════════════════════════════════════════════
 let _etp = null, _eti = null, _etph = null, _etIsBase = true, _etBaseIdx = null, _etUserIdx = null;
+let _etphPath = null, _etOldPath = null, _etBusy = false, _etSaved = false;
 
 function openET(parkId, idx) {
   _etp = parkId; _eti = idx;
@@ -3056,6 +3120,7 @@ function openET(parkId, idx) {
   const computedNum = allSorted.findIndex(x => x._pid === parkId && x._ti === idx) + 1;
   document.getElementById('et-num').value = t.num != null ? t.num : (computedNum || '');
   _etph = t.photo || null;
+  _etphPath = t.photoPath || null; _etOldPath = t.photoPath || null; _etBusy = false; _etSaved = false;
   const prev = document.getElementById('et-preview');
   if (_etph) { document.getElementById('et-preview-img').src = _etph; prev.style.display = 'block'; }
   else { prev.style.display = 'none'; }
@@ -3063,43 +3128,52 @@ function openET(parkId, idx) {
 }
 
 function closeET() {
+  // A photo that was uploaded but never saved with the trip shouldn't be left behind in cloud storage
+  if (!_etSaved && _etphPath && _etphPath !== _etOldPath) deletePhotoObject(_etphPath);
   document.getElementById('editTripBg').classList.add('hidden');
-  _etp = null; _eti = null; _etph = null;
+  _etp = null; _eti = null; _etph = null; _etphPath = null; _etOldPath = null; _etBusy = false; _etSaved = false;
 }
 
-function etPhotoChange(e) {
+async function etPhotoChange(e) {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    const img = new Image();
-    img.onload = function() {
-      const MAX = 800;
-      let w = img.width, h = img.height;
-      if (w > MAX || h > MAX) {
-        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-        else { w = Math.round(w * MAX / h); h = MAX; }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      _etph = canvas.toDataURL('image/jpeg', 0.75);
-      document.getElementById('et-preview-img').src = _etph;
-      document.getElementById('et-preview').style.display = 'block';
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
+  _etBusy = true;
+  try {
+    if (_etphPath && _etphPath !== _etOldPath) { deletePhotoObject(_etphPath); }   // replacing an unsaved upload
+    let done = false;
+    if (currentUser && accessToken) {
+      try {
+        const v = await makePhotoVariants(file, 1600);
+        const path = newPhotoPath('trip', (_etp == null ? 'x' : _etp) + '-' + (document.getElementById('et-date').value || ''));
+        await uploadAndVerify(path, v.full);
+        cachePhotoBlob(path, v.full);
+        _etph = v.thumb; _etphPath = path; done = true;
+      } catch (err) { console.warn('Cloud photo upload failed, keeping the photo on this device:', err); }
+    }
+    if (!done) {   // signed out, offline, or storage not set up: keep an 800px copy inside the diary data like before
+      const v = await makePhotoVariants(file, 800);
+      _etph = await blobToDataUrl(v.full); _etphPath = null;
+      showToast('Photo kept on this device only (cloud storage unavailable).');
+    }
+    document.getElementById('et-preview-img').src = _etph;
+    document.getElementById('et-preview').style.display = 'block';
+  } catch (err) {
+    showToast('Could not read that photo ❌');
+  } finally {
+    _etBusy = false;
+  }
 }
 
 function etClearPhoto() {
-  _etph = null;
+  if (_etphPath && _etphPath !== _etOldPath) deletePhotoObject(_etphPath);   // an unsaved upload
+  _etph = null; _etphPath = null;
   document.getElementById('et-preview').style.display = 'none';
   document.getElementById('et-file').value = '';
 }
 
 function saveET() {
   if (_etp === null) return;
+  if (_etBusy) { showToast('Photo is still uploading — one moment…'); return; }
   const date = document.getElementById('et-date').value;
   if (!date) { showToast('Please pick a date 📅'); return; }
   const depart = document.getElementById('et-depart').value;
@@ -3122,7 +3196,13 @@ function saveET() {
       updated.num = parseInt(numVal, 10);
     }
   }
-  if (_etph)  updated.photo  = _etph;
+  if (_etph) { updated.photo = _etph; if (_etphPath) updated.photoPath = _etphPath; }
+  // The drive log is not editable in this dialog, so carry it over instead of dropping it
+  const _prevTrip = _etIsBase ? ((state.tripEdits[_etp] || {})[_etBaseIdx]) : ((state.tripLogs[_etp] || [])[_etUserIdx]);
+  if (_prevTrip && _prevTrip.driveLog) updated.driveLog = _prevTrip.driveLog;
+  // If the photo was replaced or removed, the old file in cloud storage is no longer needed
+  if (_etOldPath && _etOldPath !== updated.photoPath) deletePhotoObject(_etOldPath);
+  _etSaved = true;
   if (_etIsBase) {
     if (!state.tripEdits[_etp]) state.tripEdits[_etp] = {};
     state.tripEdits[_etp][_etBaseIdx] = updated;
@@ -3136,9 +3216,16 @@ function saveET() {
   if (document.getElementById('panel-triplog').classList.contains('active')) renderTripLog();
 }
 
-function openLB(src) {
-  document.getElementById('lb-img').src = src;
+function openLB(src, path) {
+  var img = document.getElementById('lb-img');
+  img.src = src;
+  img.dataset.path = path || '';
   document.getElementById('lightbox').classList.remove('hidden');
+  if (path) {   // preview first, then the full-size photo
+    photoUrl(path).then(function(u){
+      if (img.dataset.path === path && !document.getElementById('lightbox').classList.contains('hidden')) img.src = u;
+    }).catch(function(){});
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -3163,22 +3250,49 @@ function renumberAllTrips() {
 // ═══════════════════════════════════════════════════════
 // EXPORT / IMPORT
 // ═══════════════════════════════════════════════════════
-function exportData() {
+async function exportData() {
+  showToast('Preparing backup…');
+  // Work on copies. Full-size photos live in cloud storage, so pull them back in
+  // to keep the backup file complete on its own.
+  const photos    = JSON.parse(JSON.stringify(state.parkPhotos || {}));
+  const tripLogs  = JSON.parse(JSON.stringify(state.tripLogs   || {}));
+  const tripEdits = JSON.parse(JSON.stringify(state.tripEdits  || {}));
+  const refs = [];
+  Object.keys(photos).forEach(pid => (photos[pid] || []).forEach(p => {
+    if (p && p.path) refs.push({ path: p.path, put: url => { p.data = url; delete p.path; delete p.thumb; } });
+  }));
+  [tripLogs, tripEdits].forEach(group => Object.keys(group).forEach(pid => {
+    const list = group[pid] || {};
+    Object.keys(list).forEach(k => {
+      const t = list[k];
+      if (t && t.photoPath) refs.push({ path: t.photoPath, put: url => { t.photo = url; delete t.photoPath; } });
+    });
+  }));
+  let missed = 0;
+  for (let i = 0; i < refs.length; i++) {
+    showToast('Preparing backup… photo ' + (i + 1) + ' of ' + refs.length);
+    try { refs[i].put(await blobToDataUrl(await fetchPhotoBlob(refs[i].path))); }
+    catch (e) { missed++; }
+  }
+  if (missed && !confirm(missed + ' photo' + (missed > 1 ? 's' : '') + ' could not be downloaded (are you offline?).\n\nSave the backup anyway? Those photos would only have small previews in the file.')) {
+    showToast('Backup cancelled.');
+    return;
+  }
   const payload = {
     version: 1,
     exportedAt: new Date().toISOString(),
     customParks: state.customParks,
     overrides:   state.overrides,
-    tripLogs:    state.tripLogs,
+    tripLogs:    tripLogs,
     entries:     state.entries,
     visited:     state.visited,
-    tripEdits:   state.tripEdits,
+    tripEdits:   tripEdits,
     upcoming:    state.upcoming,
     ratings:     state.ratings,
     favorites:   state.favorites,
     wishlist:    state.wishlist,
     hiddenParks: state.hiddenParks,
-    parkPhotos:  state.parkPhotos  || {},
+    parkPhotos:  photos,
     parkMileage: state.parkMileage || {},
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -3251,9 +3365,11 @@ function importData(e) {
         if (!state.parkPhotos) state.parkPhotos = {};
         Object.keys(data.parkPhotos).forEach(pid => {
           if (!state.parkPhotos[pid]) state.parkPhotos[pid] = [];
-          const existingData = new Set(state.parkPhotos[pid].map(p => p.data));
+          const existing = new Set();
+          state.parkPhotos[pid].forEach(p => { [p.id, p.h, p.data].forEach(k => { if (k) existing.add(k); }); });
           (data.parkPhotos[pid] || []).forEach(p => {
-            if (!existingData.has(p.data)) state.parkPhotos[pid].push(p);
+            const keys = [p.id, p.h, p.data, p.data && photoFingerprint(p.data)].filter(Boolean);
+            if (!keys.some(k => existing.has(k))) { keys.forEach(k => existing.add(k)); state.parkPhotos[pid].push(p); }
           });
         });
       }
@@ -3522,6 +3638,231 @@ async function onSignedIn(user) {
   saveState();          // persist cloud data to localStorage so it survives re-renders
   renderAll();
   showToast('Welcome back! \uD83C\uDF32');
+}
+
+// ═══════════════════════════════════════════════════════
+// PHOTO STORAGE — full-size photos live in a private cloud bucket, not inside the diary data.
+// The diary keeps only a small preview of each photo (so lists load instantly, even offline)
+// plus the file's path in the bucket.
+// ═══════════════════════════════════════════════════════
+const PHOTO_BUCKET = 'photos';
+const _photoUrlCache = new Map();
+
+function photoPathEnc(p){ return String(p).split('/').map(encodeURIComponent).join('/'); }
+function newPhotoId(){ return Math.random().toString(36).slice(2,10); }
+function newPhotoPath(kind, key){
+  var safe = String(key==null?'x':key).replace(/[^A-Za-z0-9_-]/g,'').slice(0,40) || 'x';
+  // The first folder is always your own user id — the bucket's access rules depend on it.
+  return currentUser.id + '/' + kind + '/' + safe + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2,7) + '.jpg';
+}
+// Short content fingerprint, used so re-importing an old backup can't duplicate photos
+function photoFingerprint(s){
+  var h = 2166136261; s = String(s);
+  for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return 'h' + (h >>> 0).toString(36) + '-' + s.length;
+}
+
+async function refreshAccessToken(){
+  var rt = localStorage.getItem('sb_refresh_token');
+  if (!rt) return false;
+  try {
+    var r = await sbFetch('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: JSON.stringify({ refresh_token: rt }) });
+    if (r.ok && r.data && r.data.access_token) {
+      accessToken = r.data.access_token;
+      localStorage.setItem('sb_access_token', accessToken);
+      localStorage.setItem('sb_refresh_token', r.data.refresh_token || rt);
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+async function storageCall(method, route, extra){
+  if (!accessToken) throw new Error('Not signed in');
+  var url = SUPABASE_URL + '/storage/v1/object/' + route;
+  var go = function(){
+    return fetch(url, {
+      method: method,
+      body: extra && extra.body,
+      headers: Object.assign({ apikey: SUPABASE_KEY, Authorization: 'Bearer ' + accessToken }, (extra && extra.headers) || {})
+    });
+  };
+  var res = await go();
+  if (!res.ok) {
+    var txt = ''; try { txt = await res.clone().text(); } catch (e) {}
+    var expired = res.status === 401 || (/jwt/i.test(txt) && /expired|invalid/i.test(txt));
+    if (expired && await refreshAccessToken()) res = await go();   // sign-in tokens only last about an hour
+  }
+  return res;
+}
+async function storageError(res, what){
+  var msg = '';
+  try { var t = await res.text(); try { var j = JSON.parse(t); msg = j.message || j.error || t; } catch (e) { msg = t; } } catch (e) {}
+  var err = new Error(what + ' failed (' + res.status + '): ' + (msg || res.statusText || 'unknown error'));
+  err.status = res.status; err.detail = msg;
+  return err;
+}
+async function uploadPhotoObject(path, blob){
+  var res = await storageCall('POST', PHOTO_BUCKET + '/' + photoPathEnc(path), { body: blob, headers: { 'Content-Type': blob.type || 'image/jpeg' } });
+  if (!res.ok) throw await storageError(res, 'Upload');
+}
+async function fetchPhotoBlob(path){
+  var res = await storageCall('GET', 'authenticated/' + PHOTO_BUCKET + '/' + photoPathEnc(path));
+  if (!res.ok) throw await storageError(res, 'Download');
+  return await res.blob();
+}
+async function deletePhotoObject(path){
+  _photoUrlCache.delete(path);
+  try { await storageCall('DELETE', PHOTO_BUCKET + '/' + photoPathEnc(path)); }
+  catch (e) { console.warn('Could not delete photo file:', e); }
+}
+// Upload, then read it straight back and compare sizes, so a path is only ever saved if it really works.
+async function uploadAndVerify(path, blob){
+  await uploadPhotoObject(path, blob);
+  var back;
+  try { back = await fetchPhotoBlob(path); }
+  catch (e) { deletePhotoObject(path); throw e; }
+  if (back.size !== blob.size) {
+    deletePhotoObject(path);
+    throw new Error('Photo did not read back correctly (' + back.size + ' of ' + blob.size + ' bytes)');
+  }
+}
+// Full-size photo as a temporary local URL (downloaded once per visit, then reused)
+function photoUrl(path){
+  if (!_photoUrlCache.has(path)) {
+    _photoUrlCache.set(path, fetchPhotoBlob(path)
+      .then(function(b){ return URL.createObjectURL(b); })
+      .catch(function(e){ _photoUrlCache.delete(path); throw e; }));
+  }
+  return _photoUrlCache.get(path);
+}
+function cachePhotoBlob(path, blob){ _photoUrlCache.set(path, Promise.resolve(URL.createObjectURL(blob))); }
+
+// ── image helpers ──
+function loadImageFrom(src){
+  return new Promise(function(resolve, reject){
+    var i = new Image();
+    i.onload = function(){ resolve(i); };
+    i.onerror = function(){ reject(new Error('Could not read that image')); };
+    i.src = src;
+  });
+}
+function scaleCanvas(img, maxDim){
+  var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  if (maxDim && (w > maxDim || h > maxDim)) {
+    if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; } else { w = Math.round(w * maxDim / h); h = maxDim; }
+  }
+  var c = document.createElement('canvas'); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(img, 0, 0, w, h);
+  return c;
+}
+function canvasToBlob(c, q){
+  return new Promise(function(res, rej){ c.toBlob(function(b){ b ? res(b) : rej(new Error('Could not process image')); }, 'image/jpeg', q); });
+}
+function blobToDataUrl(b){
+  return new Promise(function(res, rej){
+    var r = new FileReader();
+    r.onload = function(){ res(r.result); };
+    r.onerror = function(){ rej(new Error('Could not read file')); };
+    r.readAsDataURL(b);
+  });
+}
+async function dataUrlToBlob(u){ var r = await fetch(u); return await r.blob(); }
+async function makeThumbFromDataUrl(u){ var img = await loadImageFrom(u); return scaleCanvas(img, 240).toDataURL('image/jpeg', 0.7); }
+// From a chosen file: a full-size copy (long edge capped at fullMax) plus a small preview
+async function makePhotoVariants(source, fullMax){
+  var url, revoke = false;
+  if (typeof source === 'string') { url = source; } else { url = URL.createObjectURL(source); revoke = true; }
+  try {
+    var img = await loadImageFrom(url);
+    var full = await canvasToBlob(scaleCanvas(img, fullMax), 0.82);
+    var thumb = scaleCanvas(img, 240).toDataURL('image/jpeg', 0.7);
+    return { full: full, thumb: thumb };
+  } finally { if (revoke) URL.revokeObjectURL(url); }
+}
+
+// ── Move photos that are stored inside the diary data into private cloud storage ──
+var _photoMigrating = false;
+
+// Everything that still carries a full-size photo inside the diary data
+function collectLegacyPhotos(){
+  var jobs = [];
+  Object.keys(state.parkPhotos || {}).forEach(function(pid){
+    (state.parkPhotos[pid] || []).forEach(function(p){
+      if (p && p.data && !p.path) jobs.push({
+        kind: 'park', key: pid, src: p.data,
+        apply: function(path, thumb, h){ p.path = path; p.thumb = thumb; p.h = h; if (!p.id) p.id = newPhotoId(); delete p.data; }
+      });
+    });
+  });
+  function scan(group){
+    Object.keys(group || {}).forEach(function(pid){
+      var list = group[pid]; if (!list) return;
+      Object.keys(list).forEach(function(k){
+        var t = list[k];
+        if (t && typeof t.photo === 'string' && t.photo.indexOf('data:image') === 0 && !t.photoPath) jobs.push({
+          kind: 'trip', key: pid, src: t.photo,
+          apply: function(path, thumb){ t.photo = thumb; t.photoPath = path; }
+        });
+      });
+    });
+  }
+  scan(state.tripLogs); scan(state.tripEdits);
+  return jobs;
+}
+
+function updatePhotoMigrateButton(){
+  var b = document.getElementById('photoMigBtn');
+  if (!b) return;
+  var n = (currentUser && accessToken) ? collectLegacyPhotos().length : 0;
+  b.style.display = n ? '' : 'none';
+  if (n) {
+    b.textContent = '🖼️ Move ' + n + ' photo' + (n > 1 ? 's' : '');
+    b.title = 'Move ' + n + ' photo' + (n > 1 ? 's' : '') + ' out of your diary data and into private cloud storage';
+  }
+}
+
+async function migratePhotosToCloud(){
+  if (_photoMigrating) return;
+  if (!currentUser || !accessToken) { alert('Please sign in first.'); return; }
+  var jobs = collectLegacyPhotos();
+  if (!jobs.length) { updatePhotoMigrateButton(); showToast('No photos left to move.'); return; }
+  if (!confirm('Move ' + jobs.length + ' photo' + (jobs.length > 1 ? 's' : '') + ' to your private cloud storage?\n\n' +
+      '• Each photo is uploaded and read back to make sure it arrived intact before it is taken out of your diary data.\n' +
+      '• Photos keep showing while this runs, and anything that fails is simply left as it was.\n' +
+      '• Tip: use Export Backup first if you have not recently.\n\nThis takes about a minute.')) return;
+  _photoMigrating = true;
+  var done = 0, failed = 0, firstErr = null, stoppedEarly = false;
+  try {
+    for (var i = 0; i < jobs.length; i++) {
+      var j = jobs[i];
+      showToast('Moving photos… ' + (i + 1) + ' of ' + jobs.length);
+      try {
+        var blob = await dataUrlToBlob(j.src);
+        var thumb = await makeThumbFromDataUrl(j.src);
+        var path = newPhotoPath(j.kind, j.key);
+        await uploadAndVerify(path, blob);
+        j.apply(path, thumb, photoFingerprint(j.src));
+        done++;
+        if (done % 5 === 0) saveState();
+      } catch (err) {
+        failed++; if (!firstErr) firstErr = err;
+        if (done === 0) { stoppedEarly = true; break; }   // the very first one failing means a setup problem — don't hammer the server
+      }
+    }
+  } finally {
+    _photoMigrating = false;
+    saveState(); renderAll(); updatePhotoMigrateButton();
+  }
+  if (stoppedEarly) {
+    alert('Nothing was moved and nothing was changed.\n\n' + (firstErr ? firstErr.message : 'Unknown error') +
+      '\n\nThis usually means the "photos" storage bucket or its access rules have not been set up in Supabase yet. Run the setup SQL, then try again.');
+  } else if (failed) {
+    alert(done + ' photo' + (done !== 1 ? 's' : '') + ' moved. ' + failed + ' could not be moved and ' + (failed > 1 ? 'were' : 'was') + ' left exactly as before.\n\n' +
+      (firstErr ? firstErr.message : '') + '\n\nTap the button again to retry those.');
+  } else {
+    alert('Done! ' + done + ' photo' + (done !== 1 ? 's are' : ' is') + ' now in your private cloud storage, and your diary data is much smaller and faster to sync.\n\nExport Backup still includes the full photos.');
+  }
 }
 
 function showAuthMsg(msg, type) {
@@ -4687,7 +5028,7 @@ function renderPhotoGallery(parkId) {
   var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
   photos.forEach(function(photo, idx){
     html += '<div style="position:relative;width:100px;height:100px;border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.3);">' +
-      '<img src="'+photo.data+'" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="viewPhoto(\''+parkId+'\','+idx+')">' +
+      '<img src="'+(photo.thumb||photo.data)+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="viewPhoto(\''+parkId+'\','+idx+')">' +
       '<button onclick="deletePhoto(\''+parkId+'\','+idx+')" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:.8rem;line-height:1;">×</button>' +
       '</div>';
   });
@@ -4695,28 +5036,42 @@ function renderPhotoGallery(parkId) {
   return html;
 }
 
-function handlePhotoUpload(parkId, input) {
+async function handlePhotoUpload(parkId, input) {
   var file = input.files[0];
+  input.value = '';
   if (!file) return;
   if (!file.type.startsWith('image/')) { showToast('Please select an image file.'); return; }
 
   showToast('Processing photo...');
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    compressImage(e.target.result, function(compressed) {
-      if (!state.parkPhotos) state.parkPhotos = {};
-      if (!state.parkPhotos[parkId]) state.parkPhotos[parkId] = [];
-      state.parkPhotos[parkId].push({data: compressed, date: new Date().toISOString().slice(0,10)});
-      saveState();
-      scheduleSyncToCloud();
-      // Refresh just this gallery
-      var gal = document.getElementById('photo-gallery-'+parkId);
-      if (gal) gal.innerHTML = renderPhotoGallery(parkId);
-      showToast('Photo added! 📷');
-    });
-  };
-  reader.readAsDataURL(file);
-  input.value = '';
+  try {
+    var today = new Date().toISOString().slice(0,10);
+    var photo = null;
+    if (currentUser && accessToken) {
+      try {
+        var v = await makePhotoVariants(file, 1600);
+        var path = newPhotoPath('park', parkId);
+        await uploadAndVerify(path, v.full);
+        cachePhotoBlob(path, v.full);
+        photo = { id: newPhotoId(), path: path, thumb: v.thumb, date: today };
+      } catch (err) { console.warn('Cloud photo upload failed, keeping the photo on this device:', err); }
+    }
+    var savedToCloud = !!photo;
+    if (!photo) {   // signed out, offline, or storage not set up: keep it inside the diary data like before
+      var small = await makePhotoVariants(file, 900);
+      photo = { id: newPhotoId(), data: await blobToDataUrl(small.full), date: today };
+    }
+    if (!state.parkPhotos) state.parkPhotos = {};
+    if (!state.parkPhotos[parkId]) state.parkPhotos[parkId] = [];
+    state.parkPhotos[parkId].push(photo);
+    saveState();
+    scheduleSyncToCloud();
+    var gal = document.getElementById('photo-gallery-'+parkId);
+    if (gal) gal.innerHTML = renderPhotoGallery(parkId);
+    showToast(savedToCloud ? 'Photo added! 📷' : 'Photo added — kept on this device only (cloud storage unavailable).');
+    updatePhotoMigrateButton();
+  } catch (err) {
+    showToast('Could not add that photo ❌');
+  }
 }
 
 function compressImage(dataUrl, callback) {
@@ -4738,13 +5093,15 @@ function compressImage(dataUrl, callback) {
 function deletePhoto(parkId, idx) {
   if (!confirm('Delete this photo?')) return;
   if (state.parkPhotos && state.parkPhotos[parkId]) {
-    state.parkPhotos[parkId].splice(idx, 1);
+    var removed = state.parkPhotos[parkId].splice(idx, 1)[0];
     if (!state.parkPhotos[parkId].length) delete state.parkPhotos[parkId];
     saveState();
     scheduleSyncToCloud();
+    if (removed && removed.path) deletePhotoObject(removed.path);   // best effort; the diary no longer points to it either way
     var gal = document.getElementById('photo-gallery-'+parkId);
     if (gal) gal.innerHTML = renderPhotoGallery(parkId);
     showToast('Photo deleted.');
+    updatePhotoMigrateButton();
   }
 }
 
@@ -4760,8 +5117,15 @@ function viewPhoto(parkId, idx) {
     bg.onclick = function(){ bg.style.display='none'; };
     document.body.appendChild(bg);
   }
-  bg.innerHTML = '<button onclick="event.stopPropagation();document.getElementById(\'photoViewBg\').style.display=\'none\'" style="position:fixed;top:16px;right:16px;width:50px;height:50px;border-radius:50%;background:#111;color:#fff;border:3px solid #fff;font-size:26px;font-weight:bold;cursor:pointer;z-index:2001;line-height:1;">✕</button><img src="'+photo.data+'" style="max-width:95%;max-height:95%;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.8);">';
+  bg.innerHTML = '<button onclick="event.stopPropagation();document.getElementById(\'photoViewBg\').style.display=\'none\'" style="position:fixed;top:16px;right:16px;width:50px;height:50px;border-radius:50%;background:#111;color:#fff;border:3px solid #fff;font-size:26px;font-weight:bold;cursor:pointer;z-index:2001;line-height:1;">✕</button><img id="photoViewImg" alt="" src="'+(photo.thumb || photo.data || '')+'" style="max-width:95%;max-height:95%;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.8);">';
   bg.style.display = 'flex';
+  if (photo.path) {   // the preview shows straight away; the full-size photo swaps in when it arrives
+    var img = document.getElementById('photoViewImg');
+    img.dataset.path = photo.path;
+    photoUrl(photo.path).then(function(u){
+      if (img.dataset.path === photo.path && bg.style.display !== 'none') img.src = u;
+    }).catch(function(){ showToast('Could not load the full-size photo (showing the preview).'); });
+  }
 }
 // ── END PHOTOS ───────────────────────────────────
 
