@@ -761,6 +761,13 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 .park-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.park-detail-hero{background:linear-gradient(135deg,rgba(61,90,42,.12),rgba(200,135,42,.10));border-radius:8px;padding:16px;margin-bottom:14px}.park-detail-hero h2{font-family:var(--font-heading);font-size:1.6rem;color:var(--bark);margin-bottom:3px}.detail-stat{background:rgba(255,255,255,.35);border-radius:7px;padding:11px}.detail-stat label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog);font-weight:700}.detail-stat strong{display:block;color:var(--bark);font-size:.9rem;margin-top:2px}.detail-section{margin-top:14px;padding-top:12px;border-top:1px solid rgba(107,66,38,.25)}.detail-section h3{font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin-bottom:8px}.detail-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
 .book-preview{background:#fffaf0;color:#2c1a0e;border-radius:8px;padding:24px;max-height:65vh;overflow:auto}.book-cover{text-align:center;padding:35px 20px;border-bottom:2px solid #3d5a2a;margin-bottom:20px}.book-cover h1{font-family:Georgia,serif;font-size:2.4rem}.book-cover p{color:#6b4226}.book-year{margin-top:22px;font-family:Georgia,serif;font-size:1.35rem;border-bottom:1px solid #b5a898;padding-bottom:5px}.book-trip{padding:10px 0;border-bottom:1px solid #ddd0b9}.book-trip strong{font-family:Georgia,serif}.book-trip .meta{font-size:.8rem;color:#6b6a5a}.book-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .map-shell{background:var(--parchment);border-radius:8px;padding:12px}.map-canvas{height:520px;border-radius:7px;overflow:hidden;background:#dfe8dc;position:relative}.map-status{font-size:.74rem;color:var(--fog);margin:0 0 8px}.map-loading{position:absolute;z-index:500;left:12px;top:12px;background:rgba(255,250,240,.94);color:var(--bark);padding:7px 10px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.2);font-size:.75rem;font-weight:700}.map-legend{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;font-size:.72rem;color:var(--fog)}.map-legend span{padding:3px 8px;border-radius:10px;background:rgba(61,90,42,.1)}
+.map-failed{margin-top:12px;padding:12px 14px;background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.3);border-radius:8px}
+.map-failed-title{font-size:.82rem;font-weight:700;color:var(--bark);margin-bottom:10px}
+.map-failed-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)}
+.map-failed-row:first-of-type{border-top:none}
+.map-failed-name{flex:1 1 100%;font-size:.85rem;font-weight:600;color:var(--bark)}
+.map-failed-addr{font-weight:400;color:var(--fog)}
+.map-failed-input{flex:1 1 180px;min-width:140px;padding:6px 8px;border:1px solid rgba(0,0,0,.15);border-radius:5px;font-size:.8rem;font-family:var(--font-body)}
 @media(max-width:760px){.dashboard-grid{grid-template-columns:1fr}.dash-metrics{grid-template-columns:repeat(2,1fr)}.park-detail-grid{grid-template-columns:1fr}.map-canvas{height:430px}.tabs{overflow-x:auto;scrollbar-width:thin}.tab{min-width:135px;flex:0 0 auto}}
 @media print{.book-preview{max-height:none;overflow:visible}.book-actions,.modal-bg .modal>button{display:none!important}}
 </style>
@@ -1018,7 +1025,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 
 <div class="modal-bg hidden" id="detailModalBg" onclick="if(event.target===this)closeParkDetail()"><div class="modal" style="max-width:820px;width:100%"><button onclick="closeParkDetail()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="detailModalContent"></div></div></div>
 <div class="modal-bg hidden" id="bookModalBg" onclick="if(event.target===this)this.classList.add('hidden')"><div class="modal" style="max-width:850px;width:100%"><button onclick="document.getElementById('bookModalBg').classList.add('hidden')" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div class="book-actions"><button class="btn-g" onclick="printCampingBook()">🖨️ Print / Save PDF</button><button class="btn-o" onclick="document.getElementById('bookModalBg').classList.add('hidden')">Close</button></div><div id="bookContent"></div></div></div>
-<div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1000px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-legend"><span>📍 Every saved park</span><span>Click a marker for Park Details</span></div><div id="mapStatus" class="map-status">Preparing map…</div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div></div></div>
+<div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1000px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-legend"><span>📍 Every saved park</span><span>Click a marker for Park Details</span></div><div id="mapStatus" class="map-status">Preparing map…</div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div><div id="mapFailedBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -3284,6 +3291,7 @@ async function openMapExplorer(){
     clearMapMarkers();
     const parks=allParks();
     const bounds=[];
+    const failed=[];
     let mapped=0, missing=0;
     const updateStatus=(extra='')=>{if(status)status.textContent=`${mapped} of ${parks.length} parks mapped${missing?` · ${missing} still loading`:''}${extra?' · '+extra:''}`;};
     updateStatus('Loading…');
@@ -3302,12 +3310,14 @@ async function openMapExplorer(){
       const c=await geocodePark(p);
       missing--;
       if(c){addParkMarker(_campMap,p,c);bounds.push(c);mapped++;if(bounds.length===1)_campMap.setView(c,10);else _campMap.fitBounds(bounds,{padding:[30,30],maxZoom:9});}
+      else failed.push(p);
       updateStatus();
       setTimeout(()=>_campMap.invalidateSize(),40);
       // Nominatim asks for a maximum of about one request per second. Keep the app gentle.
       await new Promise(r=>setTimeout(r,700));
     }
     updateStatus(mapped===parks.length?'All parks loaded':'Some parks could not be located');
+    renderMapFailedList(failed);
     setTimeout(()=>_campMap.invalidateSize(),150);
   }catch(e){
     console.error('Map error:',e);
@@ -3315,6 +3325,44 @@ async function openMapExplorer(){
   }finally{_mapOpening=false;}
 }
 function closeMapExplorer(){const m=document.getElementById('mapModalBg');if(m)m.classList.add('hidden');if(_campMap)setTimeout(()=>_campMap.invalidateSize(),100);}
+
+// Some small, private campgrounds simply aren't in the mapping service's database under a
+// name it recognizes, however the address is phrased. Rather than guess further, list them
+// so they can be found by hand and pinned once — the pin is then cached like any other park.
+function renderMapFailedList(failed){
+  const box=document.getElementById('mapFailedBox');
+  if(!box) return;
+  if(!failed.length){ box.innerHTML=''; return; }
+  box.innerHTML=`<div class="map-failed">
+    <div class="map-failed-title">📍 Could not auto-locate ${failed.length} park${failed.length>1?'s':''}. Look it up and paste in coordinates to pin it:</div>
+    ${failed.map(p=>`
+      <div class="map-failed-row" id="mfrow-${p.id}">
+        <div class="map-failed-name">${esc(p.name)}${p.address?`<span class="map-failed-addr"> — ${esc(p.address)}</span>`:''}</div>
+        <a class="btn-o" href="${esc('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.address||p.name+' campground'))}" target="_blank" rel="noopener">Find on Google Maps</a>
+        <input type="text" id="mf-${p.id}" placeholder="paste coordinates, e.g. 29.65, -82.32" class="map-failed-input">
+        <button class="btn-g" onclick="pinParkManually(${p.id})">Pin</button>
+      </div>`).join('')}
+  </div>`;
+}
+function pinParkManually(id){
+  const input=document.getElementById('mf-'+id);
+  const nums=((input&&input.value)||'').match(/-?\d+(?:\.\d+)?/g);
+  const bad=()=>alert("Couldn't read that as coordinates.\n\nOn Google Maps, right-click the exact spot — the top of the menu that pops up shows \"latitude, longitude\". Copy that and paste it here.");
+  if(!nums||nums.length<2) return bad();
+  const coords=[Number(nums[0]),Number(nums[1])];
+  if(Math.abs(coords[0])>90||Math.abs(coords[1])>180) return bad();
+  state.mapCoords=state.mapCoords||{};
+  state.mapCoords[id]=coords;
+  try{localStorage.setItem('cd_mapcoords',JSON.stringify(state.mapCoords));}catch(e){}
+  saveState();
+  const p=allParks().find(x=>x.id===id);
+  if(p&&_campMap){ addParkMarker(_campMap,p,coords); _campMap.setView(coords,11); }
+  showToast('Pinned '+(p?p.name:'that park')+' 📍');
+  const row=document.getElementById('mfrow-'+id);
+  if(row) row.remove();
+  const status=document.getElementById('mapStatus');
+  if(status) status.textContent=status.textContent.replace(/^\d+ of/, (allParks().filter(x=>state.mapCoords&&state.mapCoords[x.id]).length)+' of');
+}
 
 
 function renderAll() {
