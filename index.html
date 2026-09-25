@@ -555,7 +555,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
   background:linear-gradient(180deg,#fbefd4,#ead8b5);
   box-shadow:0 28px 80px rgba(0,0,0,.62);
 }
-.modal-bg,#editTripBg{backdrop-filter:blur(10px);}
+.modal-bg,#editTripBg{backdrop-filter:blur(10px);}.modal-bg#detailModalBg{z-index:120}.modal-bg#mapModalBg{z-index:100}
 .toast{border-radius:999px;}
 .timeline-hero{
   display:grid;
@@ -760,7 +760,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 .quick-list{display:flex;flex-direction:column;gap:7px}.quick-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;background:rgba(255,255,255,.35);border-radius:6px;cursor:pointer}.quick-item:hover{background:rgba(61,90,42,.1)}.quick-item strong{font-family:var(--font-heading);font-size:.9rem}.quick-item small{color:var(--fog);font-size:.72rem}
 .park-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.park-detail-hero{background:linear-gradient(135deg,rgba(61,90,42,.12),rgba(200,135,42,.10));border-radius:8px;padding:16px;margin-bottom:14px}.park-detail-hero h2{font-family:var(--font-heading);font-size:1.6rem;color:var(--bark);margin-bottom:3px}.detail-stat{background:rgba(255,255,255,.35);border-radius:7px;padding:11px}.detail-stat label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog);font-weight:700}.detail-stat strong{display:block;color:var(--bark);font-size:.9rem;margin-top:2px}.detail-section{margin-top:14px;padding-top:12px;border-top:1px solid rgba(107,66,38,.25)}.detail-section h3{font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin-bottom:8px}.detail-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
 .book-preview{background:#fffaf0;color:#2c1a0e;border-radius:8px;padding:24px;max-height:65vh;overflow:auto}.book-cover{text-align:center;padding:35px 20px;border-bottom:2px solid #3d5a2a;margin-bottom:20px}.book-cover h1{font-family:Georgia,serif;font-size:2.4rem}.book-cover p{color:#6b4226}.book-year{margin-top:22px;font-family:Georgia,serif;font-size:1.35rem;border-bottom:1px solid #b5a898;padding-bottom:5px}.book-trip{padding:10px 0;border-bottom:1px solid #ddd0b9}.book-trip strong{font-family:Georgia,serif}.book-trip .meta{font-size:.8rem;color:#6b6a5a}.book-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.map-shell{background:var(--parchment);border-radius:8px;padding:12px}.map-canvas{height:520px;border-radius:7px;overflow:hidden;background:#dfe8dc}.map-legend{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;font-size:.72rem;color:var(--fog)}.map-legend span{padding:3px 8px;border-radius:10px;background:rgba(61,90,42,.1)}
+.map-shell{background:var(--parchment);border-radius:8px;padding:12px}.map-canvas{height:520px;border-radius:7px;overflow:hidden;background:#dfe8dc;position:relative}.map-status{font-size:.74rem;color:var(--fog);margin:0 0 8px}.map-loading{position:absolute;z-index:500;left:12px;top:12px;background:rgba(255,250,240,.94);color:var(--bark);padding:7px 10px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.2);font-size:.75rem;font-weight:700}.map-legend{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;font-size:.72rem;color:var(--fog)}.map-legend span{padding:3px 8px;border-radius:10px;background:rgba(61,90,42,.1)}
 @media(max-width:760px){.dashboard-grid{grid-template-columns:1fr}.dash-metrics{grid-template-columns:repeat(2,1fr)}.park-detail-grid{grid-template-columns:1fr}.map-canvas{height:430px}.tabs{overflow-x:auto;scrollbar-width:thin}.tab{min-width:135px;flex:0 0 auto}}
 @media print{.book-preview{max-height:none;overflow:visible}.book-actions,.modal-bg .modal>button{display:none!important}}
 </style>
@@ -1018,7 +1018,7 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 
 <div class="modal-bg hidden" id="detailModalBg" onclick="if(event.target===this)closeParkDetail()"><div class="modal" style="max-width:820px;width:100%"><button onclick="closeParkDetail()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="detailModalContent"></div></div></div>
 <div class="modal-bg hidden" id="bookModalBg" onclick="if(event.target===this)this.classList.add('hidden')"><div class="modal" style="max-width:850px;width:100%"><button onclick="document.getElementById('bookModalBg').classList.add('hidden')" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div class="book-actions"><button class="btn-g" onclick="printCampingBook()">🖨️ Print / Save PDF</button><button class="btn-o" onclick="document.getElementById('bookModalBg').classList.add('hidden')">Close</button></div><div id="bookContent"></div></div></div>
-<div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1000px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-legend"><span>📍 Every saved park</span><span>Click a marker for Park Details</span></div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div></div></div>
+<div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1000px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-legend"><span>📍 Every saved park</span><span>Click a marker for Park Details</span></div><div id="mapStatus" class="map-status">Preparing map…</div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -3204,9 +3204,106 @@ function openCampingBook(){
 function printCampingBook(){const content=document.getElementById('bookContent').innerHTML;const w=window.open('','_blank');if(!w){alert('Please allow pop-ups to print the Camping Book.');return;}w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trail Notes — Our Camping Story</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;max-width:850px;margin:28px auto;padding:0 22px;color:#2c1a0e;line-height:1.5;background:#fffaf0}.book-cover-premium{min-height:650px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:55px 35px;background:linear-gradient(145deg,#27462f,#3d5a2a 58%,#7c5a2d);color:#fff7e8;border-radius:10px;position:relative;overflow:hidden}.book-cover-premium:after{content:"";position:absolute;inset:18px;border:1px solid rgba(255,247,232,.4);border-radius:7px}.cover-tree{font-size:76px}.book-cover-premium h1{font:700 58px Georgia,serif;margin:18px 0 6px}.cover-sub{font:italic 23px Georgia,serif}.cover-rule{width:150px;height:2px;background:#d9a441;margin:25px 0}.cover-years{font-size:13px;letter-spacing:2px;text-transform:uppercase}.book-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.book-summary-stat{background:#f8efdf;border:1px solid #dcccb0;border-radius:8px;padding:14px 8px;text-align:center}.book-summary-stat strong{display:block;font-size:24px;color:#27462f}.book-summary-stat span{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#766a59}.book-section-title{font:700 23px Georgia,serif;color:#27462f;border-bottom:2px solid #d8c8a8;padding-bottom:7px;margin:28px 0 12px}.book-year-page{page-break-before:always}.book-year-heading{font:700 34px Georgia,serif;color:#27462f;margin:0}.book-year-sub{color:#766a59;margin-bottom:15px}.book-memory{display:grid;grid-template-columns:1fr auto;gap:14px;padding:11px 0;border-bottom:1px solid #dfd5c4;break-inside:avoid}.meta{font-size:12px;color:#766a59;margin-top:3px}.fee{font-weight:700;color:#8b6128;white-space:nowrap}.book-photo-strip{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px;break-inside:avoid}.book-photo-strip img{width:115px;height:82px;object-fit:cover;border-radius:6px}.book-journal{background:#faf4e8;border-left:4px solid #8b6128;padding:11px 13px;margin:10px 0;break-inside:avoid}.jdate{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#766a59}.book-journal p{margin:5px 0;white-space:pre-wrap}.book-footer-note{text-align:center;color:#766a59;font-size:11px;margin:30px 0}@media print{body{margin:10mm auto;background:#fff}.book-cover-premium{page-break-after:always}.book-year-page{page-break-before:always}}</style></head><body>${content}
 </body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),450)}
 let _mapLoaded=false;
+let _campMap=null;
+let _campMapMarkers=[];
+let _mapOpening=false;
+let _mapLastOpen=0;
 function loadMapLibrary(){return new Promise((resolve,reject)=>{if(window.L){_mapLoaded=true;resolve();return;}const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(css);const js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';js.onload=()=>{_mapLoaded=true;resolve()};js.onerror=reject;document.head.appendChild(js);});}
-async function openMapExplorer(){const m=document.getElementById('mapModalBg');if(!m)return;m.classList.remove('hidden');const el=document.getElementById('mapCanvas');el.innerHTML='<div style="padding:30px;text-align:center;color:var(--fog)">Loading campground map…</div>';try{await loadMapLibrary();}catch(e){el.innerHTML='<div style="padding:30px;text-align:center;color:var(--fog)">Map library could not be loaded. You can still use the park address links in Park Details.</div>';return;}el.innerHTML='';const map=L.map(el).setView([28.6,-81.5],7);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors'}).addTo(map);const parks=allParks();const bounds=[];for(const p of parks){if(!p.address)continue;let coords=state.mapCoords&&state.mapCoords[p.id];if(!coords){try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(p.address));const d=await r.json();if(d&&d[0]){coords=[parseFloat(d[0].lat),parseFloat(d[0].lon)];state.mapCoords=state.mapCoords||{};state.mapCoords[p.id]=coords;localStorage.setItem('cd_mapcoords',JSON.stringify(state.mapCoords));}}catch(e){continue;}}if(!coords)continue;const marker=L.marker(coords).addTo(map);const trips=getTrips(p.id);marker.bindPopup('<strong>'+esc(p.name)+'</strong><br>'+trips.length+' visit'+(trips.length===1?'':'s')+'<br><button onclick="openParkDetail('+p.id+')">Park Details</button>');bounds.push(coords);}if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});setTimeout(()=>map.invalidateSize(),150);}
-function closeMapExplorer(){const m=document.getElementById('mapModalBg');if(m)m.classList.add('hidden');}
+function mapCityFromAddress(address){
+  const s=String(address||'').replace(/\s+/g,' ').trim();
+  const m=s.match(/,\s*([^,]+?)\s+(?:FL|Florida)\s+\d{5}(?:-\d{4})?\s*$/i);
+  return m?m[1].trim():'';
+}
+async function geocodePark(p){
+  const cached=state.mapCoords&&state.mapCoords[p.id];
+  if(Array.isArray(cached)&&cached.length===2&&Number.isFinite(Number(cached[0]))&&Number.isFinite(Number(cached[1]))) return cached;
+  const queries=[];
+  if(p.address) queries.push(p.address+', USA');
+  const city=mapCityFromAddress(p.address);
+  if(city) queries.push(`${p.name}, ${city}, Florida, USA`);
+  queries.push(`${p.name}, Florida, USA`);
+  for(let i=0;i<queries.length;i++){
+    try{
+      const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=us&q='+encodeURIComponent(queries[i]),{headers:{'Accept':'application/json'}});
+      if(!r.ok) continue;
+      const d=await r.json();
+      if(d&&d[0]&&d[0].lat&&d[0].lon){
+        const coords=[Number(d[0].lat),Number(d[0].lon)];
+        state.mapCoords=state.mapCoords||{};state.mapCoords[p.id]=coords;
+        try{localStorage.setItem('cd_mapcoords',JSON.stringify(state.mapCoords));}catch(e){}
+        return coords;
+      }
+    }catch(e){}
+    if(i<queries.length-1) await new Promise(r=>setTimeout(r,350));
+  }
+  return null;
+}
+function clearMapMarkers(){
+  _campMapMarkers.forEach(m=>{try{m.remove();}catch(e){}});
+  _campMapMarkers=[];
+}
+function addParkMarker(map,p,coords){
+  if(!map||!coords)return;
+  const marker=L.marker(coords).addTo(map);
+  const trips=getTrips(p.id);
+  marker.bindPopup(`<strong>${esc(p.name)}</strong><br>${trips.length} visit${trips.length===1?'':'s'}<br><button class="map-detail-btn" data-park-id="${p.id}">Park Details</button>`);
+  marker.on('popupopen',function(e){
+    const btn=e.popup.getElement()?.querySelector('.map-detail-btn');
+    if(btn)btn.onclick=function(ev){ev.preventDefault();ev.stopPropagation();openParkDetail(p.id);};
+  });
+  _campMapMarkers.push(marker);
+}
+async function openMapExplorer(){
+  const m=document.getElementById('mapModalBg');if(!m)return;
+  m.classList.remove('hidden');
+  const el=document.getElementById('mapCanvas');
+  const status=document.getElementById('mapStatus');
+  if(_mapOpening){return;}
+  _mapOpening=true;
+  try{
+    await loadMapLibrary();
+    if(!_campMap){
+      el.innerHTML='';
+      _campMap=L.map(el,{preferCanvas:true}).setView([28.6,-81.5],7);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(_campMap);
+    }else{
+      setTimeout(()=>_campMap.invalidateSize(),50);
+    }
+    clearMapMarkers();
+    const parks=allParks();
+    const bounds=[];
+    let mapped=0, missing=0;
+    const updateStatus=(extra='')=>{if(status)status.textContent=`${mapped} of ${parks.length} parks mapped${missing?` · ${missing} still loading`:''}${extra?' · '+extra:''}`;};
+    updateStatus('Loading…');
+    // Cached locations appear immediately. This makes reopening the map fast.
+    parks.forEach(p=>{
+      const c=state.mapCoords&&state.mapCoords[p.id];
+      if(Array.isArray(c)&&c.length===2){addParkMarker(_campMap,p,c);bounds.push(c);mapped++;}
+    });
+    if(bounds.length)_campMap.fitBounds(bounds,{padding:[30,30],maxZoom:9});
+    setTimeout(()=>_campMap.invalidateSize(),80);
+    // Resolve any parks not yet cached, one at a time to be polite to Nominatim.
+    for(const p of parks){
+      if(state.mapCoords&&Array.isArray(state.mapCoords[p.id])) continue;
+      missing++;
+      updateStatus();
+      const c=await geocodePark(p);
+      missing--;
+      if(c){addParkMarker(_campMap,p,c);bounds.push(c);mapped++;if(bounds.length===1)_campMap.setView(c,10);else _campMap.fitBounds(bounds,{padding:[30,30],maxZoom:9});}
+      updateStatus();
+      setTimeout(()=>_campMap.invalidateSize(),40);
+      // Nominatim asks for a maximum of about one request per second. Keep the app gentle.
+      await new Promise(r=>setTimeout(r,700));
+    }
+    updateStatus(mapped===parks.length?'All parks loaded':'Some parks could not be located');
+    setTimeout(()=>_campMap.invalidateSize(),150);
+  }catch(e){
+    console.error('Map error:',e);
+    if(status)status.textContent='The map could not be loaded. Please try again.';
+  }finally{_mapOpening=false;}
+}
+function closeMapExplorer(){const m=document.getElementById('mapModalBg');if(m)m.classList.add('hidden');if(_campMap)setTimeout(()=>_campMap.invalidateSize(),100);}
+
 
 function renderAll() {
   try { migrateExpired(); renderStats(); renderDashboard(); renderParks(); refreshDropdown(); refreshUpcomingDropdown(); renderUpcoming(); renderEntries(); renderTripLog(); renderTimeline(); updatePhotoMigrateButton(); }
