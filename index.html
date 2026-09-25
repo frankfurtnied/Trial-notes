@@ -3197,7 +3197,7 @@ function openCampingBook(){
   html+=`<section><h2 class="book-section-title">Our Camping Journey</h2><div class="book-summary-grid"><div class="book-summary-stat"><strong>${trips.length}</strong><span>Trips</span></div><div class="book-summary-stat"><strong>${totalNights}</strong><span>Nights</span></div><div class="book-summary-stat"><strong>${visited.length}</strong><span>Parks</span></div><div class="book-summary-stat"><strong>${fmtFee(totalFees)}</strong><span>Camping Fees</span></div></div><div class="book-summary-grid"><div class="book-summary-stat"><strong>${totalMiles?Math.round(totalMiles).toLocaleString():'—'}</strong><span>Est. Miles</span></div><div class="book-summary-stat"><strong>${years.length}</strong><span>Camping Years</span></div><div class="book-summary-stat"><strong>${photoCount}</strong><span>Photos</span></div><div class="book-summary-stat"><strong>${state.entries.length}</strong><span>Journal Entries</span></div></div></section>`;
   const favs=parks.filter(p=>state.favorites.includes(p.id)&&getTrips(p.id).length).slice(0,8);
   if(favs.length){html+=`<section><h2 class="book-section-title">Favorite Parks</h2>`;favs.forEach(p=>{const pt=getTrips(p.id),n=pt.reduce((x,t)=>x+nightsFor(t),0),f=pt.reduce((x,t)=>x+(Number(t.sitefee)||0),0);html+=`<div class="book-memory"><div><strong>❤️ ${esc(p.name)}</strong><div class="meta">${pt.length} visit${pt.length===1?'':'s'} · ${n} night${n===1?'':'s'}${p.address?' · '+esc(p.address):''}</div></div><div class="fee">${fmtFee(f)}</div></div>`});html+='</section>'}
-  years.forEach(y=>{const yt=dated.filter(t=>t.date.slice(0,4)===y),yn=yt.reduce((n,t)=>n+nightsFor(t),0),yf=yt.reduce((n,t)=>n+(Number(t.sitefee)||0),0),parkIds=[...new Set(yt.map(t=>t._pid))];html+=`<section class="book-year-page"><h2 class="book-year-heading">${esc(y)}</h2><div class="book-year-sub">${yt.length} trip${yt.length===1?'':'s'} · ${yn} night${yn===1?'':'s'} · ${parkIds.length} park${parkIds.length===1?'':'s'} · ${fmtFee(yf)} in camping fees</div>`;yt.forEach((t,ix)=>{const p=parks.find(x=>x.id===t._pid);html+=`<div class="book-memory"><div><strong>#${tripNumberMap.get(t._pid+'|'+t._ti)||''} · ${esc(p?p.name:'Unknown Park')}</strong><div class="meta">${fmtDateShort(t.date)}${t.depart?' → '+fmtDateShort(t.depart):''} · ${nightsFor(t)} night${nightsFor(t)===1?'':'s'}${t.site?' · Site '+esc(t.site):''}</div>${t.note?`<div style="margin-top:6px;line-height:1.45">${esc(t.note)}</div>`:''}</div><div class="fee">${t.sitefee?fmtFee(t.sitefee):''}</div></div>`;const photos=(state.parkPhotos&&state.parkPhotos[t._pid]||[]).slice(0,3);if(photos.length&&ix===0)html+=`<div class="book-photo-strip">${photos.map(ph=>{const src=ph.thumb||ph.data||'';return src?`<img src="${jsAttr(src)}" alt="Camping memory">`:''}).join('')}</div>`});const journals=state.entries.filter(e=>e.date&&e.date.slice(0,4)===y);if(journals.length){html+=`<h3 class="book-section-title" style="font-size:1.15rem">📓 Journal Memories</h3>`;journals.forEach(e=>{html+=`<div class="book-journal"><div class="jdate">${fmtDateShort(e.date)}${e.location?' · '+esc(e.location):''}${e.weather?' · '+esc(e.weather):''}${e.mood?' · '+esc(e.mood):''}</div><p>${esc(e.notes||'')}</p>${e.highlights&&e.highlights.length?`<div style="font-size:.78rem;color:#766a59">✨ ${e.highlights.map(esc).join(' · ')}</div>`:''}</div>`})}html+='</section>'});
+  years.forEach(y=>{const yt=dated.filter(t=>t.date.slice(0,4)===y),yn=yt.reduce((n,t)=>n+nightsFor(t),0),yf=yt.reduce((n,t)=>n+(Number(t.sitefee)||0),0),parkIds=[...new Set(yt.map(t=>t._pid))];html+=`<section class="book-year-page"><h2 class="book-year-heading">${esc(y)}</h2><div class="book-year-sub">${yt.length} trip${yt.length===1?'':'s'} · ${yn} night${yn===1?'':'s'} · ${parkIds.length} park${parkIds.length===1?'':'s'} · ${fmtFee(yf)} in camping fees</div>`;yt.forEach((t,ix)=>{const p=parks.find(x=>x.id===t._pid);html+=`<div class="book-memory"><div><strong>#${tripNumberMap.get(t._pid+'|'+t._ti)||''} · ${esc(p?p.name:'Unknown Park')}</strong><div class="meta">${fmtDateShort(t.date)}${t.depart?' → '+fmtDateShort(t.depart):''} · ${nightsFor(t)} night${nightsFor(t)===1?'':'s'}${t.site?' · Site '+esc(t.site):''}</div>${t.note?`<div style="margin-top:6px;line-height:1.45">${esc(t.note)}</div>`:''}</div><div class="fee">${t.sitefee?fmtFee(t.sitefee):''}</div></div>`;const photos=(state.parkPhotos&&state.parkPhotos[t._pid]||[]).slice(0,3);if(photos.length&&ix===0)html+=`<div class="book-photo-strip">${photos.map(ph=>{const src=ph.thumb||ph.data||'';return src?`<img src="${esc(src)}" alt="Camping memory">`:''}).join('')}</div>`});const journals=state.entries.filter(e=>e.date&&e.date.slice(0,4)===y);if(journals.length){html+=`<h3 class="book-section-title" style="font-size:1.15rem">📓 Journal Memories</h3>`;journals.forEach(e=>{html+=`<div class="book-journal"><div class="jdate">${fmtDateShort(e.date)}${e.location?' · '+esc(e.location):''}${e.weather?' · '+esc(e.weather):''}${e.mood?' · '+esc(e.mood):''}</div><p>${esc(e.notes||'')}</p>${e.highlights&&e.highlights.length?`<div style="font-size:.78rem;color:#766a59">✨ ${e.highlights.map(esc).join(' · ')}</div>`:''}</div>`})}html+='</section>'});
   if(!trips.length)html+=`<section class="book-year-page"><div style="text-align:center;padding:50px 10px;color:#766a59">Your first camping memory is waiting to be recorded. 🏕️</div></section>`;
   html+=`<div class="book-footer-note">Created with Trail Notes · Your camping story, kept in one place.</div></div>`;document.getElementById('bookContent').innerHTML=html;m.classList.remove('hidden');
 }
@@ -3209,19 +3209,31 @@ let _campMapMarkers=[];
 let _mapOpening=false;
 let _mapLastOpen=0;
 function loadMapLibrary(){return new Promise((resolve,reject)=>{if(window.L){_mapLoaded=true;resolve();return;}const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(css);const js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';js.onload=()=>{_mapLoaded=true;resolve()};js.onerror=reject;document.head.appendChild(js);});}
-function mapCityFromAddress(address){
+const US_STATE_CODES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+// Pulls "city" and the two-letter state out of an address like the ones already in this diary
+// ("6239 State Road 21, Keystone Heights FL 32656" or "8377 State Cabin Rd, Edisto Island SC 29438"),
+// whatever state the park is actually in — not just Florida.
+function mapCityStateFromAddress(address){
   const s=String(address||'').replace(/\s+/g,' ').trim();
-  const m=s.match(/,\s*([^,]+?)\s+(?:FL|Florida)\s+\d{5}(?:-\d{4})?\s*$/i);
-  return m?m[1].trim():'';
+  const stateRe=new RegExp('\\b('+US_STATE_CODES.join('|')+')\\b\\s*(?:\\d{5}(?:-\\d{4})?)?\\s*$');
+  const sm=stateRe.exec(s);
+  if(!sm) return null;
+  const state=sm[1];
+  let before=s.slice(0,sm.index).replace(/,\s*$/,'').trim();
+  const parts=before.split(',').map(x=>x.trim()).filter(Boolean);
+  let city=parts.length?parts[parts.length-1]:'';
+  if(/\bcounty$/i.test(city)) city=parts.length>1?parts[parts.length-2]:'';
+  return {city, state};
 }
 async function geocodePark(p){
   const cached=state.mapCoords&&state.mapCoords[p.id];
   if(Array.isArray(cached)&&cached.length===2&&Number.isFinite(Number(cached[0]))&&Number.isFinite(Number(cached[1]))) return cached;
   const queries=[];
   if(p.address) queries.push(p.address+', USA');
-  const city=mapCityFromAddress(p.address);
-  if(city) queries.push(`${p.name}, ${city}, Florida, USA`);
-  queries.push(`${p.name}, Florida, USA`);
+  const cs=mapCityStateFromAddress(p.address);
+  const fallbackState=cs?cs.state:'FL';   // default only when no state could be read from the address at all
+  if(cs&&cs.city) queries.push(`${p.name}, ${cs.city}, ${fallbackState}, USA`);
+  queries.push(`${p.name}, ${fallbackState}, USA`);
   for(let i=0;i<queries.length;i++){
     try{
       const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=us&q='+encodeURIComponent(queries[i]),{headers:{'Accept':'application/json'}});
