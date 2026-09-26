@@ -3725,7 +3725,7 @@ async function syncToCloud() {
     searchHistory: getHistory(),
     savedRoutes: getSavedRoutes(),
     parkMileage: state.parkMileage||{},
-    parkCoords: state.parkCoords||{},
+    mapCoords: state.mapCoords||{},
     parkPhotos: state.parkPhotos||{},
     homeAddress: state.homeAddress||'',
   };
@@ -3793,7 +3793,7 @@ async function loadFromCloud() {
         try { localStorage.setItem('tn_saved_routes', JSON.stringify(d.savedRoutes)); } catch(e) {}
       }
       if (d.parkMileage !== undefined) state.parkMileage = d.parkMileage;
-      if (d.parkCoords !== undefined) state.parkCoords = d.parkCoords;
+      if (d.mapCoords !== undefined) { state.mapCoords = d.mapCoords; try{localStorage.setItem('cd_mapcoords', JSON.stringify(d.mapCoords));}catch(e){} }
       if (d.parkPhotos !== undefined) state.parkPhotos = d.parkPhotos;
       if (d.homeAddress) { state.homeAddress = d.homeAddress; _homeCoords = null; }
     }
