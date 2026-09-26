@@ -834,10 +834,10 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 <div class="tabs">
   <div class="tab active" data-tab="home" onclick="switchTab('home')">🏕 Home</div>
   <div class="tab" data-tab="parks" onclick="switchTab('parks')">🗺 My Parks</div>
-  <div class="tab" data-tab="upcoming" onclick="switchTab('upcoming')">📅 Trips</div>
+  <div class="tab" data-tab="upcoming" onclick="switchTab('upcoming')">📅 Upcoming Trips</div>
   <div class="tab" data-tab="timeline" onclick="switchTab('timeline')">🧭 Timeline</div>
   <div class="tab" data-tab="journal" onclick="switchTab('journal')">📓 Journal</div>
-  <div class="tab" data-tab="findcamps" onclick="switchTab('findcamps')">🔍 Explore</div>
+  <div class="tab" data-tab="findcamps" onclick="switchTab('findcamps')">🔍 Trip Planner</div>
   <div class="tab" data-tab="stats" onclick="switchTab('stats');renderStatsPanel();">📊 Statistics</div>
   <div class="tab" data-tab="wishlist" onclick="switchTab('wishlist')">🌟 Wish List</div>
 </div>
@@ -3165,7 +3165,7 @@ function renderDashboard(){
   const next=upcoming[0], nextPark=next?parks.find(p=>p.id===next.parkId):null, recent=trips.slice().reverse().slice(0,5);
   let html='<div class="dashboard-grid">';
   if(next){
-    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="switchTab('upcoming')">Open Trip Planner →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
+    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="switchTab('upcoming')">Upcoming Trips →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
   } else {
     html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>No upcoming trip yet</h2><div class="trip-big">🌲 Time to plan the next campout.</div><div class="dash-actions"><button class="dash-action" onclick="switchTab('upcoming')">＋ Plan a Trip</button><button class="dash-action alt" onclick="switchTab('findcamps')">🔍 Explore Campgrounds</button></div></div>`;
   }
