@@ -856,6 +856,9 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
     <button class="btn-amber" style="background:rgba(42,80,90,.7)" onclick="exportData()" title="Save all your diary data (trips, photos, mileage, ratings, journal, wishlist, custom parks) to a file">⬇️ Export Backup</button>
     <button class="btn-amber" style="background:rgba(90,70,42,.7)" onclick="document.getElementById('importFile').click()" title="Restore or merge a backup file — your current data is kept, not erased">⬆️ Import Backup</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn-amber" style="background:rgba(90,50,42,.7)" onclick="document.getElementById('importFuelFile').click()" title="Import a Fuelly (or similar) CSV export of fill-ups, used to work out real mileage and mpg for your trips">⛽ Import Fuel Log</button>
+    <input type="file" id="importFuelFile" accept=".csv" style="display:none" onchange="importFuelLog(event)">
+    <button class="btn-amber" style="background:rgba(58,74,58,.75)" onclick="openFuelMatchModal()" title="Scan all your trips at once and find real mileage/fuel numbers from your imported fuel log">🔎 Auto-Match Trips</button>
   </div>
   <div class="filter-bar" style="flex-wrap:wrap;">
     <span class="filter-pill" id="fp-best" onclick="setFilter('best')">⭐ Best Parks</span>
@@ -1530,6 +1533,7 @@ let state = {
   parkPhotos:  JSON.parse(localStorage.getItem('cd_photos')    || '{}'),
   parkMileage: JSON.parse(localStorage.getItem('cd_mileage')   || '{}'),
   mapCoords: JSON.parse(localStorage.getItem('cd_mapcoords') || '{}'),
+  fuelLog: JSON.parse(localStorage.getItem('cd_fuellog') || '[]'),
   activeFilter: '',
   homeAddress: localStorage.getItem('cd_home') || '',
   parkViewMode: 'list',
@@ -1552,6 +1556,7 @@ function saveState() {
     localStorage.setItem('cd_home',       state.homeAddress||'');
     localStorage.setItem('cd_mileage',    JSON.stringify(state.parkMileage||{}));
     localStorage.setItem('cd_mapcoords', JSON.stringify(state.mapCoords||{}));
+    localStorage.setItem('cd_fuellog',   JSON.stringify(state.fuelLog||[]));
   } catch(err) {
     showToast('Could not save: ' + err.message);
   }
@@ -2167,11 +2172,178 @@ async function fetchWeatherForTrip(t) {
   }
 }
 
-const MPG = 9; // average miles per gallon, used to estimate fuel from mileage
+const MPG = 9; // fallback average miles per gallon, used only when no fuel log has been imported
+// Real average MPG from an imported fuel log (Fuelly-style CSV), if any. Falls back to the MPG constant.
+function avgLogMPG(){
+  const log = (state.fuelLog||[]).filter(r=>r.mpg>0);
+  if (!log.length) return null;
+  return log.reduce((s,r)=>s+r.mpg,0)/log.length;
+}
+function effectiveMPG(){ return avgLogMPG() || MPG; }
 function milesToGallons(miles) {
   const m = Number(miles)||0;
   if (!m) return '';
-  return Math.round((m / MPG) * 10) / 10; // one decimal place
+  return Math.round((m / effectiveMPG()) * 10) / 10; // one decimal place
+}
+
+// ═══════════════════════════════════════════════════════
+// FUEL LOG IMPORT (Fuelly-style CSV) — matches real odometer readings to trip dates
+// ═══════════════════════════════════════════════════════
+function parseFuelCSV(text){
+  const lines = String(text||'').split(/\r\n|\n/).filter(l=>l.trim().length);
+  if (!lines.length) return [];
+  const splitLine = line => {
+    const out=[]; let cur=''; let inQ=false;
+    for (let i=0;i<line.length;i++){
+      const c=line[i];
+      if (inQ){
+        if (c==='"'){ if (line[i+1]==='"'){ cur+='"'; i++; } else inQ=false; }
+        else cur+=c;
+      } else {
+        if (c==='"') inQ=true;
+        else if (c===','){ out.push(cur); cur=''; }
+        else cur+=c;
+      }
+    }
+    out.push(cur);
+    return out;
+  };
+  const header = splitLine(lines[0]).map(h=>h.trim());
+  const recs = [];
+  for (let i=1;i<lines.length;i++){
+    const cols = splitLine(lines[i]);
+    if (!cols.length) continue;
+    const row = {};
+    header.forEach((h,idx)=>{ row[h]=(cols[idx]||'').trim(); });
+    const date = (row['Date']||'').trim();
+    const odometer = parseFloat(String(row['Odometer']||'').replace(/,/g,''));
+    const gallons  = parseFloat(row['Gallons']);
+    const cost     = parseFloat(String(row['Total Cost']||'').replace(/[^0-9.]/g,''));
+    const mpg      = parseFloat(row['MPG']);
+    if (!date || isNaN(odometer) || isNaN(gallons) || gallons<=0) continue;
+    recs.push({
+      date, odometer, gallons,
+      cost: isNaN(cost)?null:cost,
+      mpg: isNaN(mpg)?null:mpg,
+      vehicle: row['Vehicle']||'',
+      full: (row['Filled Up']||'').toLowerCase()==='full',
+    });
+  }
+  return recs;
+}
+function fuelLogSorted(){
+  return (state.fuelLog||[]).slice().sort((a,b)=> a.date===b.date ? a.odometer-b.odometer : a.date.localeCompare(b.date));
+}
+function daysBetween(a,b){ return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000); }
+// Finds the real odometer readings bracketing a trip's dates (closest fill-up before it started,
+// closest fill-up on/after it ended), then sums the gallons burned across that window
+// ("full-to-full" method). Returns null if there's no imported log, or the nearest fill-ups
+// are too far (>maxBufferDays) from the trip to give a trustworthy number.
+function matchFuelWindow(startDate, endDate, maxBufferDays){
+  if (!startDate) return null;
+  const buffer = maxBufferDays==null ? 4 : maxBufferDays;
+  const end = endDate || startDate;
+  const log = fuelLogSorted();
+  if (!log.length) return null;
+  let before=null, after=null;
+  for (const r of log){ if (r.date<=startDate) before=r; else break; }
+  for (const r of log){ if (r.date>=end){ after=r; break; } }
+  if (!before || !after || after===before || after.odometer<=before.odometer) return null;
+  if (daysBetween(before.date, startDate) > buffer) return null;
+  if (daysBetween(end, after.date) > buffer) return null;
+  let gallons=0, counting=false;
+  for (const r of log){
+    if (r===before){ counting=true; continue; }
+    if (!counting) continue;
+    gallons += r.gallons||0;
+    if (r===after) break;
+  }
+  if (!gallons) return null;
+  const miles = after.odometer - before.odometer;
+  return { miles, gallons: Math.round(gallons*10)/10, mpg: miles/gallons, beforeDate: before.date, afterDate: after.date, approx: false };
+}
+// Fallback for trips with no known return date (most of yours, since "date" = day you left home):
+// finds the fill-up whose cumulative mileage from the pre-trip fill-up best matches the park's
+// known round-trip distance (2x one-way). Looser and inherently approximate — it can't tell your
+// camping drive apart from other driving in between, so it's only used when the exact date-bracket
+// method above finds nothing.
+function matchFuelWindowByMileage(startDate, expectedRoundTripMiles, lookAheadDays){
+  if (!startDate || !expectedRoundTripMiles) return null;
+  const lookAhead = lookAheadDays==null ? 21 : lookAheadDays;
+  const log = fuelLogSorted();
+  if (!log.length) return null;
+  let beforeIdx=-1;
+  for (let i=0;i<log.length;i++){ if (log[i].date<=startDate) beforeIdx=i; else break; }
+  if (beforeIdx<0) return null;
+  const before = log[beforeIdx];
+  if (daysBetween(before.date, startDate) > 4) return null; // still need a fill-up close to departure
+  let bestIdx=-1, bestDiff=Infinity;
+  for (let j=beforeIdx+1;j<log.length;j++){
+    const r = log[j];
+    if (daysBetween(startDate, r.date) > lookAhead) break;
+    const miles = r.odometer - before.odometer;
+    const diff = Math.abs(miles - expectedRoundTripMiles);
+    if (diff < bestDiff){ bestDiff = diff; bestIdx = j; }
+  }
+  if (bestIdx<0) return null;
+  const after = log[bestIdx];
+  const miles = after.odometer - before.odometer;
+  if (miles <= 0) return null;
+  const tolerance = Math.max(expectedRoundTripMiles*0.5, 30); // must be in the right ballpark
+  if (Math.abs(miles - expectedRoundTripMiles) > tolerance) return null;
+  let gallons=0;
+  for (let k=beforeIdx+1;k<=bestIdx;k++) gallons += log[k].gallons||0;
+  if (!gallons) return null;
+  return { miles, gallons: Math.round(gallons*10)/10, mpg: miles/gallons, beforeDate: before.date, afterDate: after.date, approx: true };
+}
+// Tries the exact date-bracket match first (reliable, needs a real return date); falls back to
+// the mileage-based estimate using the park's known round-trip distance when no return date is
+// on file. Returns null if neither approach finds a trustworthy match.
+function matchFuelForTrip(startDate, endDate, parkId){
+  const oneWay = parkId!=null ? getParkOneWayMiles(parkId) : null;
+  const expected = oneWay ? oneWay*2 : null;
+  // A real fill-up bracket doesn't guarantee the mileage is trip-only — if the nearest fill-up
+  // was a few days early/late, ordinary driving in between gets counted too. Flag it rather than
+  // silently presenting padded mileage as a clean number.
+  const tagOvershoot = m => { if (m) m.overshoot = expected ? (m.miles > expected*1.6 || m.miles < expected*0.4) : false; return m; };
+
+  if (endDate && endDate !== startDate) {
+    const m = matchFuelWindow(startDate, endDate, 4);
+    if (m) return tagOvershoot(m);
+  }
+  if (expected) {
+    const m2 = matchFuelWindowByMileage(startDate, expected, 21);
+    if (m2) return m2; // built to fit the expected mileage already, no overshoot check needed
+  }
+  const m3 = matchFuelWindow(startDate, endDate||startDate, 4);
+  if (m3) return tagOvershoot(m3);
+  return null;
+}
+function importFuelLog(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try {
+      const parsed = parseFuelCSV(ev.target.result);
+      if (!parsed.length) { showToast('No fuel fill-ups found in that file ❌'); return; }
+      const existing = new Set((state.fuelLog||[]).map(r=>r.date+'|'+r.odometer));
+      let added = 0;
+      parsed.forEach(r=>{
+        const key = r.date+'|'+r.odometer;
+        if (!existing.has(key)) { existing.add(key); state.fuelLog.push(r); added++; }
+      });
+      state.fuelLog.sort((a,b)=> a.date===b.date ? a.odometer-b.odometer : a.date.localeCompare(b.date));
+      saveState();
+      const mpg = avgLogMPG();
+      showToast('Fuel log imported! ⛽ ' + added + ' new fill-up' + (added!==1?'s':'') + (mpg?(' · avg ' + mpg.toFixed(1) + ' mpg'):''));
+      renderAll();
+    } catch(err) {
+      showToast('Could not read that fuel log ❌');
+    }
+    document.getElementById('importFuelFile').value = '';
+  };
+  reader.readAsText(file);
 }
 function getParkOneWayMiles(pid) {
   // Prefer the park's own "drive" text (one-way miles), checking overrides first,
@@ -2211,6 +2383,7 @@ function startLogDrive(id) {
     };
     document.getElementById('dl-fuel').dataset.userEdited = '0';
     document.getElementById('dl-fuel').oninput = function(){ this.dataset.userEdited = '1'; };
+    document.getElementById('dl-fuel-match').textContent = '';
   }
 }
 
@@ -2248,6 +2421,19 @@ function saveDriveLog() {
     renderParks();
     showToast('Drive logged! 🚗');
   }
+}
+
+function matchDLFuelLog() {
+  const id = window._loggingDriveId;
+  const t = (state.upcoming||[]).find(x=>x.id===id);
+  const note = document.getElementById('dl-fuel-match');
+  if (!t) return;
+  const m = matchFuelForTrip(t.startDate, t.endDate, t.parkId);
+  if (!m) { if (note) note.textContent = 'No nearby fuel-log fill-ups found for this trip.'; return; }
+  document.getElementById('dl-fuel').value = m.gallons;
+  document.getElementById('dl-fuel').dataset.userEdited = '1';
+  const tag = m.approx ? '≈ approx (estimated from expected round-trip mileage)' : m.overshoot ? '⚠ real fill-up dates, but mileage is well outside this park\'s usual round trip — likely includes other driving' : '✓ from your actual fill-up dates';
+  if (note) note.textContent = '⛽ ' + Math.round(m.miles) + ' mi, ' + m.gallons.toFixed(1) + ' gal (' + m.mpg.toFixed(1) + ' mpg) — fill-ups ' + fmtDateShort(m.beforeDate) + ' to ' + fmtDateShort(m.afterDate) + '. ' + tag;
 }
 
 function closeDriveLog() {
@@ -2553,7 +2739,7 @@ function showFuelBreakdown() {
         <div style="padding:18px 20px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <div>
             <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">⛽ Fuel — Trip Detail</div>
-            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · <button onclick="toggleAllBreakdown(this)" style="background:none;border:none;color:var(--moss);font-size:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;">Expand all</button> · estimated @ ${MPG} mpg from one-way mileage</div>
+            <div style="font-size:.75rem;color:var(--fog);margin-top:2px;">Click a park row to expand individual trips · <button onclick="toggleAllBreakdown(this)" style="background:none;border:none;color:var(--moss);font-size:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;">Expand all</button> · estimated @ ${effectiveMPG().toFixed(1)} mpg${avgLogMPG()?' (your fuel log avg)':' from one-way mileage'}${(state.fuelLog||[]).length?' · <button onclick="document.getElementById(\'fuel-modal-bg\').remove();openFuelMatchModal()" style="background:none;border:none;color:var(--moss);font-size:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;">🔎 Auto-match all trips</button>':''}</div>
           </div>
           <button onclick="document.getElementById('fuel-modal-bg').remove()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--fog);">✕</button>
         </div>
@@ -2581,6 +2767,126 @@ function showFuelBreakdown() {
   const existingFuel = document.getElementById('fuel-modal-bg');
   if (existingFuel) existingFuel.remove();
   document.body.insertAdjacentHTML('beforeend', html);
+}
+
+// ═══════════════════════════════════════════════════════
+// BULK FUEL-LOG MATCHING — scans every trip at once
+// ═══════════════════════════════════════════════════════
+function openFuelMatchModal() {
+  const parkMap = {};
+  allParks().forEach(p => { parkMap[p.id] = p.name; });
+  const trips = getAllTripsSorted();
+
+  const candidates = [];
+  trips.forEach(t => {
+    const m = matchFuelForTrip(t.date, t.depart, t._pid);
+    if (!m) return;
+    candidates.push({
+      pid: t._pid, isBase: t._isBase, baseIdx: t._baseIdx, userIdx: t._userIdx,
+      date: t.date, depart: t.depart || null,
+      parkName: parkMap[t._pid] || 'Unknown Park',
+      oldFuel: t.fuel || null, newFuel: m.gallons, miles: m.miles, mpg: m.mpg,
+      approx: m.approx, beforeDate: m.beforeDate, afterDate: m.afterDate,
+    });
+  });
+  candidates.sort((a,b) => b.date.localeCompare(a.date));
+  window._fuelMatchCandidates = candidates;
+
+  const totalTrips = trips.length;
+  const exactCount = candidates.filter(c=>!c.approx && !c.overshoot).length;
+  const overshootCount = candidates.filter(c=>!c.approx && c.overshoot).length;
+  const approxCount = candidates.filter(c=>c.approx).length;
+  const noMatchCount = totalTrips - candidates.length;
+
+  const rowsHtml = candidates.map((c,i) => {
+    const dateStr = c.depart && c.depart !== c.date ? fmtDateShort(c.date) + ' → ' + fmtDateShort(c.depart) : fmtDateShort(c.date);
+    const oldStr = c.oldFuel ? c.oldFuel.toFixed(1) + ' gal now' : 'nothing logged yet';
+    const badge = c.approx
+      ? '<span style="background:rgba(200,150,60,.18);color:#8a6a1f;padding:1px 6px;border-radius:3px;font-size:.68rem;font-weight:700;white-space:nowrap;">≈ approx</span>'
+      : c.overshoot
+      ? '<span style="background:rgba(190,90,50,.18);color:#a3492a;padding:1px 6px;border-radius:3px;font-size:.68rem;font-weight:700;white-space:nowrap;">⚠ padded</span>'
+      : '<span style="background:rgba(70,120,80,.18);color:var(--moss);padding:1px 6px;border-radius:3px;font-size:.68rem;font-weight:700;white-space:nowrap;">✓ exact</span>';
+    const checked = (!c.approx && !c.overshoot) ? 'checked' : '';
+    return `<tr style="border-bottom:1px solid #eee;vertical-align:top;">
+      <td style="padding:10px 4px 10px 10px;"><input type="checkbox" class="fm-check" data-idx="${i}" ${checked}></td>
+      <td style="padding:10px 6px;">
+        <div style="font-weight:700;font-size:.85rem;color:var(--bark);">${esc(c.parkName)}</div>
+        <div style="color:var(--fog);font-size:.72rem;margin-top:1px;">${dateStr}</div>
+        <div style="color:var(--fog);font-size:.68rem;margin-top:2px;">${Math.round(c.miles)} mi · ${c.mpg.toFixed(1)} mpg · fill-ups ${fmtDateShort(c.beforeDate)}–${fmtDateShort(c.afterDate)}</div>
+        ${c.overshoot ? '<div style="color:#a3492a;font-size:.68rem;margin-top:2px;">Mileage is well outside this park’s usual round trip — likely includes other driving.</div>' : ''}
+      </td>
+      <td style="padding:10px 6px;text-align:right;">
+        <div style="font-size:.7rem;color:var(--fog);text-decoration:line-through;">${oldStr}</div>
+        <div style="font-size:.92rem;font-weight:700;color:var(--bark);">${c.newFuel.toFixed(1)} gal</div>
+        <div style="margin-top:3px;">${badge}</div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const html = `
+    <div id="fuel-match-bg" onclick="if(event.target===this)this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;">
+      <div style="background:white;border-radius:12px;max-width:560px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <div style="padding:18px 20px 12px;border-bottom:1px solid #eee;flex-shrink:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-family:-apple-system,Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--bark);">🔎 Match Trips to Fuel Log</div>
+            <button onclick="document.getElementById('fuel-match-bg').remove()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--fog);">✕</button>
+          </div>
+          <div style="font-size:.76rem;color:var(--fog);margin-top:6px;line-height:1.5;">
+            ${candidates.length} of ${totalTrips} trips found a real match — <b>${exactCount} exact</b> (fill-ups close by, mileage fits the park's usual round trip — pre-checked), <b>${overshootCount} padded</b> (real fill-up dates, but the mileage is well outside the park's usual round trip, likely mixed with other driving), and <b>${approxCount} approximate</b> (estimated from the park's expected round-trip mileage since no real return fill-up was close enough). ${noMatchCount} trip${noMatchCount!==1?'s':''} had no nearby fill-ups to work with and ${noMatchCount!==1?'are':'is'} left alone.
+          </div>
+        </div>
+        <div style="overflow-y:auto;flex:1;">
+          ${candidates.length ? `
+          <div style="padding:8px 10px;font-size:.74rem;border-bottom:1px solid #f0f0f0;display:flex;gap:14px;flex-wrap:wrap;">
+            <label style="cursor:pointer;"><input type="checkbox" checked onchange="fmToggleGroup('exact', this.checked)"> All exact</label>
+            <label style="cursor:pointer;"><input type="checkbox" onchange="fmToggleGroup('overshoot', this.checked)"> All padded</label>
+            <label style="cursor:pointer;"><input type="checkbox" onchange="fmToggleGroup('approx', this.checked)"> All approx</label>
+          </div>
+          <table style="width:100%;border-collapse:collapse;"><tbody>${rowsHtml}</tbody></table>` : `<div style="padding:24px;text-align:center;color:var(--fog);font-size:.85rem;">No trips matched yet. Import more of your fuel log, or check back after logging trips with real dates.</div>`}
+        </div>
+        <div style="padding:14px 20px;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;">
+          <button onclick="document.getElementById('fuel-match-bg').remove()" style="padding:8px 16px;border-radius:6px;border:1px solid var(--fog);background:none;color:var(--fog);cursor:pointer;font-family:-apple-system,Georgia,serif;">Cancel</button>
+          ${candidates.length ? `<button onclick="applyFuelMatches()" style="padding:8px 16px;border-radius:6px;border:none;background:var(--moss);color:white;font-weight:700;cursor:pointer;font-family:-apple-system,Georgia,serif;">Apply Selected</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+
+  const existing = document.getElementById('fuel-match-bg');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function fmToggleGroup(group, checked) {
+  document.querySelectorAll('.fm-check').forEach(cb => {
+    const idx = parseInt(cb.dataset.idx, 10);
+    const c = (window._fuelMatchCandidates||[])[idx];
+    if (!c) return;
+    const tier = c.approx ? 'approx' : (c.overshoot ? 'overshoot' : 'exact');
+    if (tier === group) cb.checked = checked;
+  });
+}
+
+function applyFuelMatches() {
+  const checks = document.querySelectorAll('.fm-check:checked');
+  if (!checks.length) { showToast('Nothing selected.'); return; }
+  let count = 0;
+  checks.forEach(cb => {
+    const idx = parseInt(cb.dataset.idx, 10);
+    const c = (window._fuelMatchCandidates||[])[idx];
+    if (!c) return;
+    if (c.isBase) {
+      if (!state.tripEdits[c.pid]) state.tripEdits[c.pid] = {};
+      state.tripEdits[c.pid][c.baseIdx] = Object.assign({}, state.tripEdits[c.pid][c.baseIdx]||{}, {fuel: c.newFuel});
+    } else if (state.tripLogs[c.pid] && state.tripLogs[c.pid][c.userIdx] !== undefined) {
+      state.tripLogs[c.pid][c.userIdx] = Object.assign({}, state.tripLogs[c.pid][c.userIdx], {fuel: c.newFuel});
+    }
+    count++;
+  });
+  saveState();
+  renderAll();
+  showToast('Updated fuel for ' + count + ' trip' + (count!==1?'s':'') + ' from your fuel log ⛽');
+  const bg = document.getElementById('fuel-match-bg');
+  if (bg) bg.remove();
 }
 
 function renderStats() {
@@ -3408,12 +3714,26 @@ function openET(parkId, idx) {
   document.getElementById('et-fuel').value    = t.fuel    != null ? t.fuel    : (getParkOneWayMiles(parkId) ? milesToGallons(getParkOneWayMiles(parkId)) : '');
   document.getElementById('et-fuel').dataset.userEdited = '0';
   document.getElementById('et-fuel').oninput = function(){ this.dataset.userEdited = '1'; };
+  document.getElementById('et-fuel-match').textContent = '';
   _etph = t.photo || null;
   _etphPath = t.photoPath || null; _etOldPath = t.photoPath || null; _etBusy = false; _etSaved = false;
   const prev = document.getElementById('et-preview');
   if (_etph) { document.getElementById('et-preview-img').src = _etph; prev.style.display = 'block'; }
   else { prev.style.display = 'none'; }
   document.getElementById('editTripBg').classList.remove('hidden');
+}
+
+function matchETFuelLog() {
+  const start = document.getElementById('et-date').value;
+  const end = document.getElementById('et-depart').value || null;
+  const note = document.getElementById('et-fuel-match');
+  if (!start) { showToast('Pick an arrival date first.'); return; }
+  const m = matchFuelForTrip(start, end, _etp);
+  if (!m) { if (note) note.textContent = 'No nearby fuel-log fill-ups found for this trip.'; return; }
+  document.getElementById('et-fuel').value = m.gallons;
+  document.getElementById('et-fuel').dataset.userEdited = '1';
+  const tag = m.approx ? '≈ approx (estimated from expected round-trip mileage)' : m.overshoot ? '⚠ real fill-up dates, but mileage is well outside this park\'s usual round trip — likely includes other driving' : '✓ from your actual fill-up dates';
+  if (note) note.textContent = '⛽ ' + Math.round(m.miles) + ' mi, ' + m.gallons.toFixed(1) + ' gal (' + m.mpg.toFixed(1) + ' mpg) — fill-ups ' + fmtDateShort(m.beforeDate) + ' to ' + fmtDateShort(m.afterDate) + '. ' + tag;
 }
 
 function closeET() {
@@ -3728,6 +4048,7 @@ async function syncToCloud() {
     mapCoords: state.mapCoords||{},
     parkPhotos: state.parkPhotos||{},
     homeAddress: state.homeAddress||'',
+    fuelLog: state.fuelLog||[],
   };
   try {
     // Check if a row already exists for this user
@@ -3796,6 +4117,7 @@ async function loadFromCloud() {
       if (d.mapCoords !== undefined) { state.mapCoords = d.mapCoords; try{localStorage.setItem('cd_mapcoords', JSON.stringify(d.mapCoords));}catch(e){} }
       if (d.parkPhotos !== undefined) state.parkPhotos = d.parkPhotos;
       if (d.homeAddress) { state.homeAddress = d.homeAddress; _homeCoords = null; }
+      if (d.fuelLog     !== undefined) state.fuelLog     = d.fuelLog;
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
 }
@@ -5526,7 +5848,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="fl"><label>Notes</label><input type="text" id="et-note" placeholder="e.g. great weather, very quiet"></div>
     <div class="fg2">
       <div><label>💰 Site Fee ($)</label><input type="number" id="et-sitefee" placeholder="e.g. 35" min="0" step="0.01" style="width:100%"></div>
-      <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from one-way miles @ 9 mpg" min="0" step="0.1" style="width:100%"></div>
+      <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from one-way miles" min="0" step="0.1" style="width:100%">
+        <button type="button" onclick="matchETFuelLog()" style="background:none;border:1px solid var(--moss);color:var(--moss);border-radius:4px;padding:4px 8px;font-size:.72rem;cursor:pointer;font-family:-apple-system,Georgia,serif;margin-top:5px;">🔎 Match to fuel log</button>
+        <div id="et-fuel-match" style="font-size:.7rem;color:var(--fog);margin-top:4px;"></div>
+      </div>
     </div>
     <div class="fl">
       <label>📷 Photo</label>
@@ -5595,8 +5920,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
       <div style="flex:1;">
         <label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">⛽ Fuel (gallons)</label>
-        <input id="dl-fuel" type="number" min="0" step="0.1" placeholder="auto from one-way miles @ 9 mpg" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
+        <input id="dl-fuel" type="number" min="0" step="0.1" placeholder="auto from one-way miles" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
       </div>
+    </div>
+    <div style="margin:-10px 0 16px;">
+      <button type="button" onclick="matchDLFuelLog()" style="background:none;border:1px solid var(--moss);color:var(--moss);border-radius:4px;padding:5px 10px;font-size:.75rem;cursor:pointer;font-family:-apple-system,Georgia,serif;">🔎 Match to fuel log</button>
+      <div id="dl-fuel-match" style="font-size:.72rem;color:var(--fog);margin-top:5px;"></div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button onclick="closeDriveLog()" style="padding:8px 16px;background:transparent;border:1px solid var(--fog);border-radius:4px;cursor:pointer;font-family:-apple-system,Georgia,serif;">Cancel</button>
