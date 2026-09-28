@@ -1495,7 +1495,7 @@ const BASE_TRIPS = {
   ],
   // Anastasia (id:4)
   4: [
-    {date:"2012-09-09",site:"",note:"Trip #2"},
+    {date:"2012-09-06",depart:"2012-09-09",site:"115",note:"Trip #2"},
     {date:"2015-01-23",site:"63",note:"Trip #26 — nice"},
     {date:"2015-10-09",site:"90",note:"Trip #35 — just ok, small"},
     {date:"2015-11-25",site:"93",note:"Trip #37 — good, Thanksgiving weekend"},
@@ -1712,11 +1712,29 @@ function reservationForTrip(parkId, baseIdx){
 function mergeTripReservations(trip, parkId, baseIdx){
   const baked=trip._isBase ? reservationForTrip(parkId,baseIdx) : [];
   const existing=Array.isArray(trip.reservations) ? trip.reservations.slice() : (trip.reservation ? [trip.reservation] : []);
-  const seen=new Set();
-  trip.reservations=[...existing,...baked].filter(r=>{const k=reservationKey(r);if(seen.has(k))return false;seen.add(k);return true;});
-  if(!trip.reservation && trip.reservations.length) trip.reservation=trip.reservations[0];
+  // Keep one copy of each reservation number. If an older saved copy only has the
+  // number, prefer the receipt record because it contains the reserved dates/times.
+  const byNumber=new Map();
+  const anonymous=[];
+  [...existing,...baked].forEach(r=>{
+    if(!r) return;
+    const number=String(r.number||'').trim();
+    if(!number){
+      const k=reservationKey(r);
+      if(!anonymous.some(x=>reservationKey(x)===k)) anonymous.push(r);
+      return;
+    }
+    const prev=byNumber.get(number);
+    if(!prev){ byNumber.set(number,r); return; }
+    const prevRich=(prev.effectiveArrivalDate?1:0)+(prev.effectiveDepartureDate?1:0)+(prev.checkIn?1:0)+(prev.checkOut?1:0)+(prev.notes?1:0);
+    const nextRich=(r.effectiveArrivalDate?1:0)+(r.effectiveDepartureDate?1:0)+(r.checkIn?1:0)+(r.checkOut?1:0)+(r.notes?1:0);
+    if(nextRich>prevRich) byNumber.set(number,r);
+  });
+  trip.reservations=[...byNumber.values(),...anonymous].sort((a,b)=>String(a.effectiveArrivalDate||a.arrivalDate||'').localeCompare(String(b.effectiveArrivalDate||b.arrivalDate||'')));
+  trip.reservation=trip.reservations[0] || null;
   return trip;
 }
+
 function reservationsForPark(parkName){
   const n=String(parkName||'').toLowerCase().replace(/[^a-z0-9]/g,'');
   return BAKED_RESERVATIONS.filter(r=>{
@@ -1728,13 +1746,19 @@ function reservationsForPark(parkName){
 }
 function renderReservationBoxList(reservations){
   if(!reservations||!reservations.length)return '';
-  return '<div class="reservation-box"><div class="reservation-title"><span>🔖 Reservation Details</span><span style="font-size:.7rem;color:var(--fog);font-family:var(--font-body)">'+reservations.length+' record'+(reservations.length===1?'':'s')+'</span></div>'+reservations.map(function(res){
+  const sorted=reservations.slice().sort((a,b)=>String(a.effectiveArrivalDate||a.arrivalDate||'').localeCompare(String(b.effectiveArrivalDate||b.arrivalDate||'')));
+  return '<div class="reservation-box"><div class="reservation-title"><span>🔖 Reservation Details</span><span style="font-size:.7rem;color:var(--fog);font-family:var(--font-body)">'+sorted.length+' booking'+(sorted.length===1?'':'s')+'</span></div>'+sorted.map(function(res,idx){
+    const prev=idx?sorted[idx-1]:null;
+    const prevEnd=prev&&String(prev.effectiveDepartureDate||prev.departureDate||'');
+    const start=String(res.effectiveArrivalDate||res.arrivalDate||'');
+    const addOn=prevEnd && start===prevEnd;
+    const overlaps=prevEnd && start<prevEnd;
+    const label=addOn?'Add-on day':(overlaps?'Additional/overlapping reservation':'Reservation');
     const items=[
-      res.number?'<div class="reservation-item"><label>RESERVATION #</label><strong>'+esc(res.number)+'</strong></div>':'',
+      '<div class="reservation-item" style="grid-column:1/-1"><label>'+label.toUpperCase()+'</label><strong>'+(res.number?'#'+esc(res.number):'Reservation number not shown')+'</strong></div>',
       res.effectiveArrivalDate?'<div class="reservation-item"><label>RESERVED DATES</label><strong>'+esc(fmtDateShort(res.effectiveArrivalDate))+' → '+esc(fmtDateShort(res.effectiveDepartureDate))+'</strong></div>':'',
       res.checkIn?'<div class="reservation-item"><label>CHECK-IN</label><strong>'+esc(res.checkIn)+'</strong></div>':'',
       res.checkOut?'<div class="reservation-item"><label>CHECK-OUT</label><strong>'+esc(res.checkOut)+'</strong></div>':'',
-      res.sourcePhotos?'<div class="reservation-item"><label>RECEIPT PHOTO(S)</label><strong>'+esc(res.sourcePhotos)+'</strong></div>':'',
       res.notes?'<div class="reservation-item" style="grid-column:1/-1"><label>RECEIPT NOTE</label><strong>'+esc(res.notes)+'</strong></div>':''
     ].filter(Boolean).join('');
     return '<div style="margin-bottom:10px">'+(items?'<div class="reservation-grid">'+items+'</div>':'')+'</div>';
@@ -3412,8 +3436,8 @@ function renderDashboard(){
 }
 function openParkDetail(id){
   const p=allParks().find(x=>x.id===id);if(!p)return;const trips=getTrips(id),rating=state.ratings[id];const nights=trips.reduce((n,t)=>n+((t.depart&&t.date&&t.depart>t.date)?Math.max(1,Math.round((new Date(t.depart)-new Date(t.date))/86400000)):1),0);const fee=trips.reduce((n,t)=>n+(Number(t.sitefee)||0),0);const website=safeUrl(p.website),maps='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.address||p.name);const modal=document.getElementById('detailModalBg');if(!modal)return;const mapModal=document.getElementById('mapModalBg');window._returnToMap=!!(mapModal&&!mapModal.classList.contains('hidden'));if(window._returnToMap)mapModal.classList.add('hidden');
-  const tripHistory=trips.length?trips.map((t,i)=>{const r=t.reservation||{};return `<div class="book-trip"><strong>${fmtDateShort(t.date)}${t.depart?' → '+fmtDateShort(t.depart):''}</strong><div class="meta">${t.site?'Site '+esc(t.site)+' · ':''}${t.sitefee?fmtFee(t.sitefee)+' · ':''}${t.note?esc(t.note):'No note'}</div>${r.number?`<div class="meta">🔖 Reservation #${esc(r.number)}${r.bookedThrough?' · '+esc(r.bookedThrough):''}</div>`:''}<button class="btn-o" style="margin-top:5px" onclick="window._returnToMap=false;closeParkDetail();openET(${id},${i})">Edit Trip</button></div>`}).join(''):'<div class="dash-muted">No trips logged yet.</div>';
-  document.getElementById('detailModalContent').innerHTML=`<div class="park-detail-hero"><div class="dash-muted">PARK PROFILE</div><h2>🌲 ${esc(p.name)}</h2><div class="dash-muted">${esc(p.address||'Address not entered')}</div><div class="detail-buttons"><button class="btn-g" onclick="window.open(${jsAttr(maps)},'_blank')">📍 Open Map</button>${website?`<button class="btn-o" onclick="window.open(${jsAttr(website)},'_blank')">🌐 Website</button>`:''}<button class="btn-o" onclick="window._returnToMap=false;closeParkDetail();switchTab('parks');setTimeout(()=>{const c=document.getElementById('pc${id}');if(c){c.classList.add('open');c.scrollIntoView({behavior:'smooth',block:'start'});}},50)">View in Directory</button></div></div><div class="park-detail-grid"><div class="detail-stat"><label>🏕 Visits</label><strong>${trips.length}</strong></div><div class="detail-stat"><label>🌙 Nights</label><strong>${nights}</strong></div><div class="detail-stat"><label>💰 Camping Fees</label><strong>${fmtFee(fee)}</strong></div><div class="detail-stat"><label>⭐ Rating</label><strong>${rating?esc(String(rating))+' / 5':'Not rated'}</strong></div></div><div class="detail-section"><h3>🏕 Favorite / Site Notes</h3><p>${esc(p.goodSites||'No preferred sites recorded.')}</p>${p.avoidSites?`<p style="margin-top:7px;color:#8a3f2f"><strong>Avoid:</strong> ${esc(p.avoidSites)}</p>`:''}${p.bigRig?`<p style="margin-top:7px"><strong>Big-rig notes:</strong> ${esc(p.bigRig)}</p>`:''}</div><div class="detail-section"><h3>📝 Park Notes</h3><p>${esc(p.notes||'No notes yet.')}</p></div><div class="detail-section"><h3>🗓 Trip History</h3>${tripHistory}</div>${reservationsForPark(p.name).length?`<div class="detail-section"><h3>🔖 Reservation Receipt Archive</h3><p style="margin-bottom:9px;color:var(--fog);font-size:.8rem">Reservation records from the receipt archive. Historical trip dates above are not changed by receipt dates.</p>${renderReservationBoxList(reservationsForPark(p.name))}</div>`:''}`;modal.classList.remove('hidden');
+  const tripHistory=trips.length?trips.map((t,i)=>{const reservations=Array.isArray(t.reservations)?t.reservations:(t.reservation?[t.reservation]:[]);return `<div class="book-trip"><strong>${fmtDateShort(t.date)}${t.depart?' → '+fmtDateShort(t.depart):''}</strong><div class="meta">${t.site?'Site '+esc(t.site)+' · ':''}${t.sitefee?fmtFee(t.sitefee)+' · ':''}${t.note?esc(t.note):'No note'}</div>${reservations.length?renderReservationBoxList(reservations):''}<button class="btn-o" style="margin-top:5px" onclick="window._returnToMap=false;closeParkDetail();openET(${id},${i})">Edit Trip</button></div>`}).join(''):'<div class="dash-muted">No trips logged yet.</div>';
+  document.getElementById('detailModalContent').innerHTML=`<div class="park-detail-hero"><div class="dash-muted">PARK PROFILE</div><h2>🌲 ${esc(p.name)}</h2><div class="dash-muted">${esc(p.address||'Address not entered')}</div><div class="detail-buttons"><button class="btn-g" onclick="window.open(${jsAttr(maps)},'_blank')">📍 Open Map</button>${website?`<button class="btn-o" onclick="window.open(${jsAttr(website)},'_blank')">🌐 Website</button>`:''}<button class="btn-o" onclick="window._returnToMap=false;closeParkDetail();switchTab('parks');setTimeout(()=>{const c=document.getElementById('pc${id}');if(c){c.classList.add('open');c.scrollIntoView({behavior:'smooth',block:'start'});}},50)">View in Directory</button></div></div><div class="park-detail-grid"><div class="detail-stat"><label>🏕 Visits</label><strong>${trips.length}</strong></div><div class="detail-stat"><label>🌙 Nights</label><strong>${nights}</strong></div><div class="detail-stat"><label>💰 Camping Fees</label><strong>${fmtFee(fee)}</strong></div><div class="detail-stat"><label>⭐ Rating</label><strong>${rating?esc(String(rating))+' / 5':'Not rated'}</strong></div></div><div class="detail-section"><h3>🏕 Favorite / Site Notes</h3><p>${esc(p.goodSites||'No preferred sites recorded.')}</p>${p.avoidSites?`<p style="margin-top:7px;color:#8a3f2f"><strong>Avoid:</strong> ${esc(p.avoidSites)}</p>`:''}${p.bigRig?`<p style="margin-top:7px"><strong>Big-rig notes:</strong> ${esc(p.bigRig)}</p>`:''}</div><div class="detail-section"><h3>📝 Park Notes</h3><p>${esc(p.notes||'No notes yet.')}</p></div><div class="detail-section"><h3>🗓 Trip History</h3>${tripHistory}</div>`;modal.classList.remove('hidden');
 }
 function closeParkDetail(){const m=document.getElementById('detailModalBg');if(m)m.classList.add('hidden');if(window._returnToMap){window._returnToMap=false;const mm=document.getElementById('mapModalBg');if(mm){mm.classList.remove('hidden');if(_campMap)setTimeout(()=>_campMap.invalidateSize(),80);}}}
 function openCampingBook(){
