@@ -2142,11 +2142,20 @@ function renderSiteMemories() {
       if(t.note) siteMap[key].notes.push(t.note);
     });
     const sites=Object.values(siteMap).sort((a,b)=>b.visits-a.visits || String(a.site).localeCompare(String(b.site),undefined,{numeric:true,sensitivity:'base'}));
+    const unrecordedTrips=trips.filter(t=>!String(t.site||'').trim());
+    const unrecordedSite=unrecordedTrips.length ? {
+      visits:unrecordedTrips.length,
+      last:unrecordedTrips.reduce((latest,t)=>String(t.date||'')>latest?String(t.date||''):latest,''),
+      note:unrecordedTrips.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')))[0]?.note || ''
+    } : null;
     if(sites.length){parksWithHistory++; totalSites+=sites.length; totalVisits+=trips.length;}
-    const hay=(p.name+' '+(p.address||'')+' '+(p.goodSites||'')+' '+(p.avoidSites||'')+' '+(p.stayedSites||'')+' '+sites.map(s=>s.site+' '+s.notes.join(' ')).join(' ')).toLowerCase();
+    const hay=(p.name+' '+(p.address||'')+' '+(p.goodSites||'')+' '+(p.avoidSites||'')+' '+(p.stayedSites||'')+' '+sites.map(s=>s.site+' '+s.notes.join(' ')).join(' ')+' '+(unrecordedTrips.length?'site not recorded':'')).toLowerCase();
     if(q && !hay.includes(q)) return;
     if(!sites.length && !p.goodSites && !p.avoidSites && !p.stayedSites) return;
-    const siteRows=sites.map(s=>`<tr><td class="site-memory-site">Site ${esc(s.site)}</td><td>${s.visits}</td><td>${s.last?esc(fmtDateShort(s.last)):'—'}</td><td>${s.notes.length?esc(s.notes[s.notes.length-1]):'—'}</td></tr>`).join('');
+    const siteRows=[
+      ...sites.map(s=>`<tr><td class="site-memory-site">Site ${esc(s.site)}</td><td>${s.visits}</td><td>${s.last?esc(fmtDateShort(s.last)):'—'}</td><td>${s.notes.length?esc(s.notes[s.notes.length-1]):'—'}</td></tr>`),
+      ...(unrecordedSite ? [`<tr><td class="site-memory-site" style="color:var(--soil)">Site not recorded</td><td>${unrecordedSite.visits}</td><td>${unrecordedSite.last?esc(fmtDateShort(unrecordedSite.last)):'—'}</td><td>${unrecordedSite.note?esc(unrecordedSite.note):'—'}</td></tr>`] : [])
+    ].join('');
     cards.push(`<article class="site-memory-card">
       <h3>🌲 ${esc(p.name)}</h3>
       <div class="site-memory-sub">${trips.length} visit${trips.length===1?'':'s'}${p.address?' · '+esc(p.address):''}</div>
