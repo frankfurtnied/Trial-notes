@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-09-28-contrast-v3';
+  const TRAIL_NOTES_BUILD = '2026-09-28-reservations-v1';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -947,7 +947,7 @@ header p{
   if(!navigator.onLine){document.getElementById("offline-banner").style.display="block";}
   if('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('trail-notes-sw.js?v=20260928-contrast-v3', {updateViaCache:'none'}).then(function(reg){
+      navigator.serviceWorker.register('trail-notes-sw.js?v=20260928-reservations-v1', {updateViaCache:'none'}).then(function(reg){
         reg.update().catch(function(){});
       }).catch(function(err){ console.warn('Offline app support could not be enabled:', err); });
     });
@@ -1217,6 +1217,10 @@ header p{
 // When the HTML file is transferred to a new device, localStorage is empty.
 // Without this, renderUpcoming() wipes the static HTML and shows "No upcoming trips".
 const BAKED_UPCOMING = [{"id":1776877919141,"parkId":29,"parkName":"Kelly Park","startDate":"2026-05-10","endDate":"2026-05-14","site":"2","note":""}];
+// Reservation confirmations extracted from the 166-photo receipt archive.
+// Kept as a one-time, idempotent import so the data survives local/cloud reloads.
+const BAKED_RESERVATION_IMPORT = [{"number":"M166769","park":"Manatee Hammock Park","start":"2012-08-17","end":"2012-08-19","checkIn":"3:00 PM–9:00 PM","checkOut":"11:00 AM","source":"0504","note":"Receipt explicitly says check-in 3–9 PM; checkout 11 AM"},{"number":"2-17097311","park":"Anastasia State Park","start":"2012-09-06","end":"2012-09-09","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0505–0506","note":""},{"number":"2-19083030","park":"Lake Kissimmee State Park","start":"2012-10-04","end":"2012-10-07","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0507–0508","note":""},{"number":"2-19125287","park":"Blue Spring State Park","start":"2012-11-16","end":"2012-11-18","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0509–0510","note":""},{"number":"2-19119007","park":"Fort Clinch State Park","start":"2012-12-28","end":"2013-01-01","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0511","note":""},{"number":"2-19271420","park":"Fort Clinch State Park","start":"2013-01-01","end":"2013-01-02","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0514–0515","note":""},{"number":"2-19284862","park":"Tomoka State Park","start":"2013-01-25","end":"2013-01-27","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0516–0517","note":""},{"number":"2-19422287","park":"Lake Griffin State Park","start":"2013-04-05","end":"2013-04-07","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0518–0519","note":""},{"number":"2-19422123","park":"Faver-Dykes State Park","start":"2013-05-17","end":"2013-05-19","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0520–0521","note":""},{"number":"2-19866918","park":"Gold Head Branch State Park","start":"2013-06-13","end":"2013-06-16","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0522–0523","note":""},{"number":"2-20596730","park":"Blue Spring State Park","start":"2013-07-18","end":"2013-07-21","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0524–0525","note":""},{"number":"2-21759236","park":"Lake Louisa State Park","start":"2013-08-09","end":"2013-08-11","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0530–0531","note":""},{"number":"2-22879304","park":"Tomoka State Park","start":"2013-08-29","end":"2013-09-01","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0526–0527","note":""},{"number":"2-21758737","park":"Sebastian Inlet State Park","start":"2013-09-13","end":"2013-09-15","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0528–0529","note":""},{"number":"2-22943076","park":"Wekiwa Springs State Park","start":"2013-11-15","end":"2013-11-17","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0532–0533","note":""},{"number":"2-22998491","park":"Anastasia State Park","start":"2014-02-07","end":"2014-02-09","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0545–0546","note":""},{"number":"2-22998482","park":"Wekiwa Springs State Park","start":"2014-03-07","end":"2014-03-09","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0537–0538","note":""},{"number":"2-23074985","park":"Hillsborough River State Park","start":"2014-04-10","end":"2014-04-13","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0539–0540","note":""},{"number":"2-23121841","park":"Tomoka State Park","start":"2014-05-09","end":"2014-05-11","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0541–0542","note":""},{"number":"2-23119842","park":"Wekiwa Springs State Park","start":"2014-07-25","end":"2014-07-27","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0543–0544","note":""},{"number":"2-25528753","park":"Blue Spring State Park","start":"2014-09-04","end":"2014-09-07","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0536","note":""},{"number":"2-25630949","park":"Tomoka State Park","start":"2014-10-03","end":"2014-10-05","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0535","note":""},{"number":"2-25632922","park":"Wekiwa Springs State Park","start":"2014-11-07","end":"2014-11-09","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0534","note":""},{"number":"2-27986039","park":"Anastasia State Park","start":"2015-01-23","end":"2015-01-25","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0589–0590","note":""},{"number":"2-27984748","park":"Tomoka State Park","start":"2015-02-20","end":"2015-02-22","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0591–0592","note":""},{"number":"2-27984732","park":"Gold Head Branch State Park","start":"2015-03-20","end":"2015-03-22","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0587–0588","note":""},{"number":"2-27987957","park":"Wekiwa Springs State Park","start":"2015-04-24","end":"2015-04-26","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0593–0594","note":""},{"number":"2-28231701","park":"Highlands Hammock State Park","start":"2015-05-21","end":"2015-05-24","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0595–0596","note":""},{"number":"2-28247537","park":"Highlands Hammock State Park","start":"2015-05-24","end":"2015-05-25","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0597–0598","note":""},{"number":"2-28232606","park":"Faver-Dykes State Park","start":"2015-06-12","end":"2015-06-14","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0599–0600","note":""},{"number":"2-28233091","park":"Tomoka State Park","start":"2015-07-03","end":"2015-07-05","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0601–0602","note":""},{"number":"2-28232147","park":"Wekiwa Springs State Park","start":"2015-08-07","end":"2015-08-09","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0611–0612","note":""},{"number":"2-29909520","park":"Hillsborough River State Park","start":"2015-09-09","end":"2015-09-10","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0603–0604","note":""},{"number":"2-28232586","park":"Hillsborough River State Park","start":"2015-09-10","end":"2015-09-13","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0609–0610","note":""},{"number":"2-28580015","park":"Anastasia State Park","start":"2015-10-09","end":"2015-10-11","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0607–0608","note":""},{"number":"230914768","park":"Tomoka State Park","start":"2015-11-13","end":"2015-11-15","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0586","note":""},{"number":"2-31529892","park":"Anastasia State Park","start":"2015-11-25","end":"2015-11-29","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0605–0606","note":""},{"number":"2-31038185","park":"Gold Head Branch State Park","start":"2016-02-05","end":"2016-02-07","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0580–0581","note":""},{"number":"2-31040199","park":"Tomoka State Park","start":"2016-03-18","end":"2016-03-20","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0578–0579","note":""},{"number":"2-31040189","park":"Blue Spring State Park","start":"2016-05-06","end":"2016-05-08","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0576–0577","note":""},{"number":"2-31040562","park":"Tomoka State Park","start":"2016-06-03","end":"2016-06-05","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0584–0585","note":"Reservation number OCR is obscured; image shows 2-…"},{"number":"2-32235169","park":"Blue Spring State Park","start":"2016-07-08","end":"2016-07-10","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0573","note":""},{"number":"2-32234831","park":"Anastasia State Park","start":"2016-08-03","end":"2016-08-07","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0574","note":""},{"number":"2-31040188","park":"Fort Clinch State Park","start":"2016-09-06","end":"2016-09-11","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0582–0583","note":""},{"number":"2-32234468","park":"Sebastian Inlet State Park","start":"2016-10-22","end":"2016-10-23","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0572","note":""},{"number":"2-32234864","park":"Rainbow Springs State Park","start":"2016-11-10","end":"2016-11-13","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0570","note":""},{"number":"2-32234463","park":"Blue Spring State Park","start":"2016-12-30","end":"2017-01-01","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0571","note":""},{"number":"2-34282810","park":"Wekiwa Springs State Park","start":"2017-06-02","end":"2017-06-04","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0565","note":""},{"number":"2-38294533","park":"Warrior Creek, W. Kerr Scott Dam & Reservoir","start":"2017-06-15","end":"2017-06-17","checkIn":"4:00 PM","checkOut":"3:00 PM","source":"0561","note":"Park name verified from Recreation.gov using loop WCRE/site 50"},{"number":"2-34440900","park":"Silver Springs State Park","start":"2017-08-02","end":"2017-08-03","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0562–0564","note":""},{"number":"2-34617229","park":"Tomoka State Park","start":"2017-12-20","end":"2017-12-24","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0569","note":""},{"number":"2-34548969","park":"Wekiwa Springs State Park","start":"2018-01-05","end":"2018-01-07","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0559","note":""},{"number":"2-34768753","park":"Blue Spring State Park","start":"2018-03-23","end":"2018-03-25","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0560","note":""},{"number":"2-34912801","park":"Hillsborough River State Park","start":"2018-04-11","end":"2018-04-12","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0551","note":""},{"number":"2-34551179","park":"Hillsborough River State Park","start":"2018-04-12","end":"2018-04-15","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0552","note":""},{"number":"2-34459026","park":"Silver Springs State Park","start":"2018-05-03","end":"2018-05-06","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0553","note":""},{"number":"2-34548801","park":"Wekiwa Springs State Park","start":"2018-06-01","end":"2018-06-03","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0554","note":""},{"number":"2-34550297","park":"Sebastian Inlet State Park","start":"2018-07-06","end":"2018-07-08","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0555–0556","note":"Earlier copy under same # shows Jun 22–24 2018; later/current receipt shows Jul 6–8"},{"number":"2-34778594","park":"Anastasia State Park","start":"2018-08-10","end":"2018-08-12","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0550","note":""},{"number":"2-36150281","park":"Tomoka State Park","start":"2018-09-19","end":"2018-09-24","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0547","note":""},{"number":"2-35305797","park":"Tomoka State Park","start":"2018-09-21","end":"2018-09-23","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0548","note":""},{"number":"2-35134943","park":"Silver Springs State Park","start":"2018-12-05","end":"2018-12-09","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0549","note":""},{"number":"2-35873427","park":"Santos Trailhead and Campground","start":"2019-01-25","end":"2019-01-27","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0618","note":"OCR reads check-in as 8:00 PM; verify image if needed"},{"number":"2-35869622","park":"Wekiwa Springs State Park","start":"2019-08-02","end":"2019-08-04","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0614","note":""},{"number":"2-37184823","park":"Silver Springs State Park","start":"2019-09-12","end":"2019-09-15","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0615","note":""},{"number":"2-36440560","park":"Silver Springs State Park","start":"2019-12-04","end":"2019-12-08","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0617","note":""},{"number":"2-38097668","park":"Lake Kissimmee State Park","start":"2020-02-20","end":"2020-02-23","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0619","note":""},{"number":"2-38274063","park":"Anastasia State Park","start":"2020-05-21","end":"2020-05-22","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0621","note":""},{"number":"2-38261920","park":"Anastasia State Park","start":"2020-05-22","end":"2020-05-24","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0620","note":""},{"number":"2-421172","park":"Ginnie Springs Outdoors","start":"2020-07-23","end":"2020-07-26","checkIn":"Not stated","checkOut":"Not stated","source":"0623","note":"Receipt gives arriving/departing dates but no check-in/out time"},{"number":"2-38157531","park":"Anastasia State Park","start":"2020-08-28","end":"2020-08-30","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0622","note":""},{"number":"2-38261506","park":"Blue Spring State Park","start":"2020-09-11","end":"2020-09-13","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0627","note":""},{"number":"2-38373130","park":"Hillsborough River State Park","start":"2020-10-01","end":"2020-10-04","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0626","note":""},{"number":"2-38261505","park":"Silver Springs State Park","start":"2020-12-02","end":"2020-12-06","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0624","note":""},{"number":"2-38200521","park":"Fort Clinch State Park","start":"2021-01-25","end":"2021-02-08","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0628","note":""},{"number":"2-38342710","park":"Wekiwa Springs State Park","start":"2021-05-21","end":"2021-05-23","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0632","note":""},{"number":"14200928-813098","park":"Edisto Beach State Park (South Carolina)","start":"2021-06-13","end":"2021-06-19","checkIn":"2:00 PM","checkOut":"12:00 PM","source":"0636","note":"Receipt explicitly states camping check-in 2 PM / check-out 12 PM"},{"number":"35218","park":"Wekiwa Springs State Park","start":"2021-07-09","end":"2021-07-11","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0631","note":""},{"number":"35230","park":"Kissimmee Prairie Preserve State Park","start":"2021-07-29","end":"2021-08-01","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0635","note":"Florida State Parks web-store confirmation number"},{"number":"35214","park":"Rodman Campground","start":"2021-08-27","end":"2021-08-29","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0629","note":""},{"number":"35221","park":"Wekiwa Springs State Park","start":"2021-09-23","end":"2021-09-26","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0630","note":""},{"number":"35223","park":"Lake Kissimmee State Park","start":"2021-10-21","end":"2021-10-24","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0633","note":""},{"number":"35226","park":"Silver Springs State Park","start":"2021-12-01","end":"2021-12-05","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0634","note":""},{"number":"1303310","park":"Hillsborough River State Park","start":"2022-02-17","end":"2022-02-20","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0638","note":""},{"number":"228093","park":"Florida Caverns State Park","start":"2022-04-12","end":"2022-04-18","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0639","note":""},{"number":"(not visible)","park":"Lake Kissimmee State Park","start":"2022-05-19","end":"2022-05-22","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0639","note":"Second reservation appears on same screenshot; confirmation number is below the captured area"},{"number":"2-24375398","park":"Elijah Clark State Park (Georgia)","start":"2022-10-15","end":"2022-10-22","checkIn":"1:00 PM","checkOut":"12:00 PM","source":"0637","note":""},{"number":"10366963","park":"Rodman Campground","start":"2023-08-10","end":"2023-08-13","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0642","note":"Florida State Parks confirmation number"},{"number":"292606","park":"Long Point Park (Brevard County, FL)","start":"2024-04-17","end":"2024-04-20","checkIn":"2:00 PM","checkOut":"11:00 AM","source":"0653,0655","note":"0655 is a duplicate receipt for the same reservation"},{"number":"293191","park":"Long Point Park (Brevard County, FL)","start":"2024-04-20","end":"2024-04-21","checkIn":"2:00 PM","checkOut":"11:00 AM","source":"0654","note":""},{"number":"12115382","park":"Tomoka State Park","start":"2024-05-24","end":"2024-05-27","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0640–0641","note":""},{"number":"186654 / receipt 64043699","park":"Fort De Soto Campground (Pinellas County, FL)","start":"2024-06-12","end":"2024-06-16","checkIn":"1:00 PM","checkOut":"11:00 AM","source":"0656–0658,0671","note":"Permit/receipt rather than a separate confirmation number shown"},{"number":"13964157","park":"Blue Spring State Park","start":"2024-07-02","end":"2024-07-05","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0659","note":""},{"number":"(rental reservation # not shown)","park":"Kelly Park (Orange County, FL)","start":"2024-08-26","end":"2024-08-29","checkIn":"2:00 PM","checkOut":"12:00 PM","source":"0651","note":"Receipt shows rental period; campers must check in before park close"},{"number":"00000050375","park":"Jekyll Island Campground (Georgia)","start":"2024-09-18","end":"2024-09-21","checkIn":"2:00 PM","checkOut":"12:00 PM","source":"0649–0652","note":"Confirmation # shown; check-in/out from campground terms"},{"number":"04241003-4890578","park":"Barnwell State Park (South Carolina)","start":"2024-10-17","end":"2024-10-26","checkIn":"2:00 PM","checkOut":"12:00 PM","source":"0647–0648","note":"South Carolina receipt"},{"number":"2-42932403","park":"Kerr Lake State Recreation Area (North Carolina)","start":"2024-10-21","end":"2024-10-26","checkIn":"3:00 PM","checkOut":"12:00 PM","source":"0645, 0670","note":""},{"number":"12688289","park":"Silver Springs State Park","start":"2024-12-03","end":"2024-12-08","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0646","note":""},{"number":"15982262","park":"Lake Kissimmee State Park","start":"2025-03-19","end":"2025-03-23","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0664","note":""},{"number":"0293208","park":"Long Point Park (Brevard County, FL)","start":"2025-04-13","end":"2025-04-14","checkIn":"2:00 PM","checkOut":"11:00 AM","source":"0665","note":""},{"number":"384579","park":"Long Point Park (Brevard County, FL)","start":"2025-04-14","end":"2025-04-15","checkIn":"2:00 PM","checkOut":"11:00 AM","source":"0667","note":""},{"number":"293208","park":"Long Point Park (Brevard County, FL)","start":"2025-04-15","end":"2025-04-19","checkIn":"2:00 PM","checkOut":"11:00 AM","source":"0666","note":"Same underlying L104 site; receipt references reservation 293208"},{"number":"149513","park":"Moss Park (Orange County, FL)","start":"2025-06-01","end":"2025-06-05","checkIn":"2:00 PM","checkOut":"12:00 PM","source":"0663","note":""},{"number":"151429","park":"Kelly Park (Orange County, FL)","start":"2025-07-21","end":"2025-07-25","checkIn":"2:00 PM","checkOut":"12:00 PM","source":"0662","note":""},{"number":"16877843","park":"Silver Springs State Park","start":"2025-12-03","end":"2025-12-07","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0660–0661","note":"0660 is a generic confirmation email template; 0661 has the actual confirmation number"},{"number":"165374","park":"Moss Park (Orange County, FL)","start":"2026-02-19","end":"2026-02-23","checkIn":"2:00 PM","checkOut":"12:00 PM","source":"0669","note":"Rental reservation number"},{"number":"7TEISL","park":"Hardee Lakes Park","start":"2026-03-12","end":"2026-03-15","checkIn":"1:00 PM","checkOut":"1:00 PM","source":"0668","note":"Lookup code, not labeled as confirmation number"},{"number":"2-33724478","park":"Fort Clinch State Park","start":"2016-09-04","end":"2016-09-05","checkIn":"3:00 PM","checkOut":"1:00 PM","source":"0575","note":""}];
+
 // ═══════════════════════════════════════════════════════
 // PARK DATA — all 40 parks with full site notes
 // ═══════════════════════════════════════════════════════
@@ -1770,6 +1774,99 @@ function getTrips(parkId) {
     return trip;
   });
   return [...base, ...user].sort((a,b) => a.date.localeCompare(b.date));
+}
+
+
+// ═══════════════════════════════════════════════════════
+// RECEIPT ARCHIVE — reservation confirmation import
+// ═══════════════════════════════════════════════════════
+function applyBakedReservationImport() {
+  if (!Array.isArray(BAKED_RESERVATION_IMPORT) || !BAKED_RESERVATION_IMPORT.length) return;
+
+  const aliases = {
+    "Long Point Park (Brevard County, FL)": "Long Point Park",
+    "Moss Park (Orange County, FL)": "Moss Park",
+    "Kerr Lake State Recreation Area (North Carolina)": "Kerr Lake",
+  };
+  const customDefs = {
+    "Manatee Hammock Park": {id:-101, isCustom:true, name:"Manatee Hammock Park", phone:"", address:"", website:"", drive:"", goodSites:"", avoidSites:"", stayedSites:"", bigRig:"", notes:"Added from reservation receipt archive."},
+    "Warrior Creek, W. Kerr Scott Dam & Reservoir": {id:-102, isCustom:true, name:"Warrior Creek, W. Kerr Scott Dam & Reservoir", phone:"", address:"", website:"", drive:"", goodSites:"", avoidSites:"", stayedSites:"", bigRig:"", notes:"Added from reservation receipt archive."},
+    "Ginnie Springs Outdoors": {id:-103, isCustom:true, name:"Ginnie Springs Outdoors", phone:"", address:"", website:"", drive:"", goodSites:"", avoidSites:"", stayedSites:"", bigRig:"", notes:"Added from reservation receipt archive."},
+    "Kissimmee Prairie Preserve State Park": {id:-104, isCustom:true, name:"Kissimmee Prairie Preserve State Park", phone:"", address:"", website:"", drive:"", goodSites:"", avoidSites:"", stayedSites:"", bigRig:"", notes:"Added from reservation receipt archive."},
+    "Hardee Lakes Park": {id:-105, isCustom:true, name:"Hardee Lakes Park", phone:"", address:"", website:"", drive:"", goodSites:"", avoidSites:"", stayedSites:"", bigRig:"", notes:"Added from reservation receipt archive."}
+  };
+
+  const normName = v => String(v || '').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const parkByName = name => {
+    const wanted = aliases[name] || name;
+    let p = allParks().find(x => normName(x.name) === normName(wanted));
+    if (p) return p;
+    const def = customDefs[name];
+    if (def) {
+      const existing = (state.customParks || []).find(x => normName(x.name) === normName(def.name));
+      if (existing) return existing;
+      state.customParks = state.customParks || [];
+      state.customParks.push(JSON.parse(JSON.stringify(def)));
+      return def;
+    }
+    // Last-resort exact park-name match against the current directory.
+    return allParks().find(x => normName(x.name) === normName(name)) || null;
+  };
+
+  let changed = false;
+  BAKED_RESERVATION_IMPORT.forEach(r => {
+    const park = parkByName(r.park);
+    if (!park) return;
+
+    const reservation = {
+      number: String(r.number || ''),
+      bookedThrough: 'Receipt archive',
+      checkIn: String(r.checkIn || ''),
+      checkOut: String(r.checkOut || '')
+    };
+    if (r.note) reservation.note = r.note;
+    if (r.source) reservation.sourcePhotos = String(r.source);
+
+    // Prefer the existing base trip on the exact receipt arrival date.
+    const baseList = BASE_TRIPS[park.id] || [];
+    const baseIdx = baseList.findIndex(t => t.date === r.start);
+
+    if (baseIdx >= 0) {
+      const old = (state.tripEdits[park.id] || {})[baseIdx] || {};
+      const oldRes = old.reservation || {};
+      const mergedRes = Object.assign({}, oldRes, reservation);
+      // Do not overwrite a manually entered number with a blank/non-visible value.
+      if (!r.number && oldRes.number) mergedRes.number = oldRes.number;
+      state.tripEdits[park.id] = state.tripEdits[park.id] || {};
+      state.tripEdits[park.id][baseIdx] = Object.assign({}, old, {reservation: mergedRes});
+      changed = true;
+      return;
+    }
+
+    // If this receipt is not represented by an existing base trip, add it as a
+    // user trip. This preserves every receipt without silently changing an
+    // existing trip's dates.
+    state.tripLogs[park.id] = state.tripLogs[park.id] || [];
+    const exists = state.tripLogs[park.id].some(t =>
+      t && t.reservation && String(t.reservation.number || '') === String(r.number || '') &&
+      t.date === r.start
+    );
+    if (!exists) {
+      state.tripLogs[park.id].push({
+        date: r.start,
+        depart: r.end || '',
+        site: '',
+        note: 'Reservation imported from receipt archive' + (r.note ? ' — ' + r.note : '') + (r.source ? ' · Photos ' + r.source : ''),
+        reservation
+      });
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveState();
+    if (typeof scheduleSyncToCloud === 'function' && currentUser) scheduleSyncToCloud();
+  }
 }
 
 function getAllTripsSorted() {
@@ -4035,6 +4132,7 @@ async function onSignedIn(user) {
   document.getElementById('userEmail').textContent = user.email;
   showToast('Loading your data\u2026 \u2601\uFE0F');
   await loadFromCloud();
+  applyBakedReservationImport();
   saveState();          // persist cloud data to localStorage so it survives re-renders
   renderAll();
   showToast('Welcome back! \uD83C\uDF32');
@@ -5641,6 +5739,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('userBar').style.visibility = 'hidden';
   document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   document.getElementById('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
+  applyBakedReservationImport();
   const user = await getStoredSession();
   if (user) {
     await onSignedIn(user);
