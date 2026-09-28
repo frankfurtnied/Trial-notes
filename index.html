@@ -11,6 +11,37 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-touch-fullscreen" content="yes">
 <link rel="apple-touch-icon" href="trail-notes-icon-192.png">
+<script>
+  /* Deployment/cache guard.
+     Safari/iOS can retain an older service-worker app shell even after the
+     HTML on GitHub Pages has changed. On a new build, clear only this
+     origin's Cache Storage and service workers, then reload once. */
+  const TRAIL_NOTES_BUILD = '2026-09-28-contrast-v3';
+  if (location.protocol === 'http:' || location.protocol === 'https:') {
+    (async function ensureFreshTrailNotesBuild(){
+      try {
+        const seen = localStorage.getItem('trailNotesBuild');
+        if (seen !== TRAIL_NOTES_BUILD) {
+          localStorage.setItem('trailNotesBuild', TRAIL_NOTES_BUILD);
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister()));
+          }
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
+          const u = new URL(location.href);
+          u.searchParams.set('tnb', TRAIL_NOTES_BUILD);
+          location.replace(u.toString());
+        }
+      } catch (err) {
+        console.warn('Trail Notes cache refresh could not complete:', err);
+      }
+    })();
+  }
+</script>
+
 <title>Trail Notes — Camping Diary</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
@@ -916,7 +947,7 @@ header p{
   if(!navigator.onLine){document.getElementById("offline-banner").style.display="block";}
   if('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('trail-notes-sw.js').then(function(reg){
+      navigator.serviceWorker.register('trail-notes-sw.js?v=20260928-contrast-v3', {updateViaCache:'none'}).then(function(reg){
         reg.update().catch(function(){});
       }).catch(function(err){ console.warn('Offline app support could not be enabled:', err); });
     });
