@@ -845,6 +845,66 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 @media(max-width:760px){.site-memory-grid{grid-template-columns:1fr 1fr}.site-memory-sections{grid-template-columns:1fr}}
 @media(max-width:480px){.site-memory-grid{grid-template-columns:1fr}.trash-card-head{flex-direction:column}}
 </style>
+
+<style id="trailNotes-contrast-fixes">
+/* Contrast pass: strengthen text used on the app's dark surfaces without
+   changing the established light-card palette. */
+header p{
+  color:rgba(255,247,232,.80);
+}
+.stats-bar .stat-label{
+  color:rgba(255,247,232,.84);
+}
+.stats-bar .stat-sub{
+  color:rgba(255,247,232,.82);
+}
+.top-bar input::placeholder{
+  color:rgba(255,247,232,.74);
+}
+.filter-pill{
+  color:rgba(255,247,232,.84);
+}
+.state-group-header h3,
+.state-group-header .sg-chev{
+  color:var(--cream);
+}
+.apikey-box p{
+  color:rgba(255,247,232,.78);
+}
+.pwa-card{
+  color:var(--cream);
+}
+.pwa-card p{
+  color:rgba(255,247,232,.78);
+}
+.trash-banner{
+  color:var(--cream);
+}
+.trash-banner > div > div:nth-child(2){
+  color:rgba(255,247,232,.78) !important;
+}
+
+/* Site Memories sits directly on the dark page background, so its
+   legacy bark/soil/fog colors need the light treatment here. */
+#panel-sitememory .site-memory-hero .dash-muted{
+  color:rgba(255,247,232,.76);
+}
+#panel-sitememory .site-memory-hero h2{
+  color:var(--cream) !important;
+  text-shadow:0 2px 14px rgba(0,0,0,.22);
+}
+#panel-sitememory .site-memory-hero > p{
+  color:rgba(255,247,232,.80) !important;
+}
+#panel-sitememory .site-memory-stat span{
+  color:#4a3c2c;
+  font-weight:700;
+}
+#panel-sitememory #siteMemorySearch::placeholder{
+  color:rgba(255,247,232,.74);
+}
+</style>
+
 </head>
 <body>
 <div id="offline-banner" style="display:none;background:#b84040;color:white;text-align:center;padding:8px;font-size:.82rem;font-family:-apple-system,Georgia,serif;position:sticky;top:0;z-index:999;">
