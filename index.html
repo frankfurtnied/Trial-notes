@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-09-28-reservations-v1';
+  const TRAIL_NOTES_BUILD = '2026-09-28-reservations-v2';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -701,6 +701,29 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
   color:var(--bark);
   font-weight:700;
 }
+.timeline-park-btn{
+  appearance:none;
+  border:0;
+  background:transparent;
+  padding:0;
+  margin:0;
+  font:inherit;
+  color:var(--bark);
+  font-weight:700;
+  text-align:left;
+  cursor:pointer;
+  text-decoration:underline;
+  text-decoration-color:rgba(200,113,26,.45);
+  text-underline-offset:3px;
+}
+.timeline-park-btn:hover{color:var(--moss);}
+.timeline-trip-details{
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px solid rgba(38,24,15,.10);
+}
+.timeline-trip-details .reservation-box{margin-top:0;}
+.timeline-trip-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
 .timeline-date{
   color:var(--soil);
   font-size:.82rem;
@@ -947,7 +970,7 @@ header p{
   if(!navigator.onLine){document.getElementById("offline-banner").style.display="block";}
   if('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('trail-notes-sw.js?v=20260928-reservations-v1', {updateViaCache:'none'}).then(function(reg){
+      navigator.serviceWorker.register('trail-notes-sw.js?v=20260928-reservations-v2', {updateViaCache:'none'}).then(function(reg){
         reg.update().catch(function(){});
       }).catch(function(err){ console.warn('Offline app support could not be enabled:', err); });
     });
@@ -1013,6 +1036,7 @@ header p{
     <button id="vbtn-state" onclick="setParkView('state')" class="filter-pill">🗺 By State</button>
   </div>
   <div id="parksList"></div>
+  <div id="parksReceiptArchiveBox" style="margin-top:14px;"></div>
 </div>
 
 <!-- ══ UPCOMING TRIPS PANEL ══ -->
@@ -1107,6 +1131,7 @@ header p{
   <div class="top-bar" style="margin-bottom:14px">
     <input type="text" id="triplogSearch" placeholder="🔍  Search trips, parks, notes…" oninput="renderTripLog()">
   </div>
+  <div id="receiptArchiveBox" style="margin-bottom:14px;"></div>
   <div class="entries-header">
     <span class="entries-title">All Trips</span>
     <span class="entry-count" id="triplogCount"></span>  </div>
@@ -1718,6 +1743,7 @@ let state = {
   parkPhotos:  JSON.parse(localStorage.getItem('cd_photos')    || '{}'),
   parkMileage: JSON.parse(localStorage.getItem('cd_mileage')   || '{}'),
   mapCoords: JSON.parse(localStorage.getItem('cd_mapcoords') || '{}'),
+  receiptArchive: JSON.parse(localStorage.getItem('cd_receipt_archive') || '[]'),
   trash: JSON.parse(localStorage.getItem('cd_trash') || '[]'),
   activeFilter: '',
   homeAddress: localStorage.getItem('cd_home') || '',
@@ -1741,6 +1767,7 @@ function saveState() {
     localStorage.setItem('cd_home',       state.homeAddress||'');
     localStorage.setItem('cd_mileage',    JSON.stringify(state.parkMileage||{}));
     localStorage.setItem('cd_mapcoords', JSON.stringify(state.mapCoords||{}));
+    localStorage.setItem('cd_receipt_archive', JSON.stringify(state.receiptArchive||[]));
     localStorage.setItem('cd_trash', JSON.stringify(state.trash||[]));
   } catch(err) {
     showToast('Could not save: ' + err.message);
@@ -1809,61 +1836,90 @@ function applyBakedReservationImport() {
       state.customParks.push(JSON.parse(JSON.stringify(def)));
       return def;
     }
-    // Last-resort exact park-name match against the current directory.
     return allParks().find(x => normName(x.name) === normName(name)) || null;
   };
-
-  let changed = false;
-  BAKED_RESERVATION_IMPORT.forEach(r => {
-    const park = parkByName(r.park);
-    if (!park) return;
-
-    const reservation = {
+  const daysBetween = (a,b) => Math.abs((new Date(a+'T00:00:00') - new Date(b+'T00:00:00')) / 86400000);
+  const toReservation = r => {
+    const res = {
       number: String(r.number || ''),
       bookedThrough: 'Receipt archive',
       checkIn: String(r.checkIn || ''),
       checkOut: String(r.checkOut || '')
     };
-    if (r.note) reservation.note = r.note;
-    if (r.source) reservation.sourcePhotos = String(r.source);
+    if (r.note) res.note = r.note;
+    if (r.source) res.sourcePhotos = String(r.source);
+    return res;
+  };
+  const resKey = res => [res.number||'',res.checkIn||'',res.checkOut||'',res.sourcePhotos||''].join('|');
+  const addReservationToEdit = (parkId, baseIdx, r, newStart, newEnd) => {
+    const old = (state.tripEdits[parkId] || {})[baseIdx] || {};
+    const oldRes = old.reservation || null;
+    let reservations = Array.isArray(old.reservations) ? old.reservations.slice() : [];
+    if (oldRes) reservations.unshift(oldRes);
+    const incoming = toReservation(r);
+    if (!reservations.some(x => resKey(x) === resKey(incoming))) reservations.push(incoming);
+    // Keep the first reservation in the legacy single-reservation field so older UI/data still works.
+    const primary = reservations[0] || incoming;
+    const merged = Object.assign({}, old, { reservation: primary, reservations });
+    // Receipt dates are authoritative for this historical trip. Preserve all other trip history fields.
+    if (newStart) merged.date = newStart;
+    if (newEnd) merged.depart = newEnd;
+    state.tripEdits[parkId] = state.tripEdits[parkId] || {};
+    state.tripEdits[parkId][baseIdx] = merged;
+  };
 
-    // Prefer the existing base trip on the exact receipt arrival date.
+  // The previous version created synthetic user trips. Remove only those receipt-generated
+  // records; never touch the user's real trip history.
+  let changed = false;
+  Object.keys(state.tripLogs || {}).forEach(pid => {
+    const before = state.tripLogs[pid] || [];
+    const after = before.filter(t => !String(t?.note || '').startsWith('Reservation imported from receipt archive'));
+    if (after.length !== before.length) { state.tripLogs[pid] = after; changed = true; }
+    if (!state.tripLogs[pid].length) delete state.tripLogs[pid];
+  });
+
+  const unmatched = [];
+  const assignments = new Map();
+
+  BAKED_RESERVATION_IMPORT.forEach(r => {
+    const park = parkByName(r.park);
+    if (!park || !(BASE_TRIPS[park.id] || []).length) {
+      unmatched.push(r);
+      return;
+    }
     const baseList = BASE_TRIPS[park.id] || [];
-    const baseIdx = baseList.findIndex(t => t.date === r.start);
-
-    if (baseIdx >= 0) {
-      const old = (state.tripEdits[park.id] || {})[baseIdx] || {};
-      const oldRes = old.reservation || {};
-      const mergedRes = Object.assign({}, oldRes, reservation);
-      // Do not overwrite a manually entered number with a blank/non-visible value.
-      if (!r.number && oldRes.number) mergedRes.number = oldRes.number;
-      state.tripEdits[park.id] = state.tripEdits[park.id] || {};
-      state.tripEdits[park.id][baseIdx] = Object.assign({}, old, {reservation: mergedRes});
-      changed = true;
+    const candidates = baseList.map((t,i) => ({t,i,d:daysBetween(r.start,t.date)}));
+    const exact = candidates.filter(c => c.d === 0);
+    let candidate = exact[0] || candidates.filter(c => c.d <= 5).sort((a,b) => a.d-b.d)[0];
+    if (!candidate) {
+      unmatched.push(r);
       return;
     }
 
-    // If this receipt is not represented by an existing base trip, add it as a
-    // user trip. This preserves every receipt without silently changing an
-    // existing trip's dates.
-    state.tripLogs[park.id] = state.tripLogs[park.id] || [];
-    const exists = state.tripLogs[park.id].some(t =>
-      t && t.reservation && String(t.reservation.number || '') === String(r.number || '') &&
-      t.date === r.start
-    );
-    if (!exists) {
-      state.tripLogs[park.id].push({
-        date: r.start,
-        depart: r.end || '',
-        site: '',
-        note: 'Reservation imported from receipt archive' + (r.note ? ' — ' + r.note : '') + (r.source ? ' · Photos ' + r.source : ''),
-        reservation
-      });
-      changed = true;
-    }
+    // Multiple receipts can legitimately belong to one historical trip (e.g. consecutive
+    // reservation segments). Group those on the same base trip instead of creating duplicate trips.
+    const key = park.id + ':' + candidate.i;
+    let a = assignments.get(key);
+    if (!a) { a = {parkId:park.id, baseIdx:candidate.i, rows:[]}; assignments.set(key,a); }
+    a.rows.push(r);
   });
 
-  if (changed) {
+  assignments.forEach(a => {
+    const base = (BASE_TRIPS[a.parkId] || [])[a.baseIdx] || {};
+    const allStarts = a.rows.map(r=>r.start).concat(base.date || []).filter(Boolean);
+    const allEnds = a.rows.map(r=>r.end).concat(base.depart || []).filter(Boolean);
+    const start = allStarts.sort()[0];
+    const end = allEnds.sort().slice(-1)[0] || '';
+    a.rows.forEach(r => addReservationToEdit(a.parkId, a.baseIdx, r, start, end));
+    changed = true;
+  });
+
+  // Keep receipt records that do not safely map to an existing historical trip, but do NOT
+  // turn them into trips. They are shown separately in Trip History so no receipt data is lost.
+  state.receiptArchive = unmatched;
+  try { localStorage.setItem('cd_receipt_archive', JSON.stringify(unmatched)); } catch(e) {}
+
+  if (changed || unmatched.length) {
     saveState();
     if (typeof scheduleSyncToCloud === 'function' && currentUser) scheduleSyncToCloud();
   }
@@ -3022,6 +3078,11 @@ function setRating(parkId, rating, e) {
 // PARK LIST
 // ═══════════════════════════════════════════════════════
 function renderParks() {
+  const archiveBox=document.getElementById('parksReceiptArchiveBox');
+  const archive=Array.isArray(state.receiptArchive)?state.receiptArchive:[];
+  if(archiveBox){
+    archiveBox.innerHTML=archive.length?`<div class="reservation-box" style="border-left:4px solid var(--amber);"><div class="reservation-title"><span>🧾 Receipt Reservations</span><span style="font-size:.72rem;color:var(--soil);">${archive.length} not matched to an existing trip</span></div><div style="font-size:.8rem;color:var(--soil);margin-bottom:9px;">These receipts were kept here instead of creating duplicate trips. Your original Trip History remains intact.</div><div class="reservation-grid">${archive.map(r=>`<div class="reservation-item"><label>${esc(r.park||'PARK')}</label><strong>${esc(r.number||'No confirmation #')}</strong><span style="display:block;font-size:.72rem;color:var(--soil);margin-top:3px;">${esc(r.start||'')} → ${esc(r.end||'')}</span>${r.checkIn?`<span style="display:block;font-size:.7rem;color:var(--soil);margin-top:2px;">In ${esc(r.checkIn)} · Out ${esc(r.checkOut||'')}</span>`:''}</div>`).join('')}</div></div>`:'';
+  }
   const q=(document.getElementById('parkSearch').value||'').toLowerCase();
   let list=allParks().filter(p=>
     p.name.toLowerCase().includes(q)||(p.address||'').toLowerCase().includes(q)||
@@ -3094,7 +3155,7 @@ function renderParks() {
           var ni=t.depart&&t.depart>t.date?Math.round((new Date(t.depart)-new Date(t.date))/86400000):1;
           var th=t.photo?'<br><img class="trip-thumb" src="'+t.photo+'"'+(t.photoPath?' data-path="'+esc(t.photoPath)+'"':'')+' onclick="openLB(this.src,this.dataset.path)">':'';
           var db=t._isBase?'<button class="btn-del-trip" onclick="deleteBaseTrip('+p.id+','+t._baseIdx+')">✕</button>':'<button class="btn-del-trip" onclick="deleteTrip('+p.id+','+t._userIdx+')">✕</button>';
-          return '<div class="trip-entry"><span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;">#'+dn+'</span><span class="trip-date-badge">📅 '+ds+'</span><span style="font-size:.72rem;color:var(--fog);">🌙 '+ni+' night'+(ni>1?'s':'')+'</span>'+tripFeeHtml(t)+(t.site?'<span class="trip-site">Site '+esc(t.site)+'</span>':'')+(t.note?'<span class="trip-note">'+esc(t.note)+'</span>':'')+'<div class="trip-actions"><button class="btn-edit-trip" onclick="openET('+p.id+','+ti+')">✏️</button>'+db+'</div>'+th+'</div>';
+          return '<div class="trip-entry"><span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;">#'+dn+'</span><span class="trip-date-badge">📅 '+ds+'</span><span style="font-size:.72rem;color:var(--fog);">🌙 '+ni+' night'+(ni>1?'s':'')+'</span>'+tripFeeHtml(t)+(t.site?'<span class="trip-site">Site '+esc(t.site)+'</span>':'')+(t.note?'<span class="trip-note">'+esc(t.note)+'</span>':'')+'<div class="trip-actions"><button class="btn-edit-trip" onclick="openET('+p.id+','+ti+')">✏️</button>'+db+'</div>'+tripReservationHtml(t)+th+'</div>';
         }).join('');
         return '<div class="park-card" id="pc'+p.id+'" style="animation-delay:'+Math.min(i,14)*.025+'s"><div class="park-header '+(been?'been':'')+' '+(isC?'custom-h':'')+'" onclick="toggleCard('+p.id+')"><div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">'+getParkThumb(p.id)+'<div style="min-width:0;"><div class="park-name">'+esc(p.name)+'</div><div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'+(p.drive?'<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 '+esc(p.drive)+'</span>':'')+(p.drive&&milesToGallons(parseDriveMiles(p.drive))?'<span style="font-size:.78rem;color:var(--moss);font-weight:600;" title="Estimated one-way @ '+MPG+' mpg">⛽ '+milesToGallons(parseDriveMiles(p.drive))+' gal</span>':'')+parkFeeChip(p.id)+(p.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#fff;border-radius:20px;text-decoration:none;">📍 Address</a>':'')+(p.website?'<a href="'+esc(p.website)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#fff;border-radius:20px;text-decoration:none;">🌐 Website</a>':'')+'</div></div></div><div class="park-right"><button class="btn-fav" onclick="toggleFavorite('+p.id+',event)">'+(state.favorites.includes(p.id)?'❤️':'🤍')+'</button>'+(state.ratings[p.id]?'<span style="color:var(--amber);font-size:.8rem;">'+'★'.repeat(state.ratings[p.id])+'</span>':'')+(isC?'<span class="badge bc">★ Mine</span>':'')+(trips.length?'<span class="badge bv">🏕 '+trips.length+' trip'+(trips.length>1?'s':'')+'</span>':'<span class="badge bn">New</span>')+'<span class="chevron">▾</span></div></div><div class="park-body"><div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px"><span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)">Overall Rating</span><div class="star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star '+((state.ratings[p.id]||0)>=n?'on':'')+'" onclick="setRating('+p.id+','+n+',event)">★</span>';}).join('')+'</div>'+(state.ratings[p.id]?'<span style="font-size:.75rem;color:var(--fog)">'+['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]+'</span>':'')+'</div><div class="info-grid">'+(p.goodSites?'<div class="info-block"><label>✅ Good Sites</label><p>'+esc(p.goodSites)+'</p></div>':'')+(p.stayedSites?'<div class="info-block"><label>🏕 Sites Stayed</label><p>'+esc(p.stayedSites)+'</p></div>':'')+(p.avoidSites?'<div class="info-block"><label>🚫 Avoid</label><p>'+esc(p.avoidSites)+'</p></div>':'')+(p.bigRig?'<div class="info-block"><label>🚐 Big Rig</label><p>'+esc(p.bigRig)+'</p></div>':'')+(p.phone?'<div class="info-block"><label>📞 Phone</label><p>'+esc(p.phone)+'</p></div>':'')+(p.notes?'<div class="info-block" style="grid-column:1/-1"><label>📝 Notes</label><p>'+esc(p.notes)+'</p></div>':'')+'</div><div class="trip-log"><div class="trip-log-title">🗓 Trip History<span class="trip-count-badge">'+trips.length+' trip'+(trips.length!==1?'s':'')+'</span>'+parkFeeSummaryBadge(p.id)+'</div><div class="trip-entries">'+(tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;">No trips logged yet.</div>')+'</div><div class="add-trip-row"><div class="field"><label>Arrival</label><input type="date" id="td-date-'+p.id+'"></div><div class="field"><label>Departure</label><input type="date" id="td-depart-'+p.id+'"></div><div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-'+p.id+'" placeholder="e.g. 45"></div><div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-'+p.id+'" placeholder="great weather..."></div><button class="btn-add-trip" onclick="addTrip('+p.id+')">＋ Add Trip</button></div></div>'+'<div class="park-photos" style="margin-top:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-family:var(--font-heading);font-size:.92rem;color:var(--bark);">📷 Photos</span><button onclick="document.getElementById(\'photo-input-'+p.id+'\').click()" style="font-size:.74rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">+ Add Photo</button><input type="file" id="photo-input-'+p.id+'" accept="image/*" style="display:none" onchange="handlePhotoUpload('+p.id+', this)"></div><div id="photo-gallery-'+p.id+'" class="photo-gallery">'+renderPhotoGallery(p.id)+'</div></div>'+(isC?'<div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--fog);margin-top:8px"><button class="btn-amber" style="font-size:.78rem;padding:4px 12px" onclick="openEditPark('+p.id+')">✏️ Edit</button><button class="btn-amber" style="font-size:.78rem;padding:4px 12px;background:rgba(180,60,40,.7)" onclick="deleteCustomPark('+p.id+')">🗑 Delete</button></div>':'')+'</div></div>';
       }).join('');
@@ -3303,6 +3364,11 @@ function renderEntries(){
 function renderTripLog() {
   const q=(document.getElementById('triplogSearch')?.value||'').toLowerCase();
   const sortMode=window._tripLogSort||'date';
+  const archiveEl=document.getElementById('receiptArchiveBox');
+  const archive=Array.isArray(state.receiptArchive)?state.receiptArchive:[];
+  if(archiveEl){
+    archiveEl.innerHTML=archive.length ? `<div class="reservation-box" style="border-left:4px solid var(--amber);"><div class="reservation-title"><span>🧾 Receipt Reservations — not matched to an existing trip</span><span style="font-size:.72rem;color:var(--soil);">${archive.length} receipt${archive.length===1?'':'s'}</span></div><div style="font-size:.8rem;color:var(--soil);margin-bottom:9px;">These were kept out of Trip History rather than creating duplicate trips.</div><div class="reservation-grid">${archive.map(r=>`<div class="reservation-item"><label>${esc(r.park||'PARK')}</label><strong>${esc(r.number||'No confirmation #')}</strong><span style="display:block;font-size:.72rem;color:var(--soil);margin-top:3px;">${esc(r.start||'')} → ${esc(r.end||'')}</span></div>`).join('')}</div></div>` : '';
+  }
   const parkMap={}; allParks().forEach(p=>parkMap[p.id]=p);
   let rows=getAllTripsSorted().map((t,i)=>({
     displayNum:i+1,park:parkMap[t._pid]||{},parkName:(parkMap[t._pid]?.name||'Unknown Park'),dateStr:t.depart?fmtDateShort(t.date)+' → '+fmtDateShort(t.depart):fmtDateShort(t.date),
@@ -3347,6 +3413,7 @@ function timelineRows() {
       site: t.site || '',
       note: t.note || '',
       sitefee: t.sitefee || 0,
+      reservations: Array.isArray(t.reservations) && t.reservations.length ? t.reservations : (t.reservation ? [t.reservation] : []),
       _pid: t._pid,
       _ti: t._ti
     };
@@ -3404,11 +3471,15 @@ function renderTimeline() {
           <span>${yrRows.length} trip${yrRows.length !== 1 ? 's' : ''} · ${nights} night${nights !== 1 ? 's' : ''}</span>
         </div>
         <div class="timeline-list">
-          ${yrRows.map(r => `
-            <article class="timeline-card">
+          ${yrRows.map(r => {
+            const resList = r.reservations || [];
+            const reservationHtml = resList.length
+              ? `<div class="reservation-box"><div class="reservation-title"><span>🔖 Reservation Details${resList.length > 1 ? ' · '+resList.length+' reservations' : ''}</span></div>${resList.map(res => `<div class="reservation-grid" style="margin-top:7px"><div class="reservation-item"><label>RESERVATION #</label><strong>${esc(res.number || 'Not visible')}</strong></div>${res.bookedThrough ? `<div class="reservation-item"><label>BOOKED THROUGH</label><strong>${esc(res.bookedThrough)}</strong></div>` : ''}${res.checkIn ? `<div class="reservation-item"><label>CHECK-IN</label><strong>${esc(res.checkIn)}</strong></div>` : ''}${res.checkOut ? `<div class="reservation-item"><label>CHECK-OUT</label><strong>${esc(res.checkOut)}</strong></div>` : ''}</div>`).join('')}</div>`
+              : `<div class="timeline-note">No reservation information is attached to this trip.</div>`;
+            return `<article class="timeline-card">
               <div class="timeline-card-head">
                 <div>
-                  <div class="timeline-park">${esc(r.parkName)}</div>
+                  <button type="button" class="timeline-park-btn" aria-expanded="false" onclick="toggleTimelineTripDetails(this,${JSON.stringify(r._pid)},${r._ti})">${esc(r.parkName)}</button>
                   <div class="timeline-date">${esc(r.dateStr)}</div>
                 </div>
                 <button class="timeline-num" onclick="openET(${JSON.stringify(r._pid)},${r._ti})" title="Edit trip">#${r.displayNum}</button>
@@ -3421,10 +3492,28 @@ function renderTimeline() {
                 ${r.state ? `<span class="timeline-pill">${esc(r.state)}</span>` : ''}
               </div>
               ${r.note ? `<div class="timeline-note">${esc(r.note)}</div>` : ''}
-            </article>`).join('')}
+              <div class="timeline-trip-details" hidden>
+                ${reservationHtml}
+                <div class="timeline-trip-actions">
+                  <button type="button" class="btn-sm" onclick="openET(${JSON.stringify(r._pid)},${r._ti})">✏️ Edit Trip</button>
+                  <button type="button" class="btn-sm" onclick="openParkDetail(${JSON.stringify(r._pid)})">🌲 Open Park</button>
+                </div>
+              </div>
+            </article>`;
+          }).join('')}
         </div>
       </section>`;
   }).join('');
+}
+
+function toggleTimelineTripDetails(btn, parkId, tripIndex) {
+  const card = btn.closest('.timeline-card');
+  if (!card) return;
+  const details = card.querySelector('.timeline-trip-details');
+  if (!details) return;
+  const opening = details.hidden;
+  details.hidden = !opening;
+  btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
 }
 
 function timelineJumpYear(year) {
@@ -3616,6 +3705,12 @@ function safeUrl(u){
 function fmtDate(d){if(!d)return '';const[y,m,day]=d.split('-');return new Date(y,m-1,day).toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
 function fmtDateShort(d){if(!d)return '';const[y,m,day]=d.split('-');return new Date(y,m-1,day).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function tripReservationHtml(t){
+  const list = Array.isArray(t?.reservations) && t.reservations.length ? t.reservations : (t?.reservation ? [t.reservation] : []);
+  if(!list.length) return '';
+  const items=list.map((r,i)=>`<div class="reservation-grid" style="margin-top:${i?'7px':'0'}"><div class="reservation-item"><label>RESERVATION #</label><strong>${esc(r.number||'Not visible')}</strong></div>${r.bookedThrough?`<div class="reservation-item"><label>BOOKED THROUGH</label><strong>${esc(r.bookedThrough)}</strong></div>`:''}${r.checkIn?`<div class="reservation-item"><label>CHECK-IN</label><strong>${esc(r.checkIn)}</strong></div>`:''}${r.checkOut?`<div class="reservation-item"><label>CHECK-OUT</label><strong>${esc(r.checkOut)}</strong></div>`:''}</div>`).join('');
+  return `<div class="reservation-box" style="width:100%;box-sizing:border-box;margin-top:7px"><div class="reservation-title"><span>🔖 Reservation Details${list.length>1?' · '+list.length+' reservations':''}</span></div>${items}</div>`;
+}
 
 
 // ═══════════════════════════════════════════════════════
@@ -3632,6 +3727,10 @@ function openET(parkId, idx) {
   document.getElementById('et-depart').value = t.depart || '';
   document.getElementById('et-site').value   = t.site   || '';
   document.getElementById('et-note').value   = t.note   || '';
+  const etRes = Array.isArray(t.reservations) && t.reservations.length ? t.reservations : (t.reservation ? [t.reservation] : []);
+  const etResNum = document.getElementById('et-resnum'); if(etResNum) etResNum.value = etRes.map(r=>r.number||'').filter(Boolean).join(', ');
+  const etResIn = document.getElementById('et-checkin'); if(etResIn) etResIn.value = etRes[0]?.checkIn || '';
+  const etResOut = document.getElementById('et-checkout'); if(etResOut) etResOut.value = etRes[0]?.checkOut || '';
   document.getElementById('et-sitefee').value = t.sitefee != null ? t.sitefee : '';
   document.getElementById('et-fuel').value    = t.fuel    != null ? t.fuel    : (getParkOneWayMiles(parkId) ? milesToGallons(getParkOneWayMiles(parkId)) : '');
   document.getElementById('et-fuel').dataset.userEdited = '0';
@@ -3704,9 +3803,16 @@ function saveET() {
   if (!isNaN(sitefee) && sitefee >= 0) updated.sitefee = sitefee;
   if (!isNaN(fuel)    && fuel    >= 0) updated.fuel    = fuel;
   if (depart) updated.depart = depart;
-  if (_etph) { updated.photo = _etph; if (_etphPath) updated.photoPath = _etphPath; }
-  // The drive log is not editable in this dialog, so carry it over instead of dropping it
   const _prevTrip = _etIsBase ? ((state.tripEdits[_etp] || {})[_etBaseIdx]) : ((state.tripLogs[_etp] || [])[_etUserIdx]);
+  if (_etph) { updated.photo = _etph; if (_etphPath) updated.photoPath = _etphPath; }
+  const prevRes = _prevTrip && (Array.isArray(_prevTrip.reservations) ? _prevTrip.reservations : (_prevTrip.reservation ? [_prevTrip.reservation] : []));
+  const nums = (document.getElementById('et-resnum')?.value || '').split(',').map(x=>x.trim()).filter(Boolean);
+  if(nums.length || prevRes.length){
+    const baseRes = prevRes.length ? prevRes : [{bookedThrough:'',checkIn:'',checkOut:''}];
+    updated.reservations = baseRes.map((r,i)=>Object.assign({},r,{number:nums[i] || r.number || '', checkIn:i===0?(document.getElementById('et-checkin')?.value.trim()||r.checkIn||''):r.checkIn||'', checkOut:i===0?(document.getElementById('et-checkout')?.value.trim()||r.checkOut||''):r.checkOut||''}));
+    updated.reservation = updated.reservations[0];
+  }
+  // The drive log is not editable in this dialog, so carry it over instead of dropping it
   if (_prevTrip && _prevTrip.driveLog) updated.driveLog = _prevTrip.driveLog;
   // If the photo was replaced or removed, the old file in cloud storage is no longer needed
   if (_etOldPath && _etOldPath !== updated.photoPath) deletePhotoObject(_etOldPath);
@@ -3960,6 +4066,7 @@ async function syncToCloud() {
     savedRoutes: getSavedRoutes(),
     parkMileage: state.parkMileage||{},
     mapCoords: state.mapCoords||{},
+    receiptArchive: state.receiptArchive||[],
     parkPhotos: state.parkPhotos||{},
     trash: state.trash||[],
     homeAddress: state.homeAddress||'',
@@ -4018,6 +4125,7 @@ async function loadFromCloud() {
       if (d.favorites   !== undefined) state.favorites   = d.favorites;
       if (d.hiddenParks !== undefined) state.hiddenParks = d.hiddenParks;
       if (d.wishlist    !== undefined) state.wishlist    = d.wishlist;
+      if (d.receiptArchive !== undefined) state.receiptArchive = d.receiptArchive;
       if (d.savedCampgrounds !== undefined) {
         try { localStorage.setItem('tn_saved_cg', JSON.stringify(d.savedCampgrounds)); } catch(e) {}
       }
@@ -5762,6 +5870,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div><label>Trip Number</label><div style="padding:10px 12px;background:rgba(61,90,42,.10);border:1px solid rgba(61,90,42,.18);border-radius:6px;color:var(--bark);font-weight:700;min-height:42px;box-sizing:border-box">Automatic</div></div>
     </div>
     <div class="fl"><label>Notes</label><input type="text" id="et-note" placeholder="e.g. great weather, very quiet"></div>
+    <div class="reservation-box" style="margin-top:10px"><div class="reservation-title"><span>🔖 Reservation</span></div><div class="fg2" style="margin-bottom:0"><div><label>Reservation #</label><input id="et-resnum" placeholder="Confirmation number(s), comma separated"></div><div><label>Check-in</label><input id="et-checkin" placeholder="e.g. 3:00 PM"></div><div><label>Check-out</label><input id="et-checkout" placeholder="e.g. 1:00 PM"></div></div></div>
     <div class="fg2">
       <div><label>💰 Site Fee ($)</label><input type="number" id="et-sitefee" placeholder="e.g. 35" min="0" step="0.01" style="width:100%"></div>
       <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from one-way miles @ 9 mpg" min="0" step="0.1" style="width:100%"></div>
