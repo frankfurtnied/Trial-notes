@@ -936,12 +936,7 @@ header p{
 }
 </style>
 
-<style>
-.manual-res-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr auto;gap:7px;align-items:end;margin-bottom:8px}
-.manual-res-row label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;color:var(--fog);margin-bottom:3px}
-.manual-res-row input{width:100%;box-sizing:border-box}
-@media(max-width:700px){.manual-res-row{grid-template-columns:1fr 1fr}}
-</style></head>
+</head>
 <body>
 <div id="offline-banner" style="display:none;background:#b84040;color:white;text-align:center;padding:8px;font-size:.82rem;font-family:-apple-system,Georgia,serif;position:sticky;top:0;z-index:999;">
   You are offline — saved campgrounds, routes and diary still available. New searches require internet.
@@ -981,12 +976,12 @@ header p{
   <div class="tab active" data-tab="home" onclick="switchTab('home')">🏕 Home</div>
   <div class="tab" data-tab="parks" onclick="switchTab('parks')">🗺 My Parks</div>
   <div class="tab" data-tab="upcoming" onclick="switchTab('upcoming')">📅 Upcoming Trips</div>
+  <div class="tab" data-tab="sitememory" onclick="switchTab('sitememory')">🪵 Site Memories</div>
   <div class="tab" data-tab="timeline" onclick="switchTab('timeline')">🧭 Timeline</div>
   <div class="tab" data-tab="journal" onclick="switchTab('journal')">📓 Journal</div>
   <div class="tab" data-tab="findcamps" onclick="switchTab('findcamps')">🔍 Trip Planner</div>
   <div class="tab" data-tab="stats" onclick="switchTab('stats');renderStatsPanel();">📊 Statistics</div>
   <div class="tab" data-tab="wishlist" onclick="switchTab('wishlist')">🌟 Wish List</div>
-  <div class="tab" data-tab="sitememory" onclick="switchTab('sitememory')">🪵 Site Memories</div>
   <div class="tab" data-tab="trash" onclick="switchTab('trash')">🗑 Trash <span id="trashTabCount" style="margin-left:4px;opacity:.8"></span></div>
 </div>
 
@@ -1741,7 +1736,7 @@ function reservationsForPark(parkName){
   return BAKED_RESERVATIONS.filter(r=>{
     const rn=String(r.parkName||'').toLowerCase().replace(/[^a-z0-9]/g,'');
     if(rn===n) return true;
-    const pairs=[['longpointparkbrevardcountyfl','longpointpark'],['mossparkorangecountyfl','mosspark'],['kerrlakestaterecreationareanorthcarolina','kerrlakerecreationareasatterwhitepoint'],['fortdesotocampgroundpinellascountyfl','fortdesoto'],['edistobeachstateparksouthcarolina','edistobeachstatepark'],['elijahclarkstateparkgeorgia','elijahclarkstatepark'],['jekyllislandcampgroundgeorgia','jekyllislandcampground'],['barnwellstateparksouthcarolina','barnwellstatepark'],['kellyparkorangecountyfl','kellypark'],['goldheadbranchstatepark','mikeroessgoldheadbranchstatepark']];
+    const pairs=[['longpointparkbrevardcountyfl','longpointpark'],['mossparkorangecountyfl','mosspark'],['kerrlakestaterecreationareanorthcarolina','kerrlakerecreationareasatterwhitepoint'],['fortdesotocampgroundpinellascountyfl','fortdesoto'],['edistobeachstateparksouthcarolina','edistobeachstatepark'],['elijahclarkstateparkgeorgia','elijahclarkstatepark'],['jekyllislandcampgroundgeorgia','jekyllislandcampground'],['kellyparkorangecountyfl','kellypark'],['goldheadbranchstatepark','mikeroessgoldheadbranchstatepark']];
     return pairs.some(p=>(rn===p[0]&&n===p[1])||(rn===p[1]&&n===p[0]));
   });
 }
@@ -1758,6 +1753,7 @@ function renderReservationBoxList(reservations){
     const items=[
       '<div class="reservation-item" style="grid-column:1/-1"><label>'+label.toUpperCase()+'</label><strong>'+(res.number?'#'+esc(res.number):'Reservation number not shown')+'</strong></div>',
       res.effectiveArrivalDate?'<div class="reservation-item"><label>RESERVED DATES</label><strong>'+esc(fmtDateShort(res.effectiveArrivalDate))+' → '+esc(fmtDateShort(res.effectiveDepartureDate))+'</strong></div>':'',
+      res.bookedThrough?'<div class="reservation-item"><label>BOOKED THROUGH</label><strong>'+esc(res.bookedThrough)+'</strong></div>':'',
       res.checkIn?'<div class="reservation-item"><label>CHECK-IN</label><strong>'+esc(res.checkIn)+'</strong></div>':'',
       res.checkOut?'<div class="reservation-item"><label>CHECK-OUT</label><strong>'+esc(res.checkOut)+'</strong></div>':'',
       res.notes?'<div class="reservation-item" style="grid-column:1/-1"><label>RECEIPT NOTE</label><strong>'+esc(res.notes)+'</strong></div>':''
@@ -3472,81 +3468,6 @@ function openCampingBook(){
   html+=`<div class="book-footer-note">Created with Trail Notes · Your camping story, kept in one place.</div></div>`;document.getElementById('bookContent').innerHTML=html;m.classList.remove('hidden');
 }
 function printCampingBook(){const content=document.getElementById('bookContent').innerHTML;const w=window.open('','_blank');if(!w){alert('Please allow pop-ups to print the Camping Book.');return;}w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trail Notes — Our Camping Story</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;max-width:850px;margin:28px auto;padding:0 22px;color:#2c1a0e;line-height:1.5;background:#fffaf0}.book-cover-premium{min-height:650px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:55px 35px;background:linear-gradient(145deg,#27462f,#3d5a2a 58%,#7c5a2d);color:#fff7e8;border-radius:10px;position:relative;overflow:hidden}.book-cover-premium:after{content:"";position:absolute;inset:18px;border:1px solid rgba(255,247,232,.4);border-radius:7px}.cover-tree{font-size:76px}.book-cover-premium h1{font:700 58px Georgia,serif;margin:18px 0 6px}.cover-sub{font:italic 23px Georgia,serif}.cover-rule{width:150px;height:2px;background:#d9a441;margin:25px 0}.cover-years{font-size:13px;letter-spacing:2px;text-transform:uppercase}.book-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.book-summary-stat{background:#f8efdf;border:1px solid #dcccb0;border-radius:8px;padding:14px 8px;text-align:center}.book-summary-stat strong{display:block;font-size:24px;color:#27462f}.book-summary-stat span{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#766a59}.book-section-title{font:700 23px Georgia,serif;color:#27462f;border-bottom:2px solid #d8c8a8;padding-bottom:7px;margin:28px 0 12px}.book-year-page{page-break-before:always}.book-year-heading{font:700 34px Georgia,serif;color:#27462f;margin:0}.book-year-sub{color:#766a59;margin-bottom:15px}.book-memory{display:grid;grid-template-columns:1fr auto;gap:14px;padding:11px 0;border-bottom:1px solid #dfd5c4;break-inside:avoid}.meta{font-size:12px;color:#766a59;margin-top:3px}.fee{font-weight:700;color:#8b6128;white-space:nowrap}.book-photo-strip{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px;break-inside:avoid}.book-photo-strip img{width:115px;height:82px;object-fit:cover;border-radius:6px}.book-journal{background:#faf4e8;border-left:4px solid #8b6128;padding:11px 13px;margin:10px 0;break-inside:avoid}.jdate{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#766a59}.book-journal p{margin:5px 0;white-space:pre-wrap}.book-footer-note{text-align:center;color:#766a59;font-size:11px;margin:30px 0}@media print{body{margin:10mm auto;background:#fff}.book-cover-premium{page-break-after:always}.book-year-page{page-break-before:always}}</style></head><body>${content}
-
-<script>
-(function(){
-  const _originalOpenET = openET;
-  const _originalSaveET = saveET;
-
-  function resRows(list){
-    return (Array.isArray(list)?list:[]).map((r,i)=>`
-      <div class="manual-res-row" data-res-row="${i}">
-        <div><label>Reservation #</label><input data-res="number" value="${esc(r.number||'')}" placeholder="e.g. 2-17097311"></div>
-        <div><label>Booked Through</label><input data-res="bookedThrough" value="${esc(r.bookedThrough||'')}" placeholder="ReserveAmerica"></div>
-        <div><label>Check-in</label><input data-res="checkIn" value="${esc(r.checkIn||'')}" placeholder="3:00 PM"></div>
-        <div><label>Check-out</label><input data-res="checkOut" value="${esc(r.checkOut||'')}" placeholder="1:00 PM"></div>
-        <button type="button" class="btn-o" onclick="this.closest('.manual-res-row').remove()">✕</button>
-      </div>`).join('');
-  }
-
-  function loadReservationEditor(t){
-    const box=document.getElementById('manualReservationRows');
-    if(!box)return;
-    const list=Array.isArray(t.reservations)?t.reservations:(t.reservation?[t.reservation]:[]);
-    box.innerHTML=resRows(list);
-  }
-
-  window.manualAddReservation=function(){
-    const box=document.getElementById('manualReservationRows');
-    if(!box)return;
-    const i=box.querySelectorAll('.manual-res-row').length;
-    box.insertAdjacentHTML('beforeend',resRows([{}]).replace('data-res-row="0"','data-res-row="'+i+'"'));
-  };
-
-  function collectReservations(){
-    const box=document.getElementById('manualReservationRows');
-    if(!box)return [];
-    return [...box.querySelectorAll('.manual-res-row')].map(row=>{
-      const r={};
-      row.querySelectorAll('[data-res]').forEach(el=>r[el.dataset.res]=el.value.trim());
-      return r;
-    }).filter(r=>Object.values(r).some(Boolean));
-  }
-
-  window.openET=function(parkId,idx){
-    _originalOpenET(parkId,idx);
-    const trips=getTrips(parkId);
-    const t=trips[idx];
-    if(t)loadReservationEditor(t);
-  };
-
-  window.saveET=function(){
-    const parkId=_etp;
-    const isBase=_etIsBase;
-    const baseIdx=_etBaseIdx;
-    const userIdx=_etUserIdx;
-    const reservations=collectReservations();
-
-    _originalSaveET();
-
-    // The original save closes the modal and resets the editor globals,
-    // so use the captured trip identity to attach the edited reservations.
-    if(isBase){
-      if(!state.tripEdits[parkId])state.tripEdits[parkId]={};
-      const existing=state.tripEdits[parkId][baseIdx] || {};
-      if(reservations.length){existing.reservations=reservations;existing.reservation=reservations[0];}
-      else {delete existing.reservations;delete existing.reservation;}
-      state.tripEdits[parkId][baseIdx]=existing;
-    }else if(state.tripLogs[parkId] && state.tripLogs[parkId][userIdx]){
-      const existing=state.tripLogs[parkId][userIdx];
-      if(reservations.length){existing.reservations=reservations;existing.reservation=reservations[0];}
-      else {delete existing.reservations;delete existing.reservation;}
-    }
-    saveState();
-    renderAll();
-  };
-})();
-</script>
 </body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),450)}
 let _mapLoaded=false;
 let _campMap=null;
@@ -3685,6 +3606,37 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 let _etp = null, _eti = null, _etph = null, _etIsBase = true, _etBaseIdx = null, _etUserIdx = null;
 let _etphPath = null, _etOldPath = null, _etBusy = false, _etSaved = false;
 
+
+function editTripReservationHtml(r={},i=0){
+  return `<div class="et-res-row" data-ri="${i}" style="display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr auto;gap:7px;align-items:end;margin:7px 0;padding:8px;border:1px solid rgba(38,24,15,.12);border-radius:6px;background:rgba(255,255,255,.28)">
+    <div><label style="font-size:.6rem">Reservation #</label><input type="text" data-res-field="number" value="${esc(r.number||'')}" placeholder="Reservation #"></div>
+    <div><label style="font-size:.6rem">Booked Through</label><input type="text" data-res-field="bookedThrough" value="${esc(r.bookedThrough||'')}" placeholder="ReserveAmerica"></div>
+    <div><label style="font-size:.6rem">Check-in</label><input type="text" data-res-field="checkIn" value="${esc(r.checkIn||'')}" placeholder="3:00 PM"></div>
+    <div><label style="font-size:.6rem">Check-out</label><input type="text" data-res-field="checkOut" value="${esc(r.checkOut||'')}" placeholder="1:00 PM"></div>
+    <button type="button" class="btn-o" onclick="this.closest('.et-res-row').remove()">✕</button>
+  </div>`;
+}
+function renderEditTripReservations(list){
+  const box=document.getElementById('et-reservation-list'); if(!box)return;
+  const arr=Array.isArray(list)?list:[];
+  box.innerHTML=arr.map((r,i)=>editTripReservationHtml(r,i)).join('') ||
+    '<div class="et-res-empty" style="font-size:.75rem;color:var(--fog);font-style:italic;padding:5px 0">No reservation entered. Click “＋ Add Reservation” to add one.</div>';
+}
+function addEditTripReservation(){
+  const box=document.getElementById('et-reservation-list'); if(!box)return;
+  const empty=box.querySelector('.et-res-empty'); if(empty)empty.remove();
+  const i=box.querySelectorAll('.et-res-row').length;
+  box.insertAdjacentHTML('beforeend',editTripReservationHtml({},i));
+}
+function collectEditTripReservations(){
+  const box=document.getElementById('et-reservation-list'); if(!box)return [];
+  return [...box.querySelectorAll('.et-res-row')].map(row=>{
+    const r={};
+    row.querySelectorAll('[data-res-field]').forEach(el=>r[el.dataset.resField]=el.value.trim());
+    return r;
+  }).filter(r=>Object.values(r).some(Boolean));
+}
+
 function openET(parkId, idx) {
   _etp = parkId; _eti = idx;
   const t = getTrips(parkId)[idx];
@@ -3696,6 +3648,7 @@ function openET(parkId, idx) {
   document.getElementById('et-sitefee').value = t.sitefee != null ? t.sitefee : '';
   document.getElementById('et-fuel').value    = t.fuel    != null ? t.fuel    : (getParkOneWayMiles(parkId) ? milesToGallons(getParkOneWayMiles(parkId)) : '');
   document.getElementById('et-fuel').dataset.userEdited = '0';
+  renderEditTripReservations(Array.isArray(t.reservations)?t.reservations:(t.reservation?[t.reservation]:[]));
   document.getElementById('et-fuel').oninput = function(){ this.dataset.userEdited = '1'; };
   _etph = t.photo || null;
   _etphPath = t.photoPath || null; _etOldPath = t.photoPath || null; _etBusy = false; _etSaved = false;
@@ -3765,6 +3718,9 @@ function saveET() {
   if (!isNaN(sitefee) && sitefee >= 0) updated.sitefee = sitefee;
   if (!isNaN(fuel)    && fuel    >= 0) updated.fuel    = fuel;
   if (depart) updated.depart = depart;
+  const _editReservations = collectEditTripReservations();
+  if (_editReservations.length) { updated.reservations = _editReservations; updated.reservation = _editReservations[0]; }
+  else { delete updated.reservations; delete updated.reservation; }
   if (_etph) { updated.photo = _etph; if (_etphPath) updated.photoPath = _etphPath; }
   // The drive log is not editable in this dialog, so carry it over instead of dropping it
   const _prevTrip = _etIsBase ? ((state.tripEdits[_etp] || {})[_etBaseIdx]) : ((state.tripLogs[_etp] || [])[_etUserIdx]);
@@ -5821,10 +5777,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div><label>Trip Number</label><div style="padding:10px 12px;background:rgba(61,90,42,.10);border:1px solid rgba(61,90,42,.18);border-radius:6px;color:var(--bark);font-weight:700;min-height:42px;box-sizing:border-box">Automatic</div></div>
     </div>
     <div class="fl"><label>Notes</label><input type="text" id="et-note" placeholder="e.g. great weather, very quiet"></div>
-    <div id="manualReservationEditor" style="margin:10px 0;padding:12px;border:1px solid var(--fog);border-radius:7px;background:rgba(255,255,255,.22)">
-      <div style="font-family:-apple-system,Georgia,serif;font-weight:700;color:var(--bark);margin-bottom:8px">🔖 Reservation Details</div>
-      <div id="manualReservationRows"></div>
-      <button type="button" class="btn-o" onclick="manualAddReservation()">＋ Add Reservation</button>
+    <div class="fl" style="margin-top:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <label>🔖 Reservation Details</label>
+        <button type="button" class="btn-o" style="font-size:.75rem;padding:4px 9px" onclick="addEditTripReservation()">＋ Add Reservation</button>
+      </div>
+      <div id="et-reservation-list"></div>
     </div>
     <div class="fg2">
       <div><label>💰 Site Fee ($)</label><input type="number" id="et-sitefee" placeholder="e.g. 35" min="0" step="0.01" style="width:100%"></div>
