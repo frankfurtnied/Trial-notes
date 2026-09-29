@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-09-28-contrast-v3';
+  const TRAIL_NOTES_BUILD = '2026-09-28-reconcile-v1';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1748,6 +1748,233 @@ function reservationsForPark(parkName){
     return pairs.some(p=>(rn===p[0]&&n===p[1])||(rn===p[1]&&n===p[0]));
   });
 }
+// ═══════════════════════════════════════════════════════
+// PARK / RESERVATION RECONCILIATION
+// Keeps the park record that has trip history, merges duplicate
+// custom park records into the canonical park, and attaches receipt
+// reservations only when there is a defensible existing-trip match.
+// No new/fake trips are created by this migration.
+// ═══════════════════════════════════════════════════════
+function parkMergeKey(name){
+  const n=String(name||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const aliases={
+    'goldheadbranchstatepark':'goldheadbranchpark',
+    'mikeroessgoldheadbranchstatepark':'goldheadbranchpark',
+    'longpointparkbrevardcountyfl':'longpointpark',
+    'mossparkorangecountyfl':'mosspark',
+    'kellyparkorangecountyfl':'kellypark',
+    'fortdesotocampgroundpinellascountyfl':'fortdesoto',
+    'fortdesoto':'fortdesoto',
+    'edistobeachstateparksouthcarolina':'edistobeachstatepark',
+    'edistobeachstatepark':'edistobeachstatepark',
+    'elijahclarkstateparkgeorgia':'elijahclarkstatepark',
+    'elijahclarkstatepark':'elijahclarkstatepark',
+    'jekyllislandcampgroundgeorgia':'jekyllislandcampground',
+    'jekyllislandcampground':'jekyllislandcampground',
+    'barnwellstateparksouthcarolina':'barnwellstatepark',
+    'barnwellstatepark':'barnwellstatepark',
+    'kellypark':'kellypark',
+    'mosspark':'mosspark',
+    'kerrlakestaterecreationareanorthcarolina':'kerrlakerecreationarea',
+    'kerrlakerecreationareasatterwhitepoint':'kerrlakerecreationarea',
+    'kerrlakerecreationarea':'kerrlakerecreationarea',
+    'warriorcreekwkerrscottdamreservoir':'warriorcreek',
+    'warriorcreek':'warriorcreek',
+    'ginniespringsoutdoors':'ginniespringsoutdoors',
+    'ginniesprings':'ginniespringsoutdoors'
+  };
+  return aliases[n] || n;
+}
+
+function parkTripsRaw(parkId){
+  return [...(BASE_TRIPS[parkId]||[]),...(state.tripLogs[parkId]||[])];
+}
+
+function parkHistoryCount(parkId){
+  return parkTripsRaw(parkId).length;
+}
+
+function tripRecordSignature(t){
+  return [t?.date||'',t?.depart||'',t?.site||'',t?.note||''].join('|');
+}
+
+function mergeTripLogArrays(targetId, sourceId){
+  const src=state.tripLogs[sourceId]||[];
+  if(!src.length) return 0;
+  const dst=state.tripLogs[targetId]||[];
+  const seen=new Set(dst.map(tripRecordSignature));
+  let moved=0;
+  src.forEach(t=>{
+    const sig=tripRecordSignature(t);
+    if(!seen.has(sig)){ dst.push(JSON.parse(JSON.stringify(t))); seen.add(sig); moved++; }
+  });
+  state.tripLogs[targetId]=dst;
+  delete state.tripLogs[sourceId];
+  return moved;
+}
+
+function mergeParkSideData(targetId, sourceId){
+  if(String(targetId)===String(sourceId)) return;
+  if(state.visited[sourceId]) state.visited[targetId]=true;
+  if(!state.parkMileage?.[targetId] && state.parkMileage?.[sourceId]) state.parkMileage[targetId]=state.parkMileage[sourceId];
+  if(!state.mapCoords?.[targetId] && state.mapCoords?.[sourceId]) state.mapCoords[targetId]=state.mapCoords[sourceId];
+  if(state.parkPhotos?.[sourceId]){
+    const dst=state.parkPhotos[targetId]||[];
+    const seen=new Set(dst.map(x=>x?.path||x?.src||x?.url||JSON.stringify(x)));
+    state.parkPhotos[targetId]=dst.concat((state.parkPhotos[sourceId]||[]).filter(x=>{const k=x?.path||x?.src||x?.url||JSON.stringify(x);if(seen.has(k))return false;seen.add(k);return true;}));
+    delete state.parkPhotos[sourceId];
+  }
+  if(state.ratings?.[targetId]===undefined && state.ratings?.[sourceId]!==undefined) state.ratings[targetId]=state.ratings[sourceId];
+  if(Array.isArray(state.favorites) && state.favorites.some(id=>String(id)===String(sourceId)) && !state.favorites.some(id=>String(id)===String(targetId))) state.favorites.push(targetId);
+  if(Array.isArray(state.favorites)) state.favorites=state.favorites.filter(id=>String(id)!==String(sourceId));
+  if(Array.isArray(state.hiddenParks)) state.hiddenParks=state.hiddenParks.filter(id=>String(id)!==String(sourceId));
+  if(Array.isArray(state.trash)) state.trash.forEach(x=>{if(String(x.parkId)===String(sourceId))x.parkId=targetId;});
+}
+
+function mergeParkIntoBase(baseId, customPark){
+  const cid=customPark.id;
+  const moved=mergeTripLogArrays(baseId,cid);
+  mergeParkSideData(baseId,cid);
+  // Preserve useful custom fields as non-destructive overrides on the canonical park.
+  const ov=state.overrides[baseId] || (state.overrides[baseId]={});
+  ['address','phone','drive','goodSites','avoidSites','stayedSites','bigRig','notes'].forEach(k=>{
+    if((ov[k]===undefined || ov[k]==='') && customPark[k]) ov[k]=customPark[k];
+  });
+  return moved;
+}
+
+function mergeCustomParks(a,b){
+  const ha=parkHistoryCount(a.id), hb=parkHistoryCount(b.id);
+  const keep = hb>ha ? b : a;
+  const drop = keep===a ? b : a;
+  mergeTripLogArrays(keep.id,drop.id);
+  mergeParkSideData(keep.id,drop.id);
+  // Fill missing descriptive data without replacing the keeper's values.
+  Object.keys(drop).forEach(k=>{
+    if(k!=='id' && (keep[k]===undefined || keep[k]==='') && drop[k]!==undefined) keep[k]=drop[k];
+  });
+  return {keep,drop};
+}
+
+function normalizeParkDuplicates(){
+  const custom=[...(state.customParks||[])];
+  const byKey=new Map(BASE_PARKS.map(p=>[parkMergeKey(p.name),p.id]));
+  const kept=[];
+  let merged=0;
+  custom.forEach(p=>{
+    if(!p || !p.name) return;
+    const key=parkMergeKey(p.name);
+    const baseId=byKey.get(key);
+    if(baseId!==undefined){
+      mergeParkIntoBase(baseId,p); merged++; return;
+    }
+    const same=kept.find(x=>parkMergeKey(x.name)===key);
+    if(same){
+      const out=mergeCustomParks(same,p);
+      const idx=kept.findIndex(x=>x.id===out.drop.id);
+      if(idx>=0) kept.splice(idx,1);
+      if(!kept.includes(out.keep)) kept.push(out.keep);
+      merged++;
+    } else {
+      kept.push(p);
+      byKey.set(key,p.id);
+    }
+  });
+  state.customParks=kept;
+  return merged;
+}
+
+function reservationParkMatches(res,parkName){
+  return parkMergeKey(res?.parkName)===parkMergeKey(parkName);
+}
+
+function parseTripNoteEndDate(trip){
+  if(!trip?.date || trip.depart) return trip?.depart||trip?.date||'';
+  const note=String(trip.note||'');
+  const m=note.match(/(?:[A-Za-z]{3,9})\s+(\d{1,2})\s*[–-]\s*((?:[A-Za-z]{3,9})\s+)?(\d{1,2})(?:\/(\d{1,2}))?/);
+  if(!m) return trip.date;
+  const start=new Date(trip.date+'T00:00:00');
+  const monthNames=['january','february','march','april','may','june','july','august','september','october','november','december'];
+  const monthText=(m[2]||'').trim().toLowerCase();
+  let month=start.getMonth();
+  if(monthText){
+    const mi=monthNames.findIndex(x=>x.startsWith(monthText.slice(0,3)));
+    if(mi>=0) month=mi;
+  }
+  let year=start.getFullYear();
+  if(month<start.getMonth())year++;
+  const day=Number(m[4]||m[3]);
+  if(!day)return trip.date;
+  return `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+}
+
+function tripReservationCandidates(res){
+  const out=[];
+  allParks().forEach(p=>{
+    if(!reservationParkMatches(res,p.name)) return;
+    getTrips(p.id).forEach((t,i)=>{
+      const start=String(t.date||'');
+      const end=String(t.depart||parseTripNoteEndDate(t)||start);
+      const rs=String(res.effectiveArrivalDate||res.arrivalDate||'');
+      const re=String(res.effectiveDepartureDate||res.departureDate||rs);
+      if(!start||!rs) return;
+      const exactStart=start===rs;
+      const exactEnd=end===re;
+      const overlap=start<=re && end>=rs;
+      let score=0;
+      if(exactStart)score+=100;
+      if(exactEnd)score+=30;
+      if(overlap)score+=20;
+      if(start<=rs && end>=re)score+=40;
+      if(rs<=start && re>=start)score+=25;
+      if(score<100 && !overlap)return;
+      out.push({_pid:p.id,_ti:i,_isBase:!!t._isBase,_baseIdx:t._baseIdx,_userIdx:t._userIdx,date:start,end,score,parkName:p.name,trip:t});
+    });
+  });
+  return out.sort((a,b)=>b.score-a.score || String(a.date).localeCompare(String(b.date)));
+}
+
+function attachReservationToTripCandidate(c,res){
+  if(!c)return false;
+  if(c._isBase){
+    if(!state.tripEdits[c._pid])state.tripEdits[c._pid]={};
+    const prior=state.tripEdits[c._pid][c._baseIdx]||{};
+    const arr=Array.isArray(prior.reservations)?prior.reservations.slice():(prior.reservation?[prior.reservation]:[]);
+    if(!arr.some(x=>reservationKey(x)===reservationKey(res)))arr.push(res);
+    state.tripEdits[c._pid][c._baseIdx]=Object.assign({},prior,{reservations:arr,reservation:arr[0]||null});
+    return true;
+  }
+  const list=state.tripLogs[c._pid]||[];
+  const t=list[c._userIdx];
+  if(!t)return false;
+  const arr=Array.isArray(t.reservations)?t.reservations.slice():(t.reservation?[t.reservation]:[]);
+  if(!arr.some(x=>reservationKey(x)===reservationKey(res)))arr.push(res);
+  t.reservations=arr;t.reservation=arr[0]||null;
+  return true;
+}
+
+function attachUnmappedReservations(){
+  const attached=new Set(Object.values(BAKED_TRIP_RESERVATIONS).flat().map(r=>r.index));
+  let moved=0;
+  BAKED_RESERVATIONS.forEach(res=>{
+    if(attached.has(res.index))return;
+    // Never guess when the best two candidates are effectively tied.
+    const cands=tripReservationCandidates(res);
+    if(!cands.length)return;
+    const best=cands[0], second=cands[1];
+    if(second && second.score===best.score)return;
+    if(best.score<100 && !(best.score>=145))return;
+    if(attachReservationToTripCandidate(best,res)){moved++;attached.add(res.index);}
+  });
+  return moved;
+}
+
+function reconcileParkAndReservations(){
+  const mergedParks=normalizeParkDuplicates();
+  const attachedReservations=attachUnmappedReservations();
+  return {mergedParks,attachedReservations,changed:mergedParks>0||attachedReservations>0};
+}
+
 function renderReservationBoxList(reservations, collapsed){
   if(!reservations||!reservations.length)return '';
   const sorted=reservations.slice().sort((a,b)=>String(a.effectiveArrivalDate||a.arrivalDate||'').localeCompare(String(b.effectiveArrivalDate||b.arrivalDate||'')));
@@ -4163,8 +4390,15 @@ async function onSignedIn(user) {
   document.getElementById('userEmail').textContent = user.email;
   showToast('Loading your data\u2026 \u2601\uFE0F');
   await loadFromCloud();
+  const reconciliation = reconcileParkAndReservations();
   saveState();          // persist cloud data to localStorage so it survives re-renders
   renderAll();
+  if (reconciliation.mergedParks || reconciliation.attachedReservations) {
+    const bits=[];
+    if (reconciliation.mergedParks) bits.push(reconciliation.mergedParks+' duplicate park record'+(reconciliation.mergedParks===1?'':'s')+' merged');
+    if (reconciliation.attachedReservations) bits.push(reconciliation.attachedReservations+' reservation'+(reconciliation.attachedReservations===1?'':'s')+' attached');
+    showToast(bits.join(' · ')+' ✓');
+  }
   showToast('Welcome back! \uD83C\uDF32');
 }
 
