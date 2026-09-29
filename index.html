@@ -22,15 +22,16 @@
       try {
         const seen = localStorage.getItem('trailNotesBuild');
         if (seen !== TRAIL_NOTES_BUILD) {
-          localStorage.setItem('trailNotesBuild', TRAIL_NOTES_BUILD);
           if ('serviceWorker' in navigator) {
             const regs = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(regs.map(r => r.unregister()));
+            const appPath = new URL('.', location.href).pathname;
+            await Promise.all(regs.filter(r => {
+              try { return new URL(r.scope).origin === location.origin && new URL(r.scope).pathname.startsWith(appPath); }
+              catch (_) { return false; }
+            }).map(r => r.unregister()));
           }
-          if ('caches' in window) {
-            const keys = await caches.keys();
-            await Promise.all(keys.map(k => caches.delete(k)));
-          }
+          /* Do not clear Cache Storage wholesale: other apps on this origin may use it. */
+          localStorage.setItem('trailNotesBuild', TRAIL_NOTES_BUILD);
           const u = new URL(location.href);
           u.searchParams.set('tnb', TRAIL_NOTES_BUILD);
           location.replace(u.toString());
@@ -806,11 +807,12 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 .map-failed-input{flex:1 1 180px;min-width:140px;padding:6px 8px;border:1px solid rgba(0,0,0,.15);border-radius:5px;font-size:.8rem;font-family:var(--font-body)}
 @media(max-width:760px){.dashboard-grid{grid-template-columns:1fr}.dash-metrics{grid-template-columns:repeat(2,1fr)}.park-detail-grid{grid-template-columns:1fr}.map-canvas{height:430px}.tabs{overflow-x:auto;scrollbar-width:thin}.tab{min-width:135px;flex:0 0 auto}}
 @media print{.book-preview{max-height:none;overflow:visible}.book-actions,.modal-bg .modal>button{display:none!important}}
+</style>
 <style id="reservation-collapse-style">
 .reservation-collapsed > summary::-webkit-details-marker{display:none;}
 .reservation-collapsed > summary::after{content:'▸';font-size:.85rem;color:var(--fog);margin-left:auto;}
 .reservation-collapsed[open] > summary::after{content:'▾';}
-</style></style>
+</style>
 <style id="trailNotes20-enhancements">
 .book-premium{font-family:var(--font-body);color:var(--bark)}
 .book-cover-premium{min-height:430px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;box-sizing:border-box;background:linear-gradient(145deg,#27462f,#3d5a2a 58%,#7c5a2d);color:#fff7e8;border-radius:10px;box-shadow:0 16px 35px rgba(34,27,17,.22);position:relative;overflow:hidden}
@@ -940,6 +942,17 @@ header p{
 }
 </style>
 
+
+<style id="trailNotes-accessibility-fixes">
+:root{--amber-ink:#76500c;--fog:#5f5345;}
+.journal-auto-save{color:var(--bark);background:#f3e6c8;border-color:#8a7658;line-height:1.45}
+.journal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.journal-actions button{min-height:44px}
+/* Use a darker amber for text, while retaining the brighter amber for decoration. */
+.stat-value,.stat-number,.dash-metric-value,.summary-num,.trip-date,.stars{color:var(--amber-ink)!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid #f2c66d;outline-offset:3px}
+@media(max-width:600px){.journal-actions{display:grid;grid-template-columns:1fr}.journal-actions button{width:100%}.modal-bg{overflow-y:auto;align-items:flex-start;padding:12px}.modal{max-height:calc(100dvh - 24px);overflow-y:auto;width:100%;margin:auto 0}.stats-bar{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{min-width:0;padding:15px 10px}.tab{min-height:44px}}
+</style>
 </head>
 <body>
 <div id="offline-banner" style="display:none;background:#b84040;color:white;text-align:center;padding:8px;font-size:.82rem;font-family:-apple-system,Georgia,serif;position:sticky;top:0;z-index:999;">
@@ -1174,7 +1187,8 @@ header p{
     </div>
     <div class="fl"><label>📝 Notes</label><textarea id="jNotes" placeholder="Describe your day…"></textarea></div>
     <div class="fl"><label>⭐ Highlights (comma separated)</label><input type="text" id="jHL" placeholder="e.g. saw a deer, perfect sunset"></div>
-    <div id="journalAutoSaveStatus" class="journal-auto-save">✓ Your journal saves automatically as you write</div>
+    <div id="journalAutoSaveStatus" class="journal-auto-save" role="status" aria-live="polite">Draft saves automatically on this device. Select “Save Entry” when you are ready to add it to your journal.</div>
+    <div class="journal-actions"><button type="button" class="btn-save" onclick="saveEntry()">🌲 Save Entry</button><button type="button" class="btn-cancel" onclick="clearJournalDraft()">Clear Draft</button></div>
   </div>
   <div class="entries-header">
     <span class="entries-title">Past Adventures</span>
@@ -3460,6 +3474,14 @@ function logVisit(name) {
 function toggleW(btn){const v=btn.dataset.v;document.querySelectorAll('.weather-btn').forEach(b=>b.classList.remove('active'));selW=selW===v?'':v;if(selW)btn.classList.add('active');}
 function toggleM(btn){document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));selM=selM===btn.textContent?'':btn.textContent;if(selM)btn.classList.add('active');}
 
+function clearJournalDraft(){
+  if(!confirm('Clear this unfinished journal draft?')) return;
+  try{localStorage.removeItem('cd_journal_draft_v2')}catch(e){}
+  resetForm();
+  const status=document.getElementById('journalAutoSaveStatus');
+  if(status) status.textContent='Draft cleared. Your saved journal entries are unchanged.';
+}
+
 function saveEntry(){
   let loc=document.getElementById('locSelect').value;
   if(loc==='__custom__') loc=document.getElementById('customLoc').value.trim();
@@ -3472,6 +3494,9 @@ function saveEntry(){
   const highlights=hlRaw?hlRaw.split(',').map(h=>h.trim()).filter(Boolean):[];
   state.entries.unshift({id:Date.now(),location:loc,date,notes,weather:selW,mood:selM,highlights});
   saveState(); renderAll(); resetForm();
+  try{localStorage.removeItem('cd_journal_draft_v2')}catch(e){}
+  const draftStatus=document.getElementById('journalAutoSaveStatus');
+  if(draftStatus) draftStatus.textContent='Entry saved to your journal.';
   showToast('Entry saved! 🌲');
 }
 
@@ -6112,4 +6137,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>
   </div>
 </div>
-</div>    <script id="trailNotesAutoSave">(function(){const DRAFT='cd_journal_draft_v2';let timer=null;function $(id){return document.getElementById(id)}function status(msg){const el=$('journalAutoSaveStatus');if(el)el.textContent=msg}function readDraft(){const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return null;return{loc:loc.value,date:date.value,notes:notes.value,hl:hl?hl.value:'',custom:custom?custom.value:'',weather:selW||'',mood:selM||'',savedAt:Date.now()}}function saveDraft(){const d=readDraft();if(!d)return;try{localStorage.setItem(DRAFT,JSON.stringify(d))}catch(e){}status('✓ Saved automatically')}function restoreDraft(){let d=null;try{d=JSON.parse(localStorage.getItem(DRAFT)||'null')}catch(e){}if(!d||(!d.notes&&!d.loc&&!d.hl))return;const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return;loc.value=d.loc||'';if(typeof handleLocChange==='function')handleLocChange();if(custom)custom.value=d.custom||'';date.value=d.date||date.value;notes.value=d.notes||'';if(hl)hl.value=d.hl||'';selW=d.weather||'';selM=d.mood||'';document.querySelectorAll('.weather-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===selW));document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.textContent===selM));status('↩ Restored your unfinished journal entry')}function maybeCommit(){let loc=$('locSelect')?.value||'';if(loc==='__custom__')loc=$('customLoc')?.value.trim()||'';const date=$('jDate')?.value||'';const notes=$('jNotes')?.value.trim()||'';if(!loc||!date||!notes)return;const hlRaw=$('jHL')?.value.trim()||'';const highlights=hlRaw?hlRaw.split(',').map(h=>h.trim()).filter(Boolean):[];state.entries.unshift({id:Date.now(),location:loc,date,notes,weather:selW||'',mood:selM||'',highlights});saveState();renderAll();resetForm();try{localStorage.removeItem(DRAFT)}catch(e){}status('✓ Entry saved automatically');showToast('Journal entry saved automatically 🌲')}function queue(){clearTimeout(timer);timer=setTimeout(saveDraft,180)}function attach(){['locSelect','customLoc','jDate','jNotes','jHL'].forEach(id=>{const el=$(id);if(!el||el.dataset.autoSaveBound)return;el.dataset.autoSaveBound='1';el.addEventListener('input',queue);el.addEventListener('change',queue)});['jNotes','jHL'].forEach(id=>{const el=$(id);if(el&&!el.dataset.autoCommitBound){el.dataset.autoCommitBound='1';el.addEventListener('blur',()=>{saveDraft();maybeCommit()})}});document.querySelectorAll('.weather-btn,.mood-btn').forEach(b=>{if(b.dataset.autoBound)return;b.dataset.autoBound='1';b.addEventListener('click',()=>setTimeout(saveDraft,20))});restoreDraft()}window.addEventListener('load',()=>setTimeout(attach,250))})();</script></body></html>
+</div>    <script id="trailNotesAutoSave">(function(){const DRAFT='cd_journal_draft_v2';let timer=null;function $(id){return document.getElementById(id)}function status(msg){const el=$('journalAutoSaveStatus');if(el)el.textContent=msg}function readDraft(){const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return null;return{loc:loc.value,date:date.value,notes:notes.value,hl:hl?hl.value:'',custom:custom?custom.value:'',weather:selW||'',mood:selM||'',savedAt:Date.now()}}function saveDraft(){const d=readDraft();if(!d)return;try{localStorage.setItem(DRAFT,JSON.stringify(d));status('✓ Unfinished draft saved on this device')}catch(e){status('Draft could not be saved on this device (storage may be full or unavailable).')}}function restoreDraft(){let d=null;try{d=JSON.parse(localStorage.getItem(DRAFT)||'null')}catch(e){}if(!d||(!d.notes&&!d.loc&&!d.hl))return;const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return;loc.value=d.loc||'';if(typeof handleLocChange==='function')handleLocChange();if(custom)custom.value=d.custom||'';date.value=d.date||date.value;notes.value=d.notes||'';if(hl)hl.value=d.hl||'';selW=d.weather||'';selM=d.mood||'';document.querySelectorAll('.weather-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===selW));document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.textContent===selM));status('↩ Restored unfinished draft. Select “Save Entry” to commit it.')}function queue(){clearTimeout(timer);timer=setTimeout(saveDraft,250)}function attach(){['locSelect','customLoc','jDate','jNotes','jHL'].forEach(id=>{const el=$(id);if(!el||el.dataset.autoSaveBound)return;el.dataset.autoSaveBound='1';el.addEventListener('input',queue);el.addEventListener('change',queue)});document.querySelectorAll('.weather-btn,.mood-btn').forEach(b=>{if(b.dataset.autoBound)return;b.dataset.autoBound='1';b.addEventListener('click',()=>setTimeout(saveDraft,20))});restoreDraft()}window.addEventListener('load',()=>setTimeout(attach,250))})();</script></body></html>
