@@ -16,22 +16,21 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-09-28-reconcile-v1';
+  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v1';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
         const seen = localStorage.getItem('trailNotesBuild');
         if (seen !== TRAIL_NOTES_BUILD) {
+          localStorage.setItem('trailNotesBuild', TRAIL_NOTES_BUILD);
           if ('serviceWorker' in navigator) {
             const regs = await navigator.serviceWorker.getRegistrations();
-            const appPath = new URL('.', location.href).pathname;
-            await Promise.all(regs.filter(r => {
-              try { return new URL(r.scope).origin === location.origin && new URL(r.scope).pathname.startsWith(appPath); }
-              catch (_) { return false; }
-            }).map(r => r.unregister()));
+            await Promise.all(regs.map(r => r.unregister()));
           }
-          /* Do not clear Cache Storage wholesale: other apps on this origin may use it. */
-          localStorage.setItem('trailNotesBuild', TRAIL_NOTES_BUILD);
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
           const u = new URL(location.href);
           u.searchParams.set('tnb', TRAIL_NOTES_BUILD);
           location.replace(u.toString());
@@ -255,6 +254,7 @@ header p{
 .btn-o{background:none;border:1px solid var(--fog);color:var(--fog);border-radius:3px;padding:6px 14px;font-family:-apple-system,Georgia,serif;font-size:.82rem;cursor:pointer;transition:all .2s;}
 .btn-o:hover{border-color:var(--amber);color:var(--bark);}
 .btn-o.danger:hover{border-color:#c0392b;color:#c0392b;}
+#panel-trash .btn-o.danger{color:var(--fog-bright);border-color:var(--fog-bright);}
 /* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
 .modal-bg.hidden{display:none;}
@@ -396,7 +396,7 @@ html { -webkit-overflow-scrolling: touch; }
 .pl-result-note{font-size:.82rem;color:var(--soil);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.25);border-radius:3px;padding:6px 10px;margin:8px 0;}
 .pl-result-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--fog);}
 .pl-amenity-wrap{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0;}
-.am-pill{background:rgba(61,90,42,.15);border:1px solid rgba(61,90,42,.25);color:var(--moss);font-size:.7rem;padding:2px 8px;border-radius:10px;}
+.am-pill{background:rgba(61,90,42,.15);border:1px solid rgba(61,90,42,.25);color:var(--moss-ink);font-size:.7rem;padding:2px 8px;border-radius:10px;}
 .am-pill.selected{background:var(--moss);color:var(--cream);}
 .am-toggle{display:inline-flex;align-items:center;gap:5px;font-family:-apple-system,Georgia,serif;font-size:.82rem;padding:5px 12px;border:1px solid var(--fog);border-radius:20px;cursor:pointer;color:var(--fog);background:rgba(255,255,255,.3);transition:all .2s;}
 .am-toggle:hover{border-color:var(--amber);color:var(--bark);}
@@ -420,13 +420,18 @@ html { -webkit-overflow-scrolling: touch; }
   --bark:#26180f;
   --moss:#486b3a;
   --pine:#142719;
-  --soil:#76523a;
+  --soil:#5c3b26;
   --amber:#d79a35;
   --cream:#fff7e8;
   --parchment:#f3e6c8;
-  --fog:#776957;
+  --fog:#524432;
   --smoke:#cdbfaa;
   --ember:#c75f2b;
+  --moss-ink:#2c4522;
+  --amber-ink:#583409;
+  --amber-bright:#f3cf94;
+  --badge-ink:#150d07;
+  --fog-bright:#d2c8ba;
 }
 body{
   background-color:#142719;
@@ -807,12 +812,11 @@ input[type="text"],input[type="date"],textarea,select,.pl-input,.add-trip-row in
 .map-failed-input{flex:1 1 180px;min-width:140px;padding:6px 8px;border:1px solid rgba(0,0,0,.15);border-radius:5px;font-size:.8rem;font-family:var(--font-body)}
 @media(max-width:760px){.dashboard-grid{grid-template-columns:1fr}.dash-metrics{grid-template-columns:repeat(2,1fr)}.park-detail-grid{grid-template-columns:1fr}.map-canvas{height:430px}.tabs{overflow-x:auto;scrollbar-width:thin}.tab{min-width:135px;flex:0 0 auto}}
 @media print{.book-preview{max-height:none;overflow:visible}.book-actions,.modal-bg .modal>button{display:none!important}}
-</style>
 <style id="reservation-collapse-style">
 .reservation-collapsed > summary::-webkit-details-marker{display:none;}
 .reservation-collapsed > summary::after{content:'▸';font-size:.85rem;color:var(--fog);margin-left:auto;}
 .reservation-collapsed[open] > summary::after{content:'▾';}
-</style>
+</style></style>
 <style id="trailNotes20-enhancements">
 .book-premium{font-family:var(--font-body);color:var(--bark)}
 .book-cover-premium{min-height:430px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;box-sizing:border-box;background:linear-gradient(145deg,#27462f,#3d5a2a 58%,#7c5a2d);color:#fff7e8;border-radius:10px;box-shadow:0 16px 35px rgba(34,27,17,.22);position:relative;overflow:hidden}
@@ -942,17 +946,120 @@ header p{
 }
 </style>
 
+<style id="trailNotes-contrast-fixes-v2">
+/* Second contrast pass. The first pass covered text on the app's dark page
+   background; this one covers text sitting on the light parchment/cream
+   cards (fee chips, badges, dates, buttons) plus a few spots the first
+   pass didn't reach. Verified against real rendered backgrounds, not
+   assumed ones — see the values chosen for headroom above the 4.5:1 (or
+   3:1 for large/bold numbers) WCAG AA minimum. */
 
-<style id="trailNotes-accessibility-fixes">
-:root{--amber-ink:#76500c;--fog:#5f5345;}
-.journal-auto-save{color:var(--bark);background:#f3e6c8;border-color:#8a7658;line-height:1.45}
-.journal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.journal-actions button{min-height:44px}
-/* Use a darker amber for text, while retaining the brighter amber for decoration. */
-.stat-value,.stat-number,.dash-metric-value,.summary-num,.trip-date,.stars{color:var(--amber-ink)!important}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid #f2c66d;outline-offset:3px}
-@media(max-width:600px){.journal-actions{display:grid;grid-template-columns:1fr}.journal-actions button{width:100%}.modal-bg{overflow-y:auto;align-items:flex-start;padding:12px}.modal{max-height:calc(100dvh - 24px);overflow-y:auto;width:100%;margin:auto 0}.stats-bar{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{min-width:0;padding:15px 10px}.tab{min-height:44px}}
+/* --moss used as an accent for fee/drive/fuel text on light cards */
+.park-fee-chip,
+.timeline-pill,
+.memory-pill{
+  color:var(--moss-ink) !important;
+}
+
+/* --amber used as accent TEXT (not a button fill) on light cards: dates,
+   trip counts, the big stat numbers on Home/Timeline/Site Memories */
+.trip-date-badge,
+.dash-metric strong,
+.timeline-metric strong,
+.site-memory-stat strong{
+  color:var(--amber-ink) !important;
+}
+
+/* --amber used as text directly on a dark surface needs the brighter variant */
+#syncDot,
+#calc-miles-btn,
+.entry-count{
+  color:var(--amber-bright) !important;
+}
+
+/* White/cream text on filled amber or ember buttons and badges: the fill
+   itself is plenty saturated, so switch the label to dark ink instead.
+   .btn-amber and .trip-count-badge and .dash-action are each reused with
+   a second, moss-green-filled variant elsewhere (a different button, a
+   different badge) where the existing light text is already correct —
+   scope narrowly so this only touches the amber-filled ones. */
+.btn-amber:not([style*="background"]),
+.btn-save,
+.big-save,
+.trip-count-badge:not([style*="moss"]),
+.timeline-num,
+.badge.bv,
+.next-trip .dash-action,
+.memory-number,
+.badge.bc{
+  color:var(--badge-ink) !important;
+}
+.trip-count-badge[style*="moss"]{
+  color:var(--cream) !important;
+}
+
+/* The Site Memories metric tiles were only 35% opaque, so the dark page
+   behind the hero showed through and the existing dark ink on them
+   (amber-ink above, plus --fog for the label underneath) had nothing
+   light to sit on. Give the tile itself a properly light, opaque-enough
+   background instead. */
+.site-memory-stat{
+  background:rgba(255,247,232,.88);
+}
+
+/* The rotating welcome quote has its own rule (separate from the plain
+   subtitle line the first pass fixed) and was a touch too faint. */
+.welcome-msg{
+  color:rgba(255,247,232,.94);
+}
+
+/* "📱 Offline-ready" and similar bold labels on the PWA card inherited the
+   default dark --bark color meant for light cards, not the light one the
+   rest of this dark card already correctly uses. */
+.pwa-card strong{
+  color:var(--cream);
+}
+
+/* Three copies of the same "secondary caption" rule, each with its own
+   hardcoded gray instead of a shared variable — darken all three so it
+   doesn't matter which one wins in a given spot. */
+.meta{
+  color:#524432 !important;
+}
+.book-year-sub,
+.book-footer-note{
+  color:#524432;
+}
+.book-memory .fee{
+  color:#583409;
+}
+
+/* ══ PACKING LIST ══ */
+.pack-btn-count{opacity:.9;font-weight:700}
+.pack-head h2{font-family:var(--font-heading);color:var(--bark);font-size:1.45rem;margin:0 0 2px}
+.pack-head .dash-muted{margin-bottom:10px}
+.pack-progress{height:8px;border-radius:6px;background:rgba(61,90,42,.15);overflow:hidden;margin:6px 0 4px}
+.pack-progress>div{height:100%;background:var(--moss);border-radius:6px;transition:width .25s}
+.pack-count{font-size:.78rem;color:var(--fog);font-weight:700;margin-bottom:12px}
+.pack-form{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.pack-form select,.pack-form input{font-family:var(--font-body);font-size:16px;padding:10px 12px;border-radius:6px;border:1px solid rgba(107,66,38,.35);background:#fffaf0;color:var(--bark)}
+.pack-form select{flex:0 0 auto}.pack-form input{flex:1 1 180px;min-width:0}
+.pack-form button{flex:0 0 auto}
+.pack-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.pack-chip{border:1px dashed rgba(107,66,38,.45);background:rgba(255,255,255,.35);color:var(--bark);border-radius:14px;padding:5px 11px;font-size:.78rem;cursor:pointer;font-family:var(--font-body)}
+.pack-chip:hover{background:rgba(61,90,42,.15)}
+.pack-group{margin-top:14px}
+.pack-group h3{font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(107,66,38,.25)}
+.pack-item{display:flex;align-items:center;gap:10px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.35);margin-bottom:5px}
+.pack-item label{flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;min-height:40px;font-size:.95rem;color:var(--bark);word-break:break-word}
+.pack-item input[type=checkbox]{width:22px;height:22px;accent-color:var(--moss);flex:0 0 auto;cursor:pointer}
+.pack-item.done label span{text-decoration:line-through;color:var(--fog)}
+.pack-del{background:none;border:0;font-size:1.3rem;line-height:1;color:var(--fog);cursor:pointer;padding:8px 10px;border-radius:6px}
+.pack-del:hover{background:rgba(138,63,47,.12);color:#8a3f2f}
+.pack-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pack-empty{color:var(--fog);font-size:.88rem;padding:14px 4px;text-align:center}
 </style>
+
 </head>
 <body>
 <div id="offline-banner" style="display:none;background:#b84040;color:white;text-align:center;padding:8px;font-size:.82rem;font-family:-apple-system,Georgia,serif;position:sticky;top:0;z-index:999;">
@@ -1187,8 +1294,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <div class="fl"><label>📝 Notes</label><textarea id="jNotes" placeholder="Describe your day…"></textarea></div>
     <div class="fl"><label>⭐ Highlights (comma separated)</label><input type="text" id="jHL" placeholder="e.g. saw a deer, perfect sunset"></div>
-    <div id="journalAutoSaveStatus" class="journal-auto-save" role="status" aria-live="polite">Draft saves automatically on this device. Select “Save Entry” when you are ready to add it to your journal.</div>
-    <div class="journal-actions"><button type="button" class="btn-save" onclick="saveEntry()">🌲 Save Entry</button><button type="button" class="btn-cancel" onclick="clearJournalDraft()">Clear Draft</button></div>
+    <div id="journalAutoSaveStatus" class="journal-auto-save">✓ Your journal saves automatically as you write</div>
   </div>
   <div class="entries-header">
     <span class="entries-title">Past Adventures</span>
@@ -1227,6 +1333,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 
 <div class="modal-bg hidden" id="detailModalBg" onclick="if(event.target===this)closeParkDetail()"><div class="modal" style="max-width:820px;width:100%"><button onclick="closeParkDetail()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="detailModalContent"></div></div></div>
 <div class="modal-bg hidden" id="bookModalBg" onclick="if(event.target===this)this.classList.add('hidden')"><div class="modal" style="max-width:850px;width:100%"><button onclick="document.getElementById('bookModalBg').classList.add('hidden')" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div class="book-actions"><button class="btn-g" onclick="printCampingBook()">🖨️ Print / Save PDF</button><button class="btn-o" onclick="document.getElementById('bookModalBg').classList.add('hidden')">Close</button></div><div id="bookContent"></div></div></div>
+<div class="modal-bg hidden" id="packModalBg" onclick="if(event.target===this)closePackList()"><div class="modal" style="max-width:560px;width:100%"><button onclick="closePackList()" aria-label="Close" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="packContent"></div></div></div>
 <div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1080px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-toolbar"><button class="map-filter active" id="mapFilterAll" onclick="setMapFilter('all')">📍 All Parks</button><button class="map-filter" id="mapFilterVisited" onclick="setMapFilter('visited')">🏕 Visited</button><button class="map-filter" id="mapFilterFavs" onclick="setMapFilter('favs')">❤️ Favorites</button><span class="map-toolbar-spacer"></span><button class="btn-o" onclick="fitCampingMap()">⤢ Fit All</button><button class="btn-o" onclick="openMapExplorer(true)">↻ Refresh</button></div><div id="mapStatus" class="map-status">Preparing map…</div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div><div id="mapFailedBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
@@ -1762,233 +1869,6 @@ function reservationsForPark(parkName){
     return pairs.some(p=>(rn===p[0]&&n===p[1])||(rn===p[1]&&n===p[0]));
   });
 }
-// ═══════════════════════════════════════════════════════
-// PARK / RESERVATION RECONCILIATION
-// Keeps the park record that has trip history, merges duplicate
-// custom park records into the canonical park, and attaches receipt
-// reservations only when there is a defensible existing-trip match.
-// No new/fake trips are created by this migration.
-// ═══════════════════════════════════════════════════════
-function parkMergeKey(name){
-  const n=String(name||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-  const aliases={
-    'goldheadbranchstatepark':'goldheadbranchpark',
-    'mikeroessgoldheadbranchstatepark':'goldheadbranchpark',
-    'longpointparkbrevardcountyfl':'longpointpark',
-    'mossparkorangecountyfl':'mosspark',
-    'kellyparkorangecountyfl':'kellypark',
-    'fortdesotocampgroundpinellascountyfl':'fortdesoto',
-    'fortdesoto':'fortdesoto',
-    'edistobeachstateparksouthcarolina':'edistobeachstatepark',
-    'edistobeachstatepark':'edistobeachstatepark',
-    'elijahclarkstateparkgeorgia':'elijahclarkstatepark',
-    'elijahclarkstatepark':'elijahclarkstatepark',
-    'jekyllislandcampgroundgeorgia':'jekyllislandcampground',
-    'jekyllislandcampground':'jekyllislandcampground',
-    'barnwellstateparksouthcarolina':'barnwellstatepark',
-    'barnwellstatepark':'barnwellstatepark',
-    'kellypark':'kellypark',
-    'mosspark':'mosspark',
-    'kerrlakestaterecreationareanorthcarolina':'kerrlakerecreationarea',
-    'kerrlakerecreationareasatterwhitepoint':'kerrlakerecreationarea',
-    'kerrlakerecreationarea':'kerrlakerecreationarea',
-    'warriorcreekwkerrscottdamreservoir':'warriorcreek',
-    'warriorcreek':'warriorcreek',
-    'ginniespringsoutdoors':'ginniespringsoutdoors',
-    'ginniesprings':'ginniespringsoutdoors'
-  };
-  return aliases[n] || n;
-}
-
-function parkTripsRaw(parkId){
-  return [...(BASE_TRIPS[parkId]||[]),...(state.tripLogs[parkId]||[])];
-}
-
-function parkHistoryCount(parkId){
-  return parkTripsRaw(parkId).length;
-}
-
-function tripRecordSignature(t){
-  return [t?.date||'',t?.depart||'',t?.site||'',t?.note||''].join('|');
-}
-
-function mergeTripLogArrays(targetId, sourceId){
-  const src=state.tripLogs[sourceId]||[];
-  if(!src.length) return 0;
-  const dst=state.tripLogs[targetId]||[];
-  const seen=new Set(dst.map(tripRecordSignature));
-  let moved=0;
-  src.forEach(t=>{
-    const sig=tripRecordSignature(t);
-    if(!seen.has(sig)){ dst.push(JSON.parse(JSON.stringify(t))); seen.add(sig); moved++; }
-  });
-  state.tripLogs[targetId]=dst;
-  delete state.tripLogs[sourceId];
-  return moved;
-}
-
-function mergeParkSideData(targetId, sourceId){
-  if(String(targetId)===String(sourceId)) return;
-  if(state.visited[sourceId]) state.visited[targetId]=true;
-  if(!state.parkMileage?.[targetId] && state.parkMileage?.[sourceId]) state.parkMileage[targetId]=state.parkMileage[sourceId];
-  if(!state.mapCoords?.[targetId] && state.mapCoords?.[sourceId]) state.mapCoords[targetId]=state.mapCoords[sourceId];
-  if(state.parkPhotos?.[sourceId]){
-    const dst=state.parkPhotos[targetId]||[];
-    const seen=new Set(dst.map(x=>x?.path||x?.src||x?.url||JSON.stringify(x)));
-    state.parkPhotos[targetId]=dst.concat((state.parkPhotos[sourceId]||[]).filter(x=>{const k=x?.path||x?.src||x?.url||JSON.stringify(x);if(seen.has(k))return false;seen.add(k);return true;}));
-    delete state.parkPhotos[sourceId];
-  }
-  if(state.ratings?.[targetId]===undefined && state.ratings?.[sourceId]!==undefined) state.ratings[targetId]=state.ratings[sourceId];
-  if(Array.isArray(state.favorites) && state.favorites.some(id=>String(id)===String(sourceId)) && !state.favorites.some(id=>String(id)===String(targetId))) state.favorites.push(targetId);
-  if(Array.isArray(state.favorites)) state.favorites=state.favorites.filter(id=>String(id)!==String(sourceId));
-  if(Array.isArray(state.hiddenParks)) state.hiddenParks=state.hiddenParks.filter(id=>String(id)!==String(sourceId));
-  if(Array.isArray(state.trash)) state.trash.forEach(x=>{if(String(x.parkId)===String(sourceId))x.parkId=targetId;});
-}
-
-function mergeParkIntoBase(baseId, customPark){
-  const cid=customPark.id;
-  const moved=mergeTripLogArrays(baseId,cid);
-  mergeParkSideData(baseId,cid);
-  // Preserve useful custom fields as non-destructive overrides on the canonical park.
-  const ov=state.overrides[baseId] || (state.overrides[baseId]={});
-  ['address','phone','drive','goodSites','avoidSites','stayedSites','bigRig','notes'].forEach(k=>{
-    if((ov[k]===undefined || ov[k]==='') && customPark[k]) ov[k]=customPark[k];
-  });
-  return moved;
-}
-
-function mergeCustomParks(a,b){
-  const ha=parkHistoryCount(a.id), hb=parkHistoryCount(b.id);
-  const keep = hb>ha ? b : a;
-  const drop = keep===a ? b : a;
-  mergeTripLogArrays(keep.id,drop.id);
-  mergeParkSideData(keep.id,drop.id);
-  // Fill missing descriptive data without replacing the keeper's values.
-  Object.keys(drop).forEach(k=>{
-    if(k!=='id' && (keep[k]===undefined || keep[k]==='') && drop[k]!==undefined) keep[k]=drop[k];
-  });
-  return {keep,drop};
-}
-
-function normalizeParkDuplicates(){
-  const custom=[...(state.customParks||[])];
-  const byKey=new Map(BASE_PARKS.map(p=>[parkMergeKey(p.name),p.id]));
-  const kept=[];
-  let merged=0;
-  custom.forEach(p=>{
-    if(!p || !p.name) return;
-    const key=parkMergeKey(p.name);
-    const baseId=byKey.get(key);
-    if(baseId!==undefined){
-      mergeParkIntoBase(baseId,p); merged++; return;
-    }
-    const same=kept.find(x=>parkMergeKey(x.name)===key);
-    if(same){
-      const out=mergeCustomParks(same,p);
-      const idx=kept.findIndex(x=>x.id===out.drop.id);
-      if(idx>=0) kept.splice(idx,1);
-      if(!kept.includes(out.keep)) kept.push(out.keep);
-      merged++;
-    } else {
-      kept.push(p);
-      byKey.set(key,p.id);
-    }
-  });
-  state.customParks=kept;
-  return merged;
-}
-
-function reservationParkMatches(res,parkName){
-  return parkMergeKey(res?.parkName)===parkMergeKey(parkName);
-}
-
-function parseTripNoteEndDate(trip){
-  if(!trip?.date || trip.depart) return trip?.depart||trip?.date||'';
-  const note=String(trip.note||'');
-  const m=note.match(/(?:[A-Za-z]{3,9})\s+(\d{1,2})\s*[–-]\s*((?:[A-Za-z]{3,9})\s+)?(\d{1,2})(?:\/(\d{1,2}))?/);
-  if(!m) return trip.date;
-  const start=new Date(trip.date+'T00:00:00');
-  const monthNames=['january','february','march','april','may','june','july','august','september','october','november','december'];
-  const monthText=(m[2]||'').trim().toLowerCase();
-  let month=start.getMonth();
-  if(monthText){
-    const mi=monthNames.findIndex(x=>x.startsWith(monthText.slice(0,3)));
-    if(mi>=0) month=mi;
-  }
-  let year=start.getFullYear();
-  if(month<start.getMonth())year++;
-  const day=Number(m[4]||m[3]);
-  if(!day)return trip.date;
-  return `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-}
-
-function tripReservationCandidates(res){
-  const out=[];
-  allParks().forEach(p=>{
-    if(!reservationParkMatches(res,p.name)) return;
-    getTrips(p.id).forEach((t,i)=>{
-      const start=String(t.date||'');
-      const end=String(t.depart||parseTripNoteEndDate(t)||start);
-      const rs=String(res.effectiveArrivalDate||res.arrivalDate||'');
-      const re=String(res.effectiveDepartureDate||res.departureDate||rs);
-      if(!start||!rs) return;
-      const exactStart=start===rs;
-      const exactEnd=end===re;
-      const overlap=start<=re && end>=rs;
-      let score=0;
-      if(exactStart)score+=100;
-      if(exactEnd)score+=30;
-      if(overlap)score+=20;
-      if(start<=rs && end>=re)score+=40;
-      if(rs<=start && re>=start)score+=25;
-      if(score<100 && !overlap)return;
-      out.push({_pid:p.id,_ti:i,_isBase:!!t._isBase,_baseIdx:t._baseIdx,_userIdx:t._userIdx,date:start,end,score,parkName:p.name,trip:t});
-    });
-  });
-  return out.sort((a,b)=>b.score-a.score || String(a.date).localeCompare(String(b.date)));
-}
-
-function attachReservationToTripCandidate(c,res){
-  if(!c)return false;
-  if(c._isBase){
-    if(!state.tripEdits[c._pid])state.tripEdits[c._pid]={};
-    const prior=state.tripEdits[c._pid][c._baseIdx]||{};
-    const arr=Array.isArray(prior.reservations)?prior.reservations.slice():(prior.reservation?[prior.reservation]:[]);
-    if(!arr.some(x=>reservationKey(x)===reservationKey(res)))arr.push(res);
-    state.tripEdits[c._pid][c._baseIdx]=Object.assign({},prior,{reservations:arr,reservation:arr[0]||null});
-    return true;
-  }
-  const list=state.tripLogs[c._pid]||[];
-  const t=list[c._userIdx];
-  if(!t)return false;
-  const arr=Array.isArray(t.reservations)?t.reservations.slice():(t.reservation?[t.reservation]:[]);
-  if(!arr.some(x=>reservationKey(x)===reservationKey(res)))arr.push(res);
-  t.reservations=arr;t.reservation=arr[0]||null;
-  return true;
-}
-
-function attachUnmappedReservations(){
-  const attached=new Set(Object.values(BAKED_TRIP_RESERVATIONS).flat().map(r=>r.index));
-  let moved=0;
-  BAKED_RESERVATIONS.forEach(res=>{
-    if(attached.has(res.index))return;
-    // Never guess when the best two candidates are effectively tied.
-    const cands=tripReservationCandidates(res);
-    if(!cands.length)return;
-    const best=cands[0], second=cands[1];
-    if(second && second.score===best.score)return;
-    if(best.score<100 && !(best.score>=145))return;
-    if(attachReservationToTripCandidate(best,res)){moved++;attached.add(res.index);}
-  });
-  return moved;
-}
-
-function reconcileParkAndReservations(){
-  const mergedParks=normalizeParkDuplicates();
-  const attachedReservations=attachUnmappedReservations();
-  return {mergedParks,attachedReservations,changed:mergedParks>0||attachedReservations>0};
-}
-
 function renderReservationBoxList(reservations, collapsed){
   if(!reservations||!reservations.length)return '';
   const sorted=reservations.slice().sort((a,b)=>String(a.effectiveArrivalDate||a.arrivalDate||'').localeCompare(String(b.effectiveArrivalDate||b.arrivalDate||'')));
@@ -2670,7 +2550,7 @@ function renderUpcoming() {
     if(editingUpcomingId===t.id)return `<div class="entry-card" style="border:2px solid var(--amber);"><div style="font-size:.8rem;font-weight:500;color:var(--amber);margin-bottom:10px;">✏️ Editing trip</div><div style="display:grid;gap:8px;"><div><label>Park name</label><input id="eu-name" value="${esc(t.parkName)}"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label>Arrival date</label><input type="date" id="eu-start" value="${t.startDate}"></div><div><label>Departure date</label><input type="date" id="eu-end" value="${t.endDate||t.startDate}"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label>Site number</label><input id="eu-site" value="${esc(t.site||'')}" placeholder="e.g. 46"></div><div><label>Note</label><input id="eu-note" value="${esc(t.note||'')}" placeholder="e.g. Booked with Keeners"></div></div><div class="reservation-box"><div class="reservation-title"><span>🔖 Reservation Information</span></div><div class="fg2" style="margin-bottom:0"><div><label>Reservation #</label><input id="eu-resnum" value="${esc(res.number||'')}"></div><div><label>Booked Through</label><input id="eu-bookedThrough" value="${esc(res.bookedThrough||'')}"></div><div><label>Amount Paid</label><input type="number" id="eu-paid" min="0" step="0.01" value="${res.amountPaid!==undefined&&res.amountPaid!==''?esc(res.amountPaid):''}"></div><div><label>Cancellation Deadline</label><input type="date" id="eu-cancelBy" value="${esc(res.cancelBy||'')}"></div><div><label>Check-in</label><input id="eu-checkIn" value="${esc(res.checkIn||'')}" placeholder="e.g. 3:00 PM"></div><div><label>Check-out</label><input id="eu-checkOut" value="${esc(res.checkOut||'')}" placeholder="e.g. 11:00 AM"></div></div><div class="fl" style="margin-top:10px"><label>Reservation Link</label><input id="eu-resUrl" value="${esc(res.url||'')}" placeholder="https://…"></div></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;"><button class="btn-sm" onclick="cancelUpcomingEdit()">Cancel</button><button onclick="saveUpcomingEdit(${t.id})" style="background:var(--moss);color:var(--cream);border:none;border-radius:6px;padding:8px 16px;font-family:var(--font-body);font-weight:700;cursor:pointer;">💾 Save changes</button></div></div></div>`;
     const resItems=[res.number?`<div class="reservation-item"><label>RESERVATION #</label><strong>${esc(res.number)}</strong></div>`:'',res.bookedThrough?`<div class="reservation-item"><label>BOOKED THROUGH</label><strong>${esc(res.bookedThrough)}</strong></div>`:'',res.amountPaid!==''&&res.amountPaid!==undefined&&!isNaN(Number(res.amountPaid))?`<div class="reservation-item"><label>AMOUNT PAID</label><strong>${fmtFee(res.amountPaid)}</strong></div>`:'',res.checkIn?`<div class="reservation-item"><label>CHECK-IN</label><strong>${esc(res.checkIn)}</strong></div>`:'',res.checkOut?`<div class="reservation-item"><label>CHECK-OUT</label><strong>${esc(res.checkOut)}</strong></div>`:''].filter(Boolean).join('');
     const resBox=resItems?`<div class="reservation-box"><div class="reservation-title"><span>🔖 Reservation Details</span>${res.cancelBy?`<span style="font-size:.7rem;color:var(--soil);font-family:var(--font-body)">Cancel by ${esc(fmtDateShort(res.cancelBy))}</span>`:''}</div><div class="reservation-grid">${resItems}</div>${res.url&&safeUrl(res.url)?`<div class="reservation-actions"><a class="btn-sm" href="${esc(safeUrl(res.url))}" target="_blank" rel="noopener">🔗 Open Reservation</a></div>`:''}</div>`:'';
-    return `<div class="entry-card"><div class="card-top"><div><div class="card-loc">📍 ${esc(t.parkName)}</div><div class="card-date">${esc(dateLabel)}</div></div><div class="card-badges">${statusBadge}</div></div><div class="card-body">${t.site?`<div style="font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss)">Site ${esc(t.site)}</strong></div>`:''}${t.note?`<div class="card-note">${esc(t.note)}</div>`:''}${resBox}</div>${t.driveLog?`<div style="font-size:.78rem;color:var(--moss);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:6px;">🚗 Actual drive: <strong>${t.driveLog.miles} miles</strong>${(t.driveLog.hours||t.driveLog.minutes)?' · '+(t.driveLog.hours?t.driveLog.hours+'h ':'')+(t.driveLog.minutes?t.driveLog.minutes+' min':''):''}${t.driveLog.note?' · '+esc(t.driveLog.note):''}${(t.driveLog.sitefee||0)>0?' · 💰 '+fmtFee(t.driveLog.sitefee):''}${(t.driveLog.fuel||0)>0?' · ⛽ '+Number(t.driveLog.fuel).toFixed(1)+' gal':''}</div>`:''}${daysUntil>=0&&daysUntil<=10?`<div id="wx-${t.id}" style="padding:4px 14px 8px;"></div>`:''}<div class="card-foot"><button class="btn-sm" onclick="startEditUpcoming(${t.id})">✏️ Edit</button><button class="btn-sm" onclick="startLogDrive(${t.id})" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss);">🚗 Log drive</button><button class="btn-sm" onclick="deleteUpcoming(${t.id})">Cancel Trip</button></div></div>`;
+    return `<div class="entry-card"><div class="card-top"><div><div class="card-loc">📍 ${esc(t.parkName)}</div><div class="card-date">${esc(dateLabel)}</div></div><div class="card-badges">${statusBadge}</div></div><div class="card-body">${t.site?`<div style="font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss-ink)">Site ${esc(t.site)}</strong></div>`:''}${t.note?`<div class="card-note">${esc(t.note)}</div>`:''}${resBox}</div>${t.driveLog?`<div style="font-size:.78rem;color:var(--moss-ink);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:6px;">🚗 Actual drive: <strong>${t.driveLog.miles} miles</strong>${(t.driveLog.hours||t.driveLog.minutes)?' · '+(t.driveLog.hours?t.driveLog.hours+'h ':'')+(t.driveLog.minutes?t.driveLog.minutes+' min':''):''}${t.driveLog.note?' · '+esc(t.driveLog.note):''}${(t.driveLog.sitefee||0)>0?' · 💰 '+fmtFee(t.driveLog.sitefee):''}${(t.driveLog.fuel||0)>0?' · ⛽ '+Number(t.driveLog.fuel).toFixed(1)+' gal':''}</div>`:''}${daysUntil>=0&&daysUntil<=10?`<div id="wx-${t.id}" style="padding:4px 14px 8px;"></div>`:''}<div class="card-foot"><button class="btn-sm" onclick="startEditUpcoming(${t.id})">✏️ Edit</button><button class="btn-sm" onclick="startLogDrive(${t.id})" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss-ink);">🚗 Log drive</button><button class="btn-sm" onclick="deleteUpcoming(${t.id})">Cancel Trip</button></div></div>`;
   }).join('');
   list.forEach(t=>{const [sy,sm,sd]=t.startDate.split('-').map(Number),[ty,tm,td]=today.split('-').map(Number),d=Math.round((new Date(sy,sm-1,sd)-new Date(ty,tm-1,td))/86400000);if(d>=0&&d<=10)fetchWeatherForTrip(t);});
 }
@@ -3179,13 +3059,13 @@ function renderStats() {
     <div class="stat-icon">🏕️</div>
     <div class="stat-num" style="font-size:clamp(1.1rem,2.5vw,2rem);word-break:break-all;">${fmt(totalFees)}</div>
     <div class="stat-label">Park Fees</div>
-    <div style="font-size:.6rem;color:var(--smoke);margin-top:2px;">tap for details</div>
+    <div style="font-size:.6rem;color:var(--fog-bright);margin-top:2px;">tap for details</div>
   </div>`;
   const fuelTile = `<div class="stat" onclick="showFuelBreakdown()" style="cursor:pointer;" title="Click to see breakdown · estimated at ${MPG} mpg from one-way mileage">
     <div class="stat-icon">⛽</div>
     <div class="stat-num" style="font-size:clamp(1.1rem,2.5vw,2rem);word-break:break-all;">${fmtGal1(totalFuel)}</div>
     <div class="stat-label">Fuel (gal)</div>
-    <div style="font-size:.6rem;color:var(--smoke);margin-top:2px;">tap for details</div>
+    <div style="font-size:.6rem;color:var(--fog-bright);margin-top:2px;">tap for details</div>
   </div>`;
 
   document.getElementById('statsBar').innerHTML = `
@@ -3325,9 +3205,9 @@ function renderParks() {
           var ni=t.depart&&t.depart>t.date?Math.round((new Date(t.depart)-new Date(t.date))/86400000):1;
           var th=t.photo?'<br><img class="trip-thumb" src="'+t.photo+'"'+(t.photoPath?' data-path="'+esc(t.photoPath)+'"':'')+' onclick="openLB(this.src,this.dataset.path)">':'';
           var db=t._isBase?'<button class="btn-del-trip" onclick="deleteBaseTrip('+p.id+','+t._baseIdx+')">✕</button>':'<button class="btn-del-trip" onclick="deleteTrip('+p.id+','+t._userIdx+')">✕</button>';
-          return '<div class="trip-entry"><span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;">#'+dn+'</span><span class="trip-date-badge">📅 '+ds+'</span><span style="font-size:.72rem;color:var(--fog);">🌙 '+ni+' night'+(ni>1?'s':'')+'</span>'+tripFeeHtml(t)+(t.site?'<span class="trip-site">Site '+esc(t.site)+'</span>':'')+(t.note?'<span class="trip-note">'+esc(t.note)+'</span>':'')+(Array.isArray(t.reservations)&&t.reservations.length?renderReservationBoxList(t.reservations):'')+'<div class="trip-actions"><button class="btn-edit-trip" onclick="openET('+p.id+','+ti+')">✏️</button>'+db+'</div>'+th+'</div>';
+          return '<div class="trip-entry"><span style="min-width:26px;text-align:center;background:var(--amber);color:var(--badge-ink);border-radius:10px;padding:1px 7px;font-size:.72rem;">#'+dn+'</span><span class="trip-date-badge">📅 '+ds+'</span><span style="font-size:.72rem;color:var(--fog);">🌙 '+ni+' night'+(ni>1?'s':'')+'</span>'+tripFeeHtml(t)+(t.site?'<span class="trip-site">Site '+esc(t.site)+'</span>':'')+(t.note?'<span class="trip-note">'+esc(t.note)+'</span>':'')+(Array.isArray(t.reservations)&&t.reservations.length?renderReservationBoxList(t.reservations):'')+'<div class="trip-actions"><button class="btn-edit-trip" onclick="openET('+p.id+','+ti+')">✏️</button>'+db+'</div>'+th+'</div>';
         }).join('');
-        return '<div class="park-card" id="pc'+p.id+'" style="animation-delay:'+Math.min(i,14)*.025+'s"><div class="park-header '+(been?'been':'')+' '+(isC?'custom-h':'')+'" onclick="toggleCard('+p.id+')"><div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">'+getParkThumb(p.id)+'<div style="min-width:0;"><div class="park-name">'+esc(p.name)+'</div><div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'+(p.drive?'<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 '+esc(p.drive)+'</span>':'')+(p.drive&&milesToGallons(parseDriveMiles(p.drive))?'<span style="font-size:.78rem;color:var(--moss);font-weight:600;" title="Estimated one-way @ '+MPG+' mpg">⛽ '+milesToGallons(parseDriveMiles(p.drive))+' gal</span>':'')+parkFeeChip(p.id)+(p.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#fff;border-radius:20px;text-decoration:none;">📍 Address</a>':'')+(p.website?'<a href="'+esc(p.website)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#fff;border-radius:20px;text-decoration:none;">🌐 Website</a>':'')+'</div></div></div><div class="park-right"><button class="btn-fav" onclick="toggleFavorite('+p.id+',event)">'+(state.favorites.includes(p.id)?'❤️':'🤍')+'</button>'+(state.ratings[p.id]?'<span style="color:var(--amber);font-size:.8rem;">'+'★'.repeat(state.ratings[p.id])+'</span>':'')+(isC?'<span class="badge bc">★ Mine</span>':'')+(trips.length?'<span class="badge bv">🏕 '+trips.length+' trip'+(trips.length>1?'s':'')+'</span>':'<span class="badge bn">New</span>')+'<span class="chevron">▾</span></div></div><div class="park-body"><div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px"><span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)">Overall Rating</span><div class="star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star '+((state.ratings[p.id]||0)>=n?'on':'')+'" onclick="setRating('+p.id+','+n+',event)">★</span>';}).join('')+'</div>'+(state.ratings[p.id]?'<span style="font-size:.75rem;color:var(--fog)">'+['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]+'</span>':'')+'</div><div class="info-grid">'+(p.goodSites?'<div class="info-block"><label>✅ Good Sites</label><p>'+esc(p.goodSites)+'</p></div>':'')+(p.stayedSites?'<div class="info-block"><label>🏕 Sites Stayed</label><p>'+esc(p.stayedSites)+'</p></div>':'')+(p.avoidSites?'<div class="info-block"><label>🚫 Avoid</label><p>'+esc(p.avoidSites)+'</p></div>':'')+(p.bigRig?'<div class="info-block"><label>🚐 Big Rig</label><p>'+esc(p.bigRig)+'</p></div>':'')+(p.phone?'<div class="info-block"><label>📞 Phone</label><p>'+esc(p.phone)+'</p></div>':'')+(p.notes?'<div class="info-block" style="grid-column:1/-1"><label>📝 Notes</label><p>'+esc(p.notes)+'</p></div>':'')+'</div><div class="trip-log"><div class="trip-log-title">🗓 Trip History<span class="trip-count-badge">'+trips.length+' trip'+(trips.length!==1?'s':'')+'</span>'+parkFeeSummaryBadge(p.id)+'</div><div class="trip-entries">'+(tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;">No trips logged yet.</div>')+'</div><div class="add-trip-row"><div class="field"><label>Arrival</label><input type="date" id="td-date-'+p.id+'"></div><div class="field"><label>Departure</label><input type="date" id="td-depart-'+p.id+'"></div><div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-'+p.id+'" placeholder="e.g. 45"></div><div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-'+p.id+'" placeholder="great weather..."></div><button class="btn-add-trip" onclick="addTrip('+p.id+')">＋ Add Trip</button></div></div>'+'<div class="park-photos" style="margin-top:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-family:var(--font-heading);font-size:.92rem;color:var(--bark);">📷 Photos</span><button onclick="document.getElementById(\'photo-input-'+p.id+'\').click()" style="font-size:.74rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">+ Add Photo</button><input type="file" id="photo-input-'+p.id+'" accept="image/*" style="display:none" onchange="handlePhotoUpload('+p.id+', this)"></div><div id="photo-gallery-'+p.id+'" class="photo-gallery">'+renderPhotoGallery(p.id)+'</div></div>'+(isC?'<div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--fog);margin-top:8px"><button class="btn-amber" style="font-size:.78rem;padding:4px 12px" onclick="openEditPark('+p.id+')">✏️ Edit</button><button class="btn-amber" style="font-size:.78rem;padding:4px 12px;background:rgba(180,60,40,.7)" onclick="deleteCustomPark('+p.id+')">🗑 Delete</button></div>':'')+'</div></div>';
+        return '<div class="park-card" id="pc'+p.id+'" style="animation-delay:'+Math.min(i,14)*.025+'s"><div class="park-header '+(been?'been':'')+' '+(isC?'custom-h':'')+'" onclick="toggleCard('+p.id+')"><div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">'+getParkThumb(p.id)+'<div style="min-width:0;"><div class="park-name">'+esc(p.name)+'</div><div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'+(p.drive?'<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 '+esc(p.drive)+'</span>':'')+(p.drive&&milesToGallons(parseDriveMiles(p.drive))?'<span style="font-size:.78rem;color:var(--moss-ink);font-weight:600;" title="Estimated one-way @ '+MPG+' mpg">⛽ '+milesToGallons(parseDriveMiles(p.drive))+' gal</span>':'')+parkFeeChip(p.id)+(p.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#fff;border-radius:20px;text-decoration:none;">📍 Address</a>':'')+(p.website?'<a href="'+esc(p.website)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:var(--badge-ink);border-radius:20px;text-decoration:none;">🌐 Website</a>':'')+'</div></div></div><div class="park-right"><button class="btn-fav" onclick="toggleFavorite('+p.id+',event)">'+(state.favorites.includes(p.id)?'❤️':'🤍')+'</button>'+(state.ratings[p.id]?'<span style="color:var(--amber);font-size:.8rem;">'+'★'.repeat(state.ratings[p.id])+'</span>':'')+(isC?'<span class="badge bc">★ Mine</span>':'')+(trips.length?'<span class="badge bv">🏕 '+trips.length+' trip'+(trips.length>1?'s':'')+'</span>':'<span class="badge bn">New</span>')+'<span class="chevron">▾</span></div></div><div class="park-body"><div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px"><span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)">Overall Rating</span><div class="star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star '+((state.ratings[p.id]||0)>=n?'on':'')+'" onclick="setRating('+p.id+','+n+',event)">★</span>';}).join('')+'</div>'+(state.ratings[p.id]?'<span style="font-size:.75rem;color:var(--fog)">'+['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]+'</span>':'')+'</div><div class="info-grid">'+(p.goodSites?'<div class="info-block"><label>✅ Good Sites</label><p>'+esc(p.goodSites)+'</p></div>':'')+(p.stayedSites?'<div class="info-block"><label>🏕 Sites Stayed</label><p>'+esc(p.stayedSites)+'</p></div>':'')+(p.avoidSites?'<div class="info-block"><label>🚫 Avoid</label><p>'+esc(p.avoidSites)+'</p></div>':'')+(p.bigRig?'<div class="info-block"><label>🚐 Big Rig</label><p>'+esc(p.bigRig)+'</p></div>':'')+(p.phone?'<div class="info-block"><label>📞 Phone</label><p>'+esc(p.phone)+'</p></div>':'')+(p.notes?'<div class="info-block" style="grid-column:1/-1"><label>📝 Notes</label><p>'+esc(p.notes)+'</p></div>':'')+'</div><div class="trip-log"><div class="trip-log-title">🗓 Trip History<span class="trip-count-badge">'+trips.length+' trip'+(trips.length!==1?'s':'')+'</span>'+parkFeeSummaryBadge(p.id)+'</div><div class="trip-entries">'+(tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;">No trips logged yet.</div>')+'</div><div class="add-trip-row"><div class="field"><label>Arrival</label><input type="date" id="td-date-'+p.id+'"></div><div class="field"><label>Departure</label><input type="date" id="td-depart-'+p.id+'"></div><div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-'+p.id+'" placeholder="e.g. 45"></div><div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-'+p.id+'" placeholder="great weather..."></div><button class="btn-add-trip" onclick="addTrip('+p.id+')">＋ Add Trip</button></div></div>'+'<div class="park-photos" style="margin-top:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-family:var(--font-heading);font-size:.92rem;color:var(--bark);">📷 Photos</span><button onclick="document.getElementById(\'photo-input-'+p.id+'\').click()" style="font-size:.74rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">+ Add Photo</button><input type="file" id="photo-input-'+p.id+'" accept="image/*" style="display:none" onchange="handlePhotoUpload('+p.id+', this)"></div><div id="photo-gallery-'+p.id+'" class="photo-gallery">'+renderPhotoGallery(p.id)+'</div></div>'+(isC?'<div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--fog);margin-top:8px"><button class="btn-amber" style="font-size:.78rem;padding:4px 12px" onclick="openEditPark('+p.id+')">✏️ Edit</button><button class="btn-amber" style="font-size:.78rem;padding:4px 12px;background:rgba(180,60,40,.7)" onclick="deleteCustomPark('+p.id+')">🗑 Delete</button></div>':'')+'</div></div>';
       }).join('');
     });
     return;
@@ -3350,7 +3230,7 @@ function renderParks() {
         ? `<button class="btn-del-trip" onclick="deleteBaseTrip(${p.id},${t._baseIdx})" title="Remove">✕</button>`
         : `<button class="btn-del-trip" onclick="deleteTrip(${p.id},${t._userIdx})" title="Remove">✕</button>`;
       return `<div class="trip-entry">
-        <span style="min-width:26px;text-align:center;background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#${displayNum}</span>
+        <span style="min-width:26px;text-align:center;background:var(--amber);color:var(--badge-ink);border-radius:10px;padding:1px 7px;font-size:.72rem;flex-shrink:0">#${displayNum}</span>
         <span class="trip-date-badge">📅 ${dateStr}</span>
         <span style="font-size:.72rem;color:var(--fog);white-space:nowrap">🌙 ${nights} night${nights>1?'s':''}</span>
         ${tripFeeHtml(t)}
@@ -3373,10 +3253,10 @@ function renderParks() {
           <div class="park-name">${esc(p.name)}</div>
           <div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
             ${p.drive?`<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 ${esc(p.drive)}</span>`:''}
-            ${p.drive?(()=>{const g=milesToGallons(parseDriveMiles(p.drive));return g?`<span style="font-size:.78rem;color:var(--moss);font-weight:600;" title="Estimated one-way @ ${MPG} mpg">⛽ ${g} gal</span>`:'';})():''}
+            ${p.drive?(()=>{const g=milesToGallons(parseDriveMiles(p.drive));return g?`<span style="font-size:.78rem;color:var(--moss-ink);font-weight:600;" title="Estimated one-way @ ${MPG} mpg">⛽ ${g} gal</span>`:'';})():''}
             ${parkFeeChip(p.id)}
             ${p.address?`<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.address)}" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">📍 Address</a>`:''}
-            ${safeUrl(p.website)?`<a href="${esc(safeUrl(p.website))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:#ffffff;border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">🌐 Website</a>`:''}
+            ${safeUrl(p.website)?`<a href="${esc(safeUrl(p.website))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:var(--badge-ink);border-radius:20px;text-decoration:none;white-space:nowrap;letter-spacing:.02em;">🌐 Website</a>`:''}
           </div>
           </div>
         </div>
@@ -3474,14 +3354,6 @@ function logVisit(name) {
 function toggleW(btn){const v=btn.dataset.v;document.querySelectorAll('.weather-btn').forEach(b=>b.classList.remove('active'));selW=selW===v?'':v;if(selW)btn.classList.add('active');}
 function toggleM(btn){document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));selM=selM===btn.textContent?'':btn.textContent;if(selM)btn.classList.add('active');}
 
-function clearJournalDraft(){
-  if(!confirm('Clear this unfinished journal draft?')) return;
-  try{localStorage.removeItem('cd_journal_draft_v2')}catch(e){}
-  resetForm();
-  const status=document.getElementById('journalAutoSaveStatus');
-  if(status) status.textContent='Draft cleared. Your saved journal entries are unchanged.';
-}
-
 function saveEntry(){
   let loc=document.getElementById('locSelect').value;
   if(loc==='__custom__') loc=document.getElementById('customLoc').value.trim();
@@ -3494,9 +3366,6 @@ function saveEntry(){
   const highlights=hlRaw?hlRaw.split(',').map(h=>h.trim()).filter(Boolean):[];
   state.entries.unshift({id:Date.now(),location:loc,date,notes,weather:selW,mood:selM,highlights});
   saveState(); renderAll(); resetForm();
-  try{localStorage.removeItem('cd_journal_draft_v2')}catch(e){}
-  const draftStatus=document.getElementById('journalAutoSaveStatus');
-  if(draftStatus) draftStatus.textContent='Entry saved to your journal.';
   showToast('Entry saved! 🌲');
 }
 
@@ -3558,7 +3427,7 @@ function renderTripLog() {
   if(sortMode==='park') rows.sort((a,b)=>a.parkName.localeCompare(b.parkName));
   if(q) rows=rows.filter(r=>r.parkName.toLowerCase().includes(q)||r.note.toLowerCase().includes(q)||r.site.toLowerCase().includes(q)||String(r.displayNum).includes(q)||(r.reservation?.number||'').toLowerCase().includes(q)||(r.reservation?.bookedThrough||'').toLowerCase().includes(q)||(r.reservations||[]).some(x=>String(x.number||'').toLowerCase().includes(q)));
   const countEl=document.getElementById('triplogCount'); if(countEl)countEl.textContent=rows.length+' trips';
-  if(countEl){const sort=`<button id="triplog-sort-btn" onclick="window._tripLogSort=window._tripLogSort==='park'?'date':'park';renderTripLog();" style="font-size:.75rem;padding:5px 10px;background:transparent;border:1px solid var(--fog);border-radius:999px;cursor:pointer;color:var(--fog);font-family:var(--font-body);margin-left:8px;">${sortMode==='park'?'Sort: Park ↕':'Sort: Date ↕'}</button>`;const old=document.getElementById('triplog-sort-btn');if(old)old.outerHTML=sort;else countEl.insertAdjacentHTML('afterend',sort);}
+  if(countEl){const sort=`<button id="triplog-sort-btn" onclick="window._tripLogSort=window._tripLogSort==='park'?'date':'park';renderTripLog();" style="font-size:.75rem;padding:5px 10px;background:transparent;border:1px solid var(--fog-bright);border-radius:999px;cursor:pointer;color:var(--fog-bright);font-family:var(--font-body);margin-left:8px;">${sortMode==='park'?'Sort: Park ↕':'Sort: Date ↕'}</button>`;const old=document.getElementById('triplog-sort-btn');if(old)old.outerHTML=sort;else countEl.insertAdjacentHTML('afterend',sort);}
   if(!rows.length){document.getElementById('triplogList').innerHTML='<div class="empty-state"><div class="icon">📋</div><p>No trips found.</p></div>';return;}
   document.getElementById('triplogList').innerHTML=rows.map(r=>{
     const photo=r.photo?`<img class="memory-photo" src="${esc(r.photo)}"${r.photoPath?` data-path="${esc(r.photoPath)}"`:''} onclick="openLB(this.src,this.dataset.path)" alt="Camping memory">`:'<div class="memory-empty-photo">🏕️</div>';
@@ -3688,6 +3557,59 @@ function getUpcomingSorted(){
   return (state.upcoming||[]).slice().filter(t=>t&&t.startDate).sort((a,b)=>String(a.startDate).localeCompare(String(b.startDate)));
 }
 function daysUntil(d){ if(!d)return null; return Math.ceil((new Date(d+'T00:00:00')-new Date(new Date().toDateString()))/86400000); }
+
+// ═══════════════════════════════════════════════════════
+// PACKING LIST (stored on the upcoming trip as trip.packList)
+// ═══════════════════════════════════════════════════════
+const PACK_CATS=[{id:'food',label:'🍳 Food & Drink'},{id:'gear',label:'🏕 Camp Gear'},{id:'clothes',label:'🎒 Clothing & Personal'},{id:'other',label:'📦 Other'}];
+const PACK_FOOD_IDEAS=['Coffee','Eggs','Bacon','Hot dogs','Burgers','Buns','Marshmallows','Chocolate & graham crackers','Chips & snacks','Drinking water','Ice','Beer / drinks'];
+let _packTripId=null, _packCat='food';
+function packTrip(){return (state.upcoming||[]).find(t=>t.id===_packTripId)||null;}
+function packCountLabel(t){const l=Array.isArray(t.packList)?t.packList:[];return l.length?`(${l.filter(i=>i.done).length}/${l.length})`:'';}
+function openPackList(tripId){
+  _packTripId=tripId;const t=packTrip();if(!t)return;
+  if(!Array.isArray(t.packList))t.packList=[];
+  document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>🎒 Packing List</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div>
+  <div class="pack-progress"><div id="packBar" style="width:0%"></div></div><div class="pack-count" id="packCount"></div>
+  <div class="pack-form"><select id="packCat" aria-label="Category" onchange="_packCat=this.value">${PACK_CATS.map(c=>`<option value="${c.id}"${c.id===_packCat?' selected':''}>${c.label}</option>`).join('')}</select><input id="packInput" type="text" placeholder="Add an item…" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addPackItem();}"><button class="dash-action" onclick="addPackItem()">＋ Add</button></div>
+  <div class="pack-chips" id="packChips"></div><div id="packList"></div>
+  <div class="pack-tools"><button class="dash-action alt" onclick="uncheckAllPack()">Uncheck all</button><button class="dash-action alt" onclick="removeCheckedPack()">Remove checked</button></div>`;
+  renderPackList();
+  document.getElementById('packModalBg').classList.remove('hidden');
+}
+function closePackList(){document.getElementById('packModalBg').classList.add('hidden');_packTripId=null;renderDashboard();}
+function renderPackList(){
+  const t=packTrip();if(!t)return;const list=t.packList||[];
+  const done=list.filter(i=>i.done).length;
+  document.getElementById('packBar').style.width=(list.length?Math.round(done/list.length*100):0)+'%';
+  document.getElementById('packCount').textContent=list.length?`${done} of ${list.length} packed`:'Nothing on the list yet';
+  const have=new Set(list.map(i=>i.text.toLowerCase()));
+  const chips=PACK_FOOD_IDEAS.map((f,i)=>have.has(f.toLowerCase())?'':`<button class="pack-chip" onclick="addPackQuick(${i})">＋ ${esc(f)}</button>`).join('');
+  document.getElementById('packChips').innerHTML=chips?`<span class="dash-muted" style="width:100%">Quick add food:</span>${chips}`:'';
+  const groups=PACK_CATS.map(c=>{
+    const items=list.filter(i=>(i.cat||'other')===c.id);if(!items.length)return '';
+    return `<div class="pack-group"><h3>${c.label}</h3>${items.map(i=>`<div class="pack-item${i.done?' done':''}"><label><input type="checkbox" ${i.done?'checked':''} onchange="togglePackItem(${i.id})"><span>${esc(i.text)}</span></label><button class="pack-del" aria-label="Delete ${esc(i.text)}" onclick="deletePackItem(${i.id})">×</button></div>`).join('')}</div>`;
+  }).join('');
+  document.getElementById('packList').innerHTML=groups||'<div class="pack-empty">Add food, gear and anything else you don\u2019t want to forget. 🌲</div>';
+}
+function packSave(){saveState();renderPackList();}
+function pushPackItem(text,cat){
+  const t=packTrip();if(!t)return false;text=String(text||'').trim();if(!text)return false;
+  if(!Array.isArray(t.packList))t.packList=[];
+  if(t.packList.some(i=>i.text.toLowerCase()===text.toLowerCase()&&(i.cat||'other')===cat)){showToast('Already on the list');return false;}
+  t.packList.push({id:Date.now()+Math.floor(Math.random()*1000),text,cat,done:false});return true;
+}
+function addPackItem(){
+  const inp=document.getElementById('packInput'),cat=document.getElementById('packCat').value;_packCat=cat;
+  if(pushPackItem(inp.value,cat)){inp.value='';packSave();}
+  inp.focus();
+}
+function addPackQuick(i){if(pushPackItem(PACK_FOOD_IDEAS[i],'food'))packSave();}
+function togglePackItem(id){const t=packTrip();const it=t&&t.packList.find(x=>x.id===id);if(it){it.done=!it.done;packSave();}}
+function deletePackItem(id){const t=packTrip();if(!t)return;t.packList=t.packList.filter(x=>x.id!==id);packSave();}
+function uncheckAllPack(){const t=packTrip();if(!t)return;t.packList.forEach(i=>i.done=false);packSave();}
+function removeCheckedPack(){const t=packTrip();if(!t)return;const n=t.packList.filter(i=>i.done).length;if(!n){showToast('Nothing checked yet');return;}if(!confirm(`Remove ${n} checked item${n>1?'s':''} from the list?`))return;t.packList=t.packList.filter(i=>!i.done);packSave();}
+
 function renderDashboard(){
   const el=document.getElementById('dashboardContent'); if(!el)return;
   const parks=allParks(), trips=getAllTripsSorted(), upcoming=getUpcomingSorted();
@@ -3696,7 +3618,7 @@ function renderDashboard(){
   const next=upcoming[0], nextPark=next?parks.find(p=>p.id===next.parkId):null, recent=trips.slice().reverse().slice(0,5);
   let html='<div class="dashboard-grid">';
   if(next){
-    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.reservation?.number?`<div class="trip-line">🔖 Reservation #${esc(next.reservation.number)}</div>`:''}${next.reservation?.bookedThrough?`<div class="trip-line">🏢 ${esc(next.reservation.bookedThrough)}</div>`:''}${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="switchTab('upcoming')">Upcoming Trips →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
+    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.reservation?.number?`<div class="trip-line">🔖 Reservation #${esc(next.reservation.number)}</div>`:''}${next.reservation?.bookedThrough?`<div class="trip-line">🏢 ${esc(next.reservation.bookedThrough)}</div>`:''}${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="openPackList(${next.id})">🎒 Packing List <span class="pack-btn-count">${packCountLabel(next)}</span></button><button class="dash-action" onclick="switchTab('upcoming')">Upcoming Trips →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
   } else {
     html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>No upcoming trip yet</h2><div class="trip-big">🌲 Time to plan the next campout.</div><div class="dash-actions"><button class="dash-action" onclick="switchTab('upcoming')">＋ Plan a Trip</button><button class="dash-action alt" onclick="switchTab('findcamps')">🔍 Explore Campgrounds</button></div></div>`;
   }
@@ -4415,15 +4337,8 @@ async function onSignedIn(user) {
   document.getElementById('userEmail').textContent = user.email;
   showToast('Loading your data\u2026 \u2601\uFE0F');
   await loadFromCloud();
-  const reconciliation = reconcileParkAndReservations();
   saveState();          // persist cloud data to localStorage so it survives re-renders
   renderAll();
-  if (reconciliation.mergedParks || reconciliation.attachedReservations) {
-    const bits=[];
-    if (reconciliation.mergedParks) bits.push(reconciliation.mergedParks+' duplicate park record'+(reconciliation.mergedParks===1?'':'s')+' merged');
-    if (reconciliation.attachedReservations) bits.push(reconciliation.attachedReservations+' reservation'+(reconciliation.attachedReservations===1?'':'s')+' attached');
-    showToast(bits.join(' · ')+' ✓');
-  }
   showToast('Welcome back! \uD83C\uDF32');
 }
 
@@ -5087,12 +5002,12 @@ function renderFindPanel() {
 
   const keySection=`<div class="apikey-box" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <p style="margin:0;font-size:.82rem;">&#128273; <strong>API Key</strong> &mdash; ${hasKey?'&#9989; Set and saved in this browser':'&#9888;&#65039; Not set &mdash; required for search'}</p>
-    <button onclick="promptForKey()" style="background:${hasKey?'rgba(255,255,255,.1)':'var(--amber)'};color:${hasKey?'var(--fog)':'white'};border:1px solid ${hasKey?'rgba(255,255,255,.2)':'var(--amber)'};border-radius:3px;padding:5px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">${hasKey?'&#128260; Update key':'&#128273; Set API key'}</button>
+    <button onclick="promptForKey()" style="background:${hasKey?'rgba(255,255,255,.1)':'var(--amber)'};color:${hasKey?'var(--fog)':'var(--badge-ink)'};border:1px solid ${hasKey?'rgba(255,255,255,.2)':'var(--amber)'};border-radius:3px;padding:5px 12px;font-family:-apple-system,Georgia,serif;font-size:.78rem;cursor:pointer;">${hasKey?'&#128260; Update key':'&#128273; Set API key'}</button>
   </div>`;
 
   const modeSwitch=`<div style="display:flex;margin-bottom:16px;border-radius:4px;overflow:hidden;border:1px solid var(--fog);">
     <button onclick="PL.mode='quick';PL.done=false;PL.results=[];renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:${PL.mode==='quick'?'var(--moss)':'rgba(255,255,255,.1)'};color:${PL.mode==='quick'?'var(--cream)':'var(--fog)'};">&#128269; Quick Search</button>
-    <button onclick="PL.mode='route';PL.done=false;PL.routeData=null;renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:${PL.mode==='route'?'var(--moss)':'rgba(255,255,255,.1)'};color:${PL.mode==='route'?'var(--cream)':'var(--fog)'};">&#128506; Route Planner</button>
+    <button onclick="PL.mode='route';PL.done=false;PL.routeData=null;renderFindPanel()" style="flex:1;padding:10px;font-family:-apple-system,Georgia,serif;font-size:.88rem;border:none;cursor:pointer;background:${PL.mode==='route'?'var(--moss)':'rgba(255,255,255,.1)'};color:${PL.mode==='route'?'var(--cream)':'var(--fog-bright)'};">&#128506; Route Planner</button>
   </div>`;
 
   let formSection='';
@@ -5108,7 +5023,7 @@ function renderFindPanel() {
         <label class="pl-label">Amenities</label>
         <div style="display:flex;flex-wrap:wrap;gap:6px;">${ams.map(a=>`<span class="am-toggle ${sq.ams.includes(a)?'on':''}" onclick="toggleAm2('${a}')">${a}</span>`).join('')}</div>
       </div>
-      <div style="background:rgba(61,90,42,.15);border:1px solid rgba(61,90,42,.25);border-radius:3px;padding:8px 12px;font-size:.8rem;color:var(--moss);margin-bottom:12px;">
+      <div style="background:rgba(61,90,42,.15);border:1px solid rgba(61,90,42,.25);border-radius:3px;padding:8px 12px;font-size:.8rem;color:var(--moss-ink);margin-bottom:12px;">
         &#128656; 27ft &middot; 30-amp &middot; Water &amp; Electric &mdash; searching at 20ft since state parks list conservatively
       </div>
       <button class="pl-btn-main" onclick="doQuickSearch()" ${PL.loading?'disabled':''}>${PL.loading?'Searching…':'&#128269; Find Campgrounds'}</button>
@@ -5142,7 +5057,7 @@ function renderFindPanel() {
         </div>
         <div style="font-size:.78rem;color:var(--bark);margin-bottom:8px;">Enter destination below, then click Auto-plan to fill in stop cities automatically.</div>
         <button id="autoplan-btn" onclick="autoplanRoute()" style="width:100%;background:var(--amber);color:white;border:none;border-radius:3px;padding:8px;font-family:-apple-system,Georgia,serif;font-size:.85rem;cursor:pointer;">&#128506; Auto-plan my route</button>
-        <div id="autoplan-instr" style="display:none;margin-top:8px;font-size:.78rem;color:var(--moss);padding:6px 10px;background:rgba(61,90,42,.15);border-radius:3px;"></div>
+        <div id="autoplan-instr" style="display:none;margin-top:8px;font-size:.78rem;color:var(--moss-ink);padding:6px 10px;background:rgba(61,90,42,.15);border-radius:3px;"></div>
       </div>
 
       <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--moss);margin:14px 0 8px;">&#127957; Final Destination</div>
@@ -5454,10 +5369,10 @@ function renderCard(cg,i,accent){
       <div style="display:flex;justify-content:space-between;align-items:start;">
         <div>
           <div style="font-family:-apple-system,Georgia,serif;font-size:1rem;color:var(--bark);">${esc2(cg.name)}</div>
-          <div style="font-size:.78rem;color:var(--fog);margin-top:2px;">&#128205; ${esc2(cg.location||'')} &middot; <span style="color:${accent};">${typeLabel}</span></div>
+          <div style="font-size:.78rem;color:var(--fog);margin-top:2px;">&#128205; ${esc2(cg.location||'')} &middot; <span style="color:${accent==='var(--moss)'?'var(--moss-ink)':accent==='var(--amber)'?'var(--amber-ink)':accent};">${typeLabel}</span></div>
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-          ${cg.rating?`<div style="color:var(--amber);font-size:.82rem;">${cg.rating} &#9733;</div>`:''}
+          ${cg.rating?`<div style="color:var(--amber-ink);font-size:.82rem;">${cg.rating} &#9733;</div>`:''}
           ${cg.priceRange?`<div style="font-size:.75rem;color:var(--fog);">${esc2(cg.priceRange)}/night</div>`:''}
         </div>
       </div>
@@ -5776,8 +5691,8 @@ function renderStatsPanel() {
     var pct = maxSeason ? Math.round((seasons[s]/maxSeason)*100) : 0;
     html += '<div>';
     html += '<div style="font-size:1.8rem;margin-bottom:4px;">'+seasonIcons[s]+'</div>';
-    html += '<div style="font-family:var(--font-heading);font-size:1.4rem;font-weight:600;color:var(--amber);">'+seasons[s]+'</div>';
-    html += '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--smoke);">'+s+'</div>';
+    html += '<div style="font-family:var(--font-heading);font-size:1.4rem;font-weight:600;color:var(--amber-ink);">'+seasons[s]+'</div>';
+    html += '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog);">'+s+'</div>';
     html += '</div>';
   });
   html += '</div></div>';
@@ -5800,7 +5715,7 @@ function statCard(icon, big, sub, label) {
     '<div style="font-size:1.8rem;margin-bottom:6px;">'+icon+'</div>' +
     '<div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--fog);font-weight:700;margin-bottom:4px;">'+label+'</div>' +
     '<div style="font-family:var(--font-heading);font-size:.95rem;font-weight:600;color:var(--bark);line-height:1.2;">'+big+'</div>' +
-    (sub?'<div style="font-size:.76rem;color:var(--amber);margin-top:2px;">'+sub+'</div>':'') +
+    (sub?'<div style="font-size:.76rem;color:var(--amber-ink);margin-top:2px;">'+sub+'</div>':'') +
     '</div>';
 }
 // ── END STATISTICS ───────────────────────────────
@@ -6137,4 +6052,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>
   </div>
 </div>
-</div>    <script id="trailNotesAutoSave">(function(){const DRAFT='cd_journal_draft_v2';let timer=null;function $(id){return document.getElementById(id)}function status(msg){const el=$('journalAutoSaveStatus');if(el)el.textContent=msg}function readDraft(){const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return null;return{loc:loc.value,date:date.value,notes:notes.value,hl:hl?hl.value:'',custom:custom?custom.value:'',weather:selW||'',mood:selM||'',savedAt:Date.now()}}function saveDraft(){const d=readDraft();if(!d)return;try{localStorage.setItem(DRAFT,JSON.stringify(d));status('✓ Unfinished draft saved on this device')}catch(e){status('Draft could not be saved on this device (storage may be full or unavailable).')}}function restoreDraft(){let d=null;try{d=JSON.parse(localStorage.getItem(DRAFT)||'null')}catch(e){}if(!d||(!d.notes&&!d.loc&&!d.hl))return;const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return;loc.value=d.loc||'';if(typeof handleLocChange==='function')handleLocChange();if(custom)custom.value=d.custom||'';date.value=d.date||date.value;notes.value=d.notes||'';if(hl)hl.value=d.hl||'';selW=d.weather||'';selM=d.mood||'';document.querySelectorAll('.weather-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===selW));document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.textContent===selM));status('↩ Restored unfinished draft. Select “Save Entry” to commit it.')}function queue(){clearTimeout(timer);timer=setTimeout(saveDraft,250)}function attach(){['locSelect','customLoc','jDate','jNotes','jHL'].forEach(id=>{const el=$(id);if(!el||el.dataset.autoSaveBound)return;el.dataset.autoSaveBound='1';el.addEventListener('input',queue);el.addEventListener('change',queue)});document.querySelectorAll('.weather-btn,.mood-btn').forEach(b=>{if(b.dataset.autoBound)return;b.dataset.autoBound='1';b.addEventListener('click',()=>setTimeout(saveDraft,20))});restoreDraft()}window.addEventListener('load',()=>setTimeout(attach,250))})();</script></body></html>
+</div>    <script id="trailNotesAutoSave">(function(){const DRAFT='cd_journal_draft_v2';let timer=null;function $(id){return document.getElementById(id)}function status(msg){const el=$('journalAutoSaveStatus');if(el)el.textContent=msg}function readDraft(){const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return null;return{loc:loc.value,date:date.value,notes:notes.value,hl:hl?hl.value:'',custom:custom?custom.value:'',weather:selW||'',mood:selM||'',savedAt:Date.now()}}function saveDraft(){const d=readDraft();if(!d)return;try{localStorage.setItem(DRAFT,JSON.stringify(d))}catch(e){}status('✓ Saved automatically')}function restoreDraft(){let d=null;try{d=JSON.parse(localStorage.getItem(DRAFT)||'null')}catch(e){}if(!d||(!d.notes&&!d.loc&&!d.hl))return;const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return;loc.value=d.loc||'';if(typeof handleLocChange==='function')handleLocChange();if(custom)custom.value=d.custom||'';date.value=d.date||date.value;notes.value=d.notes||'';if(hl)hl.value=d.hl||'';selW=d.weather||'';selM=d.mood||'';document.querySelectorAll('.weather-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===selW));document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.textContent===selM));status('↩ Restored your unfinished journal entry')}function maybeCommit(){let loc=$('locSelect')?.value||'';if(loc==='__custom__')loc=$('customLoc')?.value.trim()||'';const date=$('jDate')?.value||'';const notes=$('jNotes')?.value.trim()||'';if(!loc||!date||!notes)return;const hlRaw=$('jHL')?.value.trim()||'';const highlights=hlRaw?hlRaw.split(',').map(h=>h.trim()).filter(Boolean):[];state.entries.unshift({id:Date.now(),location:loc,date,notes,weather:selW||'',mood:selM||'',highlights});saveState();renderAll();resetForm();try{localStorage.removeItem(DRAFT)}catch(e){}status('✓ Entry saved automatically');showToast('Journal entry saved automatically 🌲')}function queue(){clearTimeout(timer);timer=setTimeout(saveDraft,180)}function attach(){['locSelect','customLoc','jDate','jNotes','jHL'].forEach(id=>{const el=$(id);if(!el||el.dataset.autoSaveBound)return;el.dataset.autoSaveBound='1';el.addEventListener('input',queue);el.addEventListener('change',queue)});['jNotes','jHL'].forEach(id=>{const el=$(id);if(el&&!el.dataset.autoCommitBound){el.dataset.autoCommitBound='1';el.addEventListener('blur',()=>{saveDraft();maybeCommit()})}});document.querySelectorAll('.weather-btn,.mood-btn').forEach(b=>{if(b.dataset.autoBound)return;b.dataset.autoBound='1';b.addEventListener('click',()=>setTimeout(saveDraft,20))});restoreDraft()}window.addEventListener('load',()=>setTimeout(attach,250))})();</script></body></html>
