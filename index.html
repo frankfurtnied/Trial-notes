@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v1';
+  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v2';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1045,9 +1045,6 @@ header p{
 .pack-form select,.pack-form input{font-family:var(--font-body);font-size:16px;padding:10px 12px;border-radius:6px;border:1px solid rgba(107,66,38,.35);background:#fffaf0;color:var(--bark)}
 .pack-form select{flex:0 0 auto}.pack-form input{flex:1 1 180px;min-width:0}
 .pack-form button{flex:0 0 auto}
-.pack-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.pack-chip{border:1px dashed rgba(107,66,38,.45);background:rgba(255,255,255,.35);color:var(--bark);border-radius:14px;padding:5px 11px;font-size:.78rem;cursor:pointer;font-family:var(--font-body)}
-.pack-chip:hover{background:rgba(61,90,42,.15)}
 .pack-group{margin-top:14px}
 .pack-group h3{font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(107,66,38,.25)}
 .pack-item{display:flex;align-items:center;gap:10px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.35);margin-bottom:5px}
@@ -3562,7 +3559,6 @@ function daysUntil(d){ if(!d)return null; return Math.ceil((new Date(d+'T00:00:0
 // PACKING LIST (stored on the upcoming trip as trip.packList)
 // ═══════════════════════════════════════════════════════
 const PACK_CATS=[{id:'food',label:'🍳 Food & Drink'},{id:'gear',label:'🏕 Camp Gear'},{id:'clothes',label:'🎒 Clothing & Personal'},{id:'other',label:'📦 Other'}];
-const PACK_FOOD_IDEAS=['Coffee','Eggs','Bacon','Hot dogs','Burgers','Buns','Marshmallows','Chocolate & graham crackers','Chips & snacks','Drinking water','Ice','Beer / drinks'];
 let _packTripId=null, _packCat='food';
 function packTrip(){return (state.upcoming||[]).find(t=>t.id===_packTripId)||null;}
 function packCountLabel(t){const l=Array.isArray(t.packList)?t.packList:[];return l.length?`(${l.filter(i=>i.done).length}/${l.length})`:'';}
@@ -3572,7 +3568,7 @@ function openPackList(tripId){
   document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>🎒 Packing List</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div>
   <div class="pack-progress"><div id="packBar" style="width:0%"></div></div><div class="pack-count" id="packCount"></div>
   <div class="pack-form"><select id="packCat" aria-label="Category" onchange="_packCat=this.value">${PACK_CATS.map(c=>`<option value="${c.id}"${c.id===_packCat?' selected':''}>${c.label}</option>`).join('')}</select><input id="packInput" type="text" placeholder="Add an item…" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addPackItem();}"><button class="dash-action" onclick="addPackItem()">＋ Add</button></div>
-  <div class="pack-chips" id="packChips"></div><div id="packList"></div>
+  <div id="packList"></div>
   <div class="pack-tools"><button class="dash-action alt" onclick="uncheckAllPack()">Uncheck all</button><button class="dash-action alt" onclick="removeCheckedPack()">Remove checked</button></div>`;
   renderPackList();
   document.getElementById('packModalBg').classList.remove('hidden');
@@ -3583,9 +3579,6 @@ function renderPackList(){
   const done=list.filter(i=>i.done).length;
   document.getElementById('packBar').style.width=(list.length?Math.round(done/list.length*100):0)+'%';
   document.getElementById('packCount').textContent=list.length?`${done} of ${list.length} packed`:'Nothing on the list yet';
-  const have=new Set(list.map(i=>i.text.toLowerCase()));
-  const chips=PACK_FOOD_IDEAS.map((f,i)=>have.has(f.toLowerCase())?'':`<button class="pack-chip" onclick="addPackQuick(${i})">＋ ${esc(f)}</button>`).join('');
-  document.getElementById('packChips').innerHTML=chips?`<span class="dash-muted" style="width:100%">Quick add food:</span>${chips}`:'';
   const groups=PACK_CATS.map(c=>{
     const items=list.filter(i=>(i.cat||'other')===c.id);if(!items.length)return '';
     return `<div class="pack-group"><h3>${c.label}</h3>${items.map(i=>`<div class="pack-item${i.done?' done':''}"><label><input type="checkbox" ${i.done?'checked':''} onchange="togglePackItem(${i.id})"><span>${esc(i.text)}</span></label><button class="pack-del" aria-label="Delete ${esc(i.text)}" onclick="deletePackItem(${i.id})">×</button></div>`).join('')}</div>`;
@@ -3604,7 +3597,6 @@ function addPackItem(){
   if(pushPackItem(inp.value,cat)){inp.value='';packSave();}
   inp.focus();
 }
-function addPackQuick(i){if(pushPackItem(PACK_FOOD_IDEAS[i],'food'))packSave();}
 function togglePackItem(id){const t=packTrip();const it=t&&t.packList.find(x=>x.id===id);if(it){it.done=!it.done;packSave();}}
 function deletePackItem(id){const t=packTrip();if(!t)return;t.packList=t.packList.filter(x=>x.id!==id);packSave();}
 function uncheckAllPack(){const t=packTrip();if(!t)return;t.packList.forEach(i=>i.done=false);packSave();}
