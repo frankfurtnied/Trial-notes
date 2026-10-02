@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v3';
+  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v5';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1058,6 +1058,10 @@ header p{
 .pack-col{background:rgba(255,255,255,.28);border:1px solid rgba(107,66,38,.22);border-radius:10px;padding:12px 14px;min-width:0}
 .pack-col-title{font-family:var(--font-heading);font-size:1.15rem;color:var(--bark);margin:0 0 6px}
 @media(max-width:720px){.pack-cols{grid-template-columns:1fr}}
+.pack-toolbar{display:flex;align-items:center;gap:12px;margin:2px 0 12px;flex-wrap:wrap}
+.pack-grip{flex:0 0 auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:var(--fog);font-size:1.25rem;line-height:1;padding:10px 6px;border-radius:6px}
+.pack-grip:hover{background:rgba(107,66,38,.12)}
+.pack-item.dragging{opacity:.8;background:rgba(215,154,53,.28);box-shadow:0 3px 10px rgba(0,0,0,.2)}
 .pack-empty{color:var(--fog);font-size:.88rem;padding:14px 4px;text-align:center}
 </style>
 
@@ -3204,7 +3208,7 @@ function renderParks() {
           var db=t._isBase?'<button class="btn-del-trip" onclick="deleteBaseTrip('+p.id+','+t._baseIdx+')">✕</button>':'<button class="btn-del-trip" onclick="deleteTrip('+p.id+','+t._userIdx+')">✕</button>';
           return '<div class="trip-entry"><span style="min-width:26px;text-align:center;background:var(--amber);color:var(--badge-ink);border-radius:10px;padding:1px 7px;font-size:.72rem;">#'+dn+'</span><span class="trip-date-badge">📅 '+ds+'</span><span style="font-size:.72rem;color:var(--fog);">🌙 '+ni+' night'+(ni>1?'s':'')+'</span>'+tripFeeHtml(t)+(t.site?'<span class="trip-site">Site '+esc(t.site)+'</span>':'')+(t.note?'<span class="trip-note">'+esc(t.note)+'</span>':'')+(Array.isArray(t.reservations)&&t.reservations.length?renderReservationBoxList(t.reservations):'')+'<div class="trip-actions"><button class="btn-edit-trip" onclick="openET('+p.id+','+ti+')">✏️</button>'+db+'</div>'+th+'</div>';
         }).join('');
-        return '<div class="park-card" id="pc'+p.id+'" style="animation-delay:'+Math.min(i,14)*.025+'s"><div class="park-header '+(been?'been':'')+' '+(isC?'custom-h':'')+'" onclick="toggleCard('+p.id+')"><div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">'+getParkThumb(p.id)+'<div style="min-width:0;"><div class="park-name">'+esc(p.name)+'</div><div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'+(p.drive?'<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 '+esc(p.drive)+'</span>':'')+(p.drive&&milesToGallons(parseDriveMiles(p.drive))?'<span style="font-size:.78rem;color:var(--moss-ink);font-weight:600;" title="Estimated one-way @ '+MPG+' mpg">⛽ '+milesToGallons(parseDriveMiles(p.drive))+' gal</span>':'')+parkFeeChip(p.id)+(p.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#fff;border-radius:20px;text-decoration:none;">📍 Address</a>':'')+(p.website?'<a href="'+esc(p.website)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:var(--badge-ink);border-radius:20px;text-decoration:none;">🌐 Website</a>':'')+'</div></div></div><div class="park-right"><button class="btn-fav" onclick="toggleFavorite('+p.id+',event)">'+(state.favorites.includes(p.id)?'❤️':'🤍')+'</button>'+(state.ratings[p.id]?'<span style="color:var(--amber);font-size:.8rem;">'+'★'.repeat(state.ratings[p.id])+'</span>':'')+(isC?'<span class="badge bc">★ Mine</span>':'')+(trips.length?'<span class="badge bv">🏕 '+trips.length+' trip'+(trips.length>1?'s':'')+'</span>':'<span class="badge bn">New</span>')+'<span class="chevron">▾</span></div></div><div class="park-body"><div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px"><span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)">Overall Rating</span><div class="star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star '+((state.ratings[p.id]||0)>=n?'on':'')+'" onclick="setRating('+p.id+','+n+',event)">★</span>';}).join('')+'</div>'+(state.ratings[p.id]?'<span style="font-size:.75rem;color:var(--fog)">'+['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]+'</span>':'')+'</div><div class="info-grid">'+(p.goodSites?'<div class="info-block"><label>✅ Good Sites</label><p>'+esc(p.goodSites)+'</p></div>':'')+(p.stayedSites?'<div class="info-block"><label>🏕 Sites Stayed</label><p>'+esc(p.stayedSites)+'</p></div>':'')+(p.avoidSites?'<div class="info-block"><label>🚫 Avoid</label><p>'+esc(p.avoidSites)+'</p></div>':'')+(p.bigRig?'<div class="info-block"><label>🚐 Big Rig</label><p>'+esc(p.bigRig)+'</p></div>':'')+(p.phone?'<div class="info-block"><label>📞 Phone</label><p>'+esc(p.phone)+'</p></div>':'')+(p.notes?'<div class="info-block" style="grid-column:1/-1"><label>📝 Notes</label><p>'+esc(p.notes)+'</p></div>':'')+'</div><div class="trip-log"><div class="trip-log-title">🗓 Trip History<span class="trip-count-badge">'+trips.length+' trip'+(trips.length!==1?'s':'')+'</span>'+parkFeeSummaryBadge(p.id)+'</div><div class="trip-entries">'+(tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;">No trips logged yet.</div>')+'</div><div class="add-trip-row"><div class="field"><label>Arrival</label><input type="date" id="td-date-'+p.id+'"></div><div class="field"><label>Departure</label><input type="date" id="td-depart-'+p.id+'"></div><div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-'+p.id+'" placeholder="e.g. 45"></div><div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-'+p.id+'" placeholder="great weather..."></div><button class="btn-add-trip" onclick="addTrip('+p.id+')">＋ Add Trip</button></div></div>'+'<div class="park-photos" style="margin-top:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-family:var(--font-heading);font-size:.92rem;color:var(--bark);">📷 Photos</span><button onclick="document.getElementById(\'photo-input-'+p.id+'\').click()" style="font-size:.74rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">+ Add Photo</button><input type="file" id="photo-input-'+p.id+'" accept="image/*" style="display:none" onchange="handlePhotoUpload('+p.id+', this)"></div><div id="photo-gallery-'+p.id+'" class="photo-gallery">'+renderPhotoGallery(p.id)+'</div></div>'+(isC?'<div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--fog);margin-top:8px"><button class="btn-amber" style="font-size:.78rem;padding:4px 12px" onclick="openEditPark('+p.id+')">✏️ Edit</button><button class="btn-amber" style="font-size:.78rem;padding:4px 12px;background:rgba(180,60,40,.7)" onclick="deleteCustomPark('+p.id+')">🗑 Delete</button></div>':'')+'</div></div>';
+        return '<div class="park-card" id="pc'+p.id+'" style="animation-delay:'+Math.min(i,14)*.025+'s"><div class="park-header '+(been?'been':'')+' '+(isC?'custom-h':'')+'" onclick="toggleCard('+p.id+')"><div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">'+getParkThumb(p.id)+'<div style="min-width:0;"><div class="park-name">'+esc(p.name)+'</div><div class="park-sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'+(p.drive?'<span style="font-size:.78rem;color:#1a1a1a;font-weight:600;">🚗 '+esc(p.drive)+'</span>':'')+(p.drive&&milesToGallons(parseDriveMiles(p.drive))?'<span style="font-size:.78rem;color:var(--moss-ink);font-weight:600;" title="Estimated one-way @ '+MPG+' mpg">⛽ '+milesToGallons(parseDriveMiles(p.drive))+' gal</span>':'')+parkFeeChip(p.id)+(p.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#2d7a3a;color:#fff;border-radius:20px;text-decoration:none;">📍 Address</a>':'')+(p.website?'<a href="'+esc(p.website)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:.75rem;font-weight:700;padding:4px 12px;background:#c8711a;color:var(--badge-ink);border-radius:20px;text-decoration:none;">🌐 Website</a>':'')+'</div></div></div><div class="park-right"><button class="btn-fav" onclick="toggleFavorite('+p.id+',event)">'+(state.favorites.includes(p.id)?'❤️':'🤍')+'</button>'+(state.ratings[p.id]?'<span style="color:var(--amber);font-size:.8rem;">'+'★'.repeat(state.ratings[p.id])+'</span>':'')+(trips.length?'<span class="badge bv">🏕 '+trips.length+' trip'+(trips.length>1?'s':'')+'</span>':'<span class="badge bn">New</span>')+'<span class="chevron">▾</span></div></div><div class="park-body"><div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px;border-bottom:1px solid var(--fog);margin-bottom:4px"><span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)">Overall Rating</span><div class="star-row">'+[1,2,3,4,5].map(function(n){return '<span class="star '+((state.ratings[p.id]||0)>=n?'on':'')+'" onclick="setRating('+p.id+','+n+',event)">★</span>';}).join('')+'</div>'+(state.ratings[p.id]?'<span style="font-size:.75rem;color:var(--fog)">'+['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]+'</span>':'')+'</div><div class="info-grid">'+(p.goodSites?'<div class="info-block"><label>✅ Good Sites</label><p>'+esc(p.goodSites)+'</p></div>':'')+(p.stayedSites?'<div class="info-block"><label>🏕 Sites Stayed</label><p>'+esc(p.stayedSites)+'</p></div>':'')+(p.avoidSites?'<div class="info-block"><label>🚫 Avoid</label><p>'+esc(p.avoidSites)+'</p></div>':'')+(p.bigRig?'<div class="info-block"><label>🚐 Big Rig</label><p>'+esc(p.bigRig)+'</p></div>':'')+(p.phone?'<div class="info-block"><label>📞 Phone</label><p>'+esc(p.phone)+'</p></div>':'')+(p.notes?'<div class="info-block" style="grid-column:1/-1"><label>📝 Notes</label><p>'+esc(p.notes)+'</p></div>':'')+'</div><div class="trip-log"><div class="trip-log-title">🗓 Trip History<span class="trip-count-badge">'+trips.length+' trip'+(trips.length!==1?'s':'')+'</span>'+parkFeeSummaryBadge(p.id)+'</div><div class="trip-entries">'+(tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;">No trips logged yet.</div>')+'</div><div class="add-trip-row"><div class="field"><label>Arrival</label><input type="date" id="td-date-'+p.id+'"></div><div class="field"><label>Departure</label><input type="date" id="td-depart-'+p.id+'"></div><div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-'+p.id+'" placeholder="e.g. 45"></div><div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-'+p.id+'" placeholder="great weather..."></div><button class="btn-add-trip" onclick="addTrip('+p.id+')">＋ Add Trip</button></div></div>'+'<div class="park-photos" style="margin-top:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-family:var(--font-heading);font-size:.92rem;color:var(--bark);">📷 Photos</span><button onclick="document.getElementById(\'photo-input-'+p.id+'\').click()" style="font-size:.74rem;padding:4px 12px;background:var(--moss);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-family:var(--font-body);">+ Add Photo</button><input type="file" id="photo-input-'+p.id+'" accept="image/*" style="display:none" onchange="handlePhotoUpload('+p.id+', this)"></div><div id="photo-gallery-'+p.id+'" class="photo-gallery">'+renderPhotoGallery(p.id)+'</div></div>'+(isC?'<div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--fog);margin-top:8px"><button class="btn-amber" style="font-size:.78rem;padding:4px 12px" onclick="openEditPark('+p.id+')">✏️ Edit</button><button class="btn-amber" style="font-size:.78rem;padding:4px 12px;background:rgba(180,60,40,.7)" onclick="deleteCustomPark('+p.id+')">🗑 Delete</button></div>':'')+'</div></div>';
       }).join('');
     });
     return;
@@ -3260,7 +3264,6 @@ function renderParks() {
         <div class="park-right">
           <button class="btn-fav" onclick="toggleFavorite(${p.id},event)" title="${state.favorites.includes(p.id)?'Remove from favorites':'Add to favorites'}">${state.favorites.includes(p.id)?'❤️':'🤍'}</button>
           ${state.ratings[p.id] ? `<span style="color:var(--amber);font-size:.8rem;letter-spacing:1px" title="${['','Poor','Fair','Good','Great','Excellent'][state.ratings[p.id]]}">${'★'.repeat(state.ratings[p.id])}</span>` : ''}
-          ${isC?'<span class="badge bc">★ Mine</span>':''}
           ${trips.length?`<span class="badge bv">🏕 ${trips.length} trip${trips.length>1?'s':''}</span>`:`<span class="badge bn">New</span>`}
           <span class="chevron">▾</span>
         </div>
@@ -3557,14 +3560,13 @@ function daysUntil(d){ if(!d)return null; return Math.ceil((new Date(d+'T00:00:0
 
 // ═══════════════════════════════════════════════════════
 // TRIP LISTS: packing + shopping (stored on the upcoming trip as
-// trip.packList and trip.shopList)
+// trip.packList and trip.shopList). Items: {id,text,done}; array order = display order.
 // ═══════════════════════════════════════════════════════
-const PACK_CATS=[{id:'food',label:'🍳 Food & Drink'},{id:'gear',label:'🏕 Camp Gear'},{id:'clothes',label:'🎒 Clothing & Personal'},{id:'other',label:'📦 Other'}];
 const TRIP_LISTS={
-  pack:{key:'packList',title:'🎒 Packing List',doneWord:'packed',placeholder:'Add an item…',empty:'Add food, gear and anything else you don\u2019t want to forget. 🌲',cats:true},
-  shop:{key:'shopList',title:'🛒 Shopping List',doneWord:'bought',placeholder:'Add something to buy…',empty:'Groceries and supplies to pick up before the trip. 🛒',cats:false}
+  pack:{key:'packList',title:'🎒 Packing List',doneWord:'packed',placeholder:'Add an item…',empty:'Add food, gear and anything else you don\u2019t want to forget. 🌲'},
+  shop:{key:'shopList',title:'🛒 Shopping List',doneWord:'bought',placeholder:'Add something to buy…',empty:'Groceries and supplies to pick up before the trip. 🛒'}
 };
-let _packTripId=null,_packCat='food';
+let _packTripId=null;
 function packTrip(){return (state.upcoming||[]).find(t=>t.id===_packTripId)||null;}
 function tripList(t,kind){const k=TRIP_LISTS[kind].key;if(!Array.isArray(t[k]))t[k]=[];return t[k];}
 function packCountLabel(t){
@@ -3575,14 +3577,14 @@ function listPanelHTML(kind){
   const L=TRIP_LISTS[kind];
   return `<div class="pack-col"><h3 class="pack-col-title">${L.title}</h3>
   <div class="pack-progress"><div id="${kind}Bar" style="width:0%"></div></div><div class="pack-count" id="${kind}Count"></div>
-  <div class="pack-form">${L.cats?`<select id="${kind}Cat" aria-label="Category" onchange="_packCat=this.value">${PACK_CATS.map(c=>`<option value="${c.id}"${c.id===_packCat?' selected':''}>${c.label}</option>`).join('')}</select>`:''}<input id="${kind}Input" type="text" placeholder="${L.placeholder}" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addListItem('${kind}');}"><button class="dash-action" onclick="addListItem('${kind}')">＋ Add</button></div>
-  <div id="${kind}List"></div>
+  <div class="pack-form"><input id="${kind}Input" type="text" placeholder="${L.placeholder}" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addListItem('${kind}');}"><button class="dash-action" onclick="addListItem('${kind}')">＋ Add</button></div>
+  <div id="${kind}List" data-kind="${kind}"></div>
   <div class="pack-tools"><button class="dash-action alt" onclick="uncheckAllList('${kind}')">Uncheck all</button><button class="dash-action alt" onclick="removeCheckedList('${kind}')">Remove checked</button></div></div>`;
 }
 function openPackList(tripId){
   _packTripId=tripId;const t=packTrip();if(!t)return;
   tripList(t,'pack');tripList(t,'shop');
-  document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>Trip Lists</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div><div class="pack-cols">${listPanelHTML('pack')}${listPanelHTML('shop')}</div>`;
+  document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>Trip Lists</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div><div class="pack-toolbar"><button class="dash-action alt" onclick="printTripLists()">🖨️ Print lists</button><span class="dash-muted">Drag ⠿ to rearrange</span></div><div class="pack-cols">${listPanelHTML('pack')}${listPanelHTML('shop')}</div>`;
   renderList('pack');renderList('shop');
   document.getElementById('packModalBg').classList.remove('hidden');
 }
@@ -3592,25 +3594,17 @@ function renderList(kind){
   const done=list.filter(i=>i.done).length;
   document.getElementById(kind+'Bar').style.width=(list.length?Math.round(done/list.length*100):0)+'%';
   document.getElementById(kind+'Count').textContent=list.length?`${done} of ${list.length} ${L.doneWord}`:'Nothing on the list yet';
-  const row=i=>`<div class="pack-item${i.done?' done':''}"><label><input type="checkbox" ${i.done?'checked':''} onchange="toggleListItem('${kind}',${i.id})"><span>${esc(i.text)}</span></label><button class="pack-del" aria-label="Delete ${esc(i.text)}" onclick="deleteListItem('${kind}',${i.id})">×</button></div>`;
-  let html;
-  if(L.cats){
-    html=PACK_CATS.map(c=>{const items=list.filter(i=>(i.cat||'other')===c.id);return items.length?`<div class="pack-group"><h3>${c.label}</h3>${items.map(row).join('')}</div>`:'';}).join('');
-  }else{
-    const ordered=[...list.filter(i=>!i.done),...list.filter(i=>i.done)];
-    html=ordered.length?`<div class="pack-group">${ordered.map(row).join('')}</div>`:'';
-  }
-  document.getElementById(kind+'List').innerHTML=html||`<div class="pack-empty">${L.empty}</div>`;
+  const row=i=>`<div class="pack-item${i.done?' done':''}" data-id="${i.id}"><span class="pack-grip" title="Drag to rearrange" aria-label="Drag to rearrange">⠿</span><label><input type="checkbox" ${i.done?'checked':''} onchange="toggleListItem('${kind}',${i.id})"><span>${esc(i.text)}</span></label><button class="pack-del" aria-label="Delete ${esc(i.text)}" onclick="deleteListItem('${kind}',${i.id})">×</button></div>`;
+  document.getElementById(kind+'List').innerHTML=list.length?`<div class="pack-group">${list.map(row).join('')}</div>`:`<div class="pack-empty">${L.empty}</div>`;
 }
 function listSave(kind){saveState();renderList(kind);}
 function addListItem(kind){
-  const t=packTrip();if(!t)return;const L=TRIP_LISTS[kind];
+  const t=packTrip();if(!t)return;
   const inp=document.getElementById(kind+'Input');const text=inp.value.trim();
-  const cat=L.cats?document.getElementById(kind+'Cat').value:null;if(cat)_packCat=cat;
   if(text){
     const list=tripList(t,kind);
-    if(list.some(i=>i.text.toLowerCase()===text.toLowerCase()&&(i.cat||null)===cat)){showToast('Already on the list');}
-    else{list.push({id:Date.now()+Math.floor(Math.random()*1000),text,cat,done:false});inp.value='';listSave(kind);}
+    if(list.some(i=>i.text.toLowerCase()===text.toLowerCase())){showToast('Already on the list');}
+    else{list.push({id:Date.now()+Math.floor(Math.random()*1000),text,done:false});inp.value='';listSave(kind);}
   }
   inp.focus();
 }
@@ -3623,6 +3617,54 @@ function removeCheckedList(kind){
   if(!confirm(`Remove ${n} checked item${n>1?'s':''} from the list?`))return;
   t[TRIP_LISTS[kind].key]=list.filter(i=>!i.done);listSave(kind);
 }
+// ── Print ──
+function printTripLists(){
+  const t=packTrip();if(!t)return;
+  const w=window.open('','_blank');if(!w){alert('Please allow pop-ups to print your lists.');return;}
+  const col=kind=>{
+    const L=TRIP_LISTS[kind],list=tripList(t,kind);
+    return `<div class="col"><h2>${L.title}</h2>${list.length?list.map(i=>`<div class="it${i.done?' d':''}"><span class="bx">${i.done?'☑':'☐'}</span><span>${esc(i.text)}</span></div>`).join(''):'<div class="none">(empty)</div>'}</div>`;
+  };
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trip Lists — ${esc(t.parkName||'Trip')}</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#2c1a0e;margin:28px auto;max-width:850px;padding:0 22px}h1{margin:0 0 2px;font-size:24px}.sub{color:#6b5a4a;margin-bottom:18px;font-size:14px}.cols{display:flex;gap:30px;align-items:flex-start}.col{flex:1;min-width:0}.col h2{font-size:17px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #3d5a2a}.it{display:flex;gap:9px;padding:5px 0;border-bottom:1px dotted #c9b99f;font-size:15px;break-inside:avoid}.bx{font-size:18px;line-height:1.1}.it.d span:last-child{text-decoration:line-through;color:#8a7a6a}.none{color:#8a7a6a;font-size:14px}@media print{body{margin:0;padding:0}}</style></head><body><h1>🌲 ${esc(t.parkName||'Upcoming trip')}</h1><div class="sub">${fmtDateShort(t.startDate)}${t.endDate?' – '+fmtDateShort(t.endDate):''}</div><div class="cols">${col('pack')}${col('shop')}</div></body></html>`);
+  w.document.close();w.focus();setTimeout(()=>w.print(),400);
+}
+// ── Drag to rearrange (touch + mouse) ──
+(function(){
+  let drag=null;
+  function scrollParent(el){for(let n=el.parentElement;n;n=n.parentElement){const o=getComputedStyle(n).overflowY;if((o==='auto'||o==='scroll')&&n.scrollHeight>n.clientHeight)return n;}return null;}
+  document.addEventListener('pointerdown',e=>{
+    const g=e.target.closest&&e.target.closest('.pack-grip');if(!g)return;
+    const item=g.closest('.pack-item'),listEl=g.closest('[data-kind]');if(!item||!listEl)return;
+    e.preventDefault();
+    drag={item,box:item.parentElement,kind:listEl.dataset.kind,id:e.pointerId,g,sp:scrollParent(item)};
+    item.classList.add('dragging');
+    try{g.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!drag||e.pointerId!==drag.id)return;
+    const y=e.clientY;
+    const sibs=[...drag.box.querySelectorAll('.pack-item:not(.dragging)')];
+    let before=null;
+    for(const sb of sibs){const r=sb.getBoundingClientRect();if(y<r.top+r.height/2){before=sb;break;}}
+    if(before)drag.box.insertBefore(drag.item,before);else drag.box.appendChild(drag.item);
+    if(drag.sp){const r=drag.sp.getBoundingClientRect();if(y<r.top+50)drag.sp.scrollTop-=12;else if(y>r.bottom-50)drag.sp.scrollTop+=12;}
+  });
+  function finish(e){
+    if(!drag||e.pointerId!==drag.id)return;
+    const {item,box,kind,g}=drag;drag=null;
+    item.classList.remove('dragging');
+    try{g.releasePointerCapture(e.pointerId);}catch(_){}
+    const t=packTrip();if(!t){return;}
+    const order=[...box.querySelectorAll('.pack-item')].map(el=>Number(el.dataset.id));
+    const list=tripList(t,kind);
+    const byId=new Map(list.map(i=>[i.id,i]));
+    const next=order.map(id=>byId.get(id)).filter(Boolean);
+    if(next.length===list.length){t[TRIP_LISTS[kind].key]=next;saveState();}
+    renderList(kind);
+  }
+  document.addEventListener('pointerup',finish);
+  document.addEventListener('pointercancel',finish);
+})();
 
 function renderDashboard(){
   const el=document.getElementById('dashboardContent'); if(!el)return;
