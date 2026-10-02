@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v2';
+  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v3';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1054,6 +1054,10 @@ header p{
 .pack-del{background:none;border:0;font-size:1.3rem;line-height:1;color:var(--fog);cursor:pointer;padding:8px 10px;border-radius:6px}
 .pack-del:hover{background:rgba(138,63,47,.12);color:#8a3f2f}
 .pack-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pack-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.pack-col{background:rgba(255,255,255,.28);border:1px solid rgba(107,66,38,.22);border-radius:10px;padding:12px 14px;min-width:0}
+.pack-col-title{font-family:var(--font-heading);font-size:1.15rem;color:var(--bark);margin:0 0 6px}
+@media(max-width:720px){.pack-cols{grid-template-columns:1fr}}
 .pack-empty{color:var(--fog);font-size:.88rem;padding:14px 4px;text-align:center}
 </style>
 
@@ -1326,7 +1330,7 @@ header p{
 
 <div class="modal-bg hidden" id="detailModalBg" onclick="if(event.target===this)closeParkDetail()"><div class="modal" style="max-width:820px;width:100%"><button onclick="closeParkDetail()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="detailModalContent"></div></div></div>
 <div class="modal-bg hidden" id="bookModalBg" onclick="if(event.target===this)this.classList.add('hidden')"><div class="modal" style="max-width:850px;width:100%"><button onclick="document.getElementById('bookModalBg').classList.add('hidden')" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div class="book-actions"><button class="btn-g" onclick="printCampingBook()">🖨️ Print / Save PDF</button><button class="btn-o" onclick="document.getElementById('bookModalBg').classList.add('hidden')">Close</button></div><div id="bookContent"></div></div></div>
-<div class="modal-bg hidden" id="packModalBg" onclick="if(event.target===this)closePackList()"><div class="modal" style="max-width:560px;width:100%"><button onclick="closePackList()" aria-label="Close" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="packContent"></div></div></div>
+<div class="modal-bg hidden" id="packModalBg" onclick="if(event.target===this)closePackList()"><div class="modal" style="max-width:980px;width:100%"><button onclick="closePackList()" aria-label="Close" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="packContent"></div></div></div>
 <div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1080px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-toolbar"><button class="map-filter active" id="mapFilterAll" onclick="setMapFilter('all')">📍 All Parks</button><button class="map-filter" id="mapFilterVisited" onclick="setMapFilter('visited')">🏕 Visited</button><button class="map-filter" id="mapFilterFavs" onclick="setMapFilter('favs')">❤️ Favorites</button><span class="map-toolbar-spacer"></span><button class="btn-o" onclick="fitCampingMap()">⤢ Fit All</button><button class="btn-o" onclick="openMapExplorer(true)">↻ Refresh</button></div><div id="mapStatus" class="map-status">Preparing map…</div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div><div id="mapFailedBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
@@ -3552,51 +3556,73 @@ function getUpcomingSorted(){
 function daysUntil(d){ if(!d)return null; return Math.ceil((new Date(d+'T00:00:00')-new Date(new Date().toDateString()))/86400000); }
 
 // ═══════════════════════════════════════════════════════
-// PACKING LIST (stored on the upcoming trip as trip.packList)
+// TRIP LISTS: packing + shopping (stored on the upcoming trip as
+// trip.packList and trip.shopList)
 // ═══════════════════════════════════════════════════════
 const PACK_CATS=[{id:'food',label:'🍳 Food & Drink'},{id:'gear',label:'🏕 Camp Gear'},{id:'clothes',label:'🎒 Clothing & Personal'},{id:'other',label:'📦 Other'}];
-let _packTripId=null, _packCat='food';
+const TRIP_LISTS={
+  pack:{key:'packList',title:'🎒 Packing List',doneWord:'packed',placeholder:'Add an item…',empty:'Add food, gear and anything else you don\u2019t want to forget. 🌲',cats:true},
+  shop:{key:'shopList',title:'🛒 Shopping List',doneWord:'bought',placeholder:'Add something to buy…',empty:'Groceries and supplies to pick up before the trip. 🛒',cats:false}
+};
+let _packTripId=null,_packCat='food';
 function packTrip(){return (state.upcoming||[]).find(t=>t.id===_packTripId)||null;}
-function packCountLabel(t){const l=Array.isArray(t.packList)?t.packList:[];return l.length?`(${l.filter(i=>i.done).length}/${l.length})`:'';}
+function tripList(t,kind){const k=TRIP_LISTS[kind].key;if(!Array.isArray(t[k]))t[k]=[];return t[k];}
+function packCountLabel(t){
+  const f=(arr,ic)=>Array.isArray(arr)&&arr.length?`${ic}${arr.filter(i=>i.done).length}/${arr.length}`:'';
+  return [f(t.packList,'🎒'),f(t.shopList,'🛒')].filter(Boolean).join(' · ');
+}
+function listPanelHTML(kind){
+  const L=TRIP_LISTS[kind];
+  return `<div class="pack-col"><h3 class="pack-col-title">${L.title}</h3>
+  <div class="pack-progress"><div id="${kind}Bar" style="width:0%"></div></div><div class="pack-count" id="${kind}Count"></div>
+  <div class="pack-form">${L.cats?`<select id="${kind}Cat" aria-label="Category" onchange="_packCat=this.value">${PACK_CATS.map(c=>`<option value="${c.id}"${c.id===_packCat?' selected':''}>${c.label}</option>`).join('')}</select>`:''}<input id="${kind}Input" type="text" placeholder="${L.placeholder}" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addListItem('${kind}');}"><button class="dash-action" onclick="addListItem('${kind}')">＋ Add</button></div>
+  <div id="${kind}List"></div>
+  <div class="pack-tools"><button class="dash-action alt" onclick="uncheckAllList('${kind}')">Uncheck all</button><button class="dash-action alt" onclick="removeCheckedList('${kind}')">Remove checked</button></div></div>`;
+}
 function openPackList(tripId){
   _packTripId=tripId;const t=packTrip();if(!t)return;
-  if(!Array.isArray(t.packList))t.packList=[];
-  document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>🎒 Packing List</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div>
-  <div class="pack-progress"><div id="packBar" style="width:0%"></div></div><div class="pack-count" id="packCount"></div>
-  <div class="pack-form"><select id="packCat" aria-label="Category" onchange="_packCat=this.value">${PACK_CATS.map(c=>`<option value="${c.id}"${c.id===_packCat?' selected':''}>${c.label}</option>`).join('')}</select><input id="packInput" type="text" placeholder="Add an item…" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addPackItem();}"><button class="dash-action" onclick="addPackItem()">＋ Add</button></div>
-  <div id="packList"></div>
-  <div class="pack-tools"><button class="dash-action alt" onclick="uncheckAllPack()">Uncheck all</button><button class="dash-action alt" onclick="removeCheckedPack()">Remove checked</button></div>`;
-  renderPackList();
+  tripList(t,'pack');tripList(t,'shop');
+  document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>Trip Lists</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div><div class="pack-cols">${listPanelHTML('pack')}${listPanelHTML('shop')}</div>`;
+  renderList('pack');renderList('shop');
   document.getElementById('packModalBg').classList.remove('hidden');
 }
 function closePackList(){document.getElementById('packModalBg').classList.add('hidden');_packTripId=null;renderDashboard();}
-function renderPackList(){
-  const t=packTrip();if(!t)return;const list=t.packList||[];
+function renderList(kind){
+  const t=packTrip();if(!t)return;const L=TRIP_LISTS[kind];const list=tripList(t,kind);
   const done=list.filter(i=>i.done).length;
-  document.getElementById('packBar').style.width=(list.length?Math.round(done/list.length*100):0)+'%';
-  document.getElementById('packCount').textContent=list.length?`${done} of ${list.length} packed`:'Nothing on the list yet';
-  const groups=PACK_CATS.map(c=>{
-    const items=list.filter(i=>(i.cat||'other')===c.id);if(!items.length)return '';
-    return `<div class="pack-group"><h3>${c.label}</h3>${items.map(i=>`<div class="pack-item${i.done?' done':''}"><label><input type="checkbox" ${i.done?'checked':''} onchange="togglePackItem(${i.id})"><span>${esc(i.text)}</span></label><button class="pack-del" aria-label="Delete ${esc(i.text)}" onclick="deletePackItem(${i.id})">×</button></div>`).join('')}</div>`;
-  }).join('');
-  document.getElementById('packList').innerHTML=groups||'<div class="pack-empty">Add food, gear and anything else you don\u2019t want to forget. 🌲</div>';
+  document.getElementById(kind+'Bar').style.width=(list.length?Math.round(done/list.length*100):0)+'%';
+  document.getElementById(kind+'Count').textContent=list.length?`${done} of ${list.length} ${L.doneWord}`:'Nothing on the list yet';
+  const row=i=>`<div class="pack-item${i.done?' done':''}"><label><input type="checkbox" ${i.done?'checked':''} onchange="toggleListItem('${kind}',${i.id})"><span>${esc(i.text)}</span></label><button class="pack-del" aria-label="Delete ${esc(i.text)}" onclick="deleteListItem('${kind}',${i.id})">×</button></div>`;
+  let html;
+  if(L.cats){
+    html=PACK_CATS.map(c=>{const items=list.filter(i=>(i.cat||'other')===c.id);return items.length?`<div class="pack-group"><h3>${c.label}</h3>${items.map(row).join('')}</div>`:'';}).join('');
+  }else{
+    const ordered=[...list.filter(i=>!i.done),...list.filter(i=>i.done)];
+    html=ordered.length?`<div class="pack-group">${ordered.map(row).join('')}</div>`:'';
+  }
+  document.getElementById(kind+'List').innerHTML=html||`<div class="pack-empty">${L.empty}</div>`;
 }
-function packSave(){saveState();renderPackList();}
-function pushPackItem(text,cat){
-  const t=packTrip();if(!t)return false;text=String(text||'').trim();if(!text)return false;
-  if(!Array.isArray(t.packList))t.packList=[];
-  if(t.packList.some(i=>i.text.toLowerCase()===text.toLowerCase()&&(i.cat||'other')===cat)){showToast('Already on the list');return false;}
-  t.packList.push({id:Date.now()+Math.floor(Math.random()*1000),text,cat,done:false});return true;
-}
-function addPackItem(){
-  const inp=document.getElementById('packInput'),cat=document.getElementById('packCat').value;_packCat=cat;
-  if(pushPackItem(inp.value,cat)){inp.value='';packSave();}
+function listSave(kind){saveState();renderList(kind);}
+function addListItem(kind){
+  const t=packTrip();if(!t)return;const L=TRIP_LISTS[kind];
+  const inp=document.getElementById(kind+'Input');const text=inp.value.trim();
+  const cat=L.cats?document.getElementById(kind+'Cat').value:null;if(cat)_packCat=cat;
+  if(text){
+    const list=tripList(t,kind);
+    if(list.some(i=>i.text.toLowerCase()===text.toLowerCase()&&(i.cat||null)===cat)){showToast('Already on the list');}
+    else{list.push({id:Date.now()+Math.floor(Math.random()*1000),text,cat,done:false});inp.value='';listSave(kind);}
+  }
   inp.focus();
 }
-function togglePackItem(id){const t=packTrip();const it=t&&t.packList.find(x=>x.id===id);if(it){it.done=!it.done;packSave();}}
-function deletePackItem(id){const t=packTrip();if(!t)return;t.packList=t.packList.filter(x=>x.id!==id);packSave();}
-function uncheckAllPack(){const t=packTrip();if(!t)return;t.packList.forEach(i=>i.done=false);packSave();}
-function removeCheckedPack(){const t=packTrip();if(!t)return;const n=t.packList.filter(i=>i.done).length;if(!n){showToast('Nothing checked yet');return;}if(!confirm(`Remove ${n} checked item${n>1?'s':''} from the list?`))return;t.packList=t.packList.filter(i=>!i.done);packSave();}
+function toggleListItem(kind,id){const t=packTrip();const it=t&&tripList(t,kind).find(x=>x.id===id);if(it){it.done=!it.done;listSave(kind);}}
+function deleteListItem(kind,id){const t=packTrip();if(!t)return;t[TRIP_LISTS[kind].key]=tripList(t,kind).filter(x=>x.id!==id);listSave(kind);}
+function uncheckAllList(kind){const t=packTrip();if(!t)return;tripList(t,kind).forEach(i=>i.done=false);listSave(kind);}
+function removeCheckedList(kind){
+  const t=packTrip();if(!t)return;const list=tripList(t,kind);const n=list.filter(i=>i.done).length;
+  if(!n){showToast('Nothing checked yet');return;}
+  if(!confirm(`Remove ${n} checked item${n>1?'s':''} from the list?`))return;
+  t[TRIP_LISTS[kind].key]=list.filter(i=>!i.done);listSave(kind);
+}
 
 function renderDashboard(){
   const el=document.getElementById('dashboardContent'); if(!el)return;
@@ -3606,7 +3632,7 @@ function renderDashboard(){
   const next=upcoming[0], nextPark=next?parks.find(p=>p.id===next.parkId):null, recent=trips.slice().reverse().slice(0,5);
   let html='<div class="dashboard-grid">';
   if(next){
-    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.reservation?.number?`<div class="trip-line">🔖 Reservation #${esc(next.reservation.number)}</div>`:''}${next.reservation?.bookedThrough?`<div class="trip-line">🏢 ${esc(next.reservation.bookedThrough)}</div>`:''}${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="openPackList(${next.id})">🎒 Packing List <span class="pack-btn-count">${packCountLabel(next)}</span></button><button class="dash-action" onclick="switchTab('upcoming')">Upcoming Trips →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
+    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.reservation?.number?`<div class="trip-line">🔖 Reservation #${esc(next.reservation.number)}</div>`:''}${next.reservation?.bookedThrough?`<div class="trip-line">🏢 ${esc(next.reservation.bookedThrough)}</div>`:''}${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="openPackList(${next.id})">🎒 Packing & Shopping <span class="pack-btn-count">${packCountLabel(next)}</span></button><button class="dash-action" onclick="switchTab('upcoming')">Upcoming Trips →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
   } else {
     html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>No upcoming trip yet</h2><div class="trip-big">🌲 Time to plan the next campout.</div><div class="dash-actions"><button class="dash-action" onclick="switchTab('upcoming')">＋ Plan a Trip</button><button class="dash-action alt" onclick="switchTab('findcamps')">🔍 Explore Campgrounds</button></div></div>`;
   }
