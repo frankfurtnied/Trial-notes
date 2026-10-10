@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-01-packlist-v5';
+  const TRAIL_NOTES_BUILD = '2026-10-10-mpg85';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -2626,7 +2626,7 @@ async function fetchWeatherForTrip(t) {
   }
 }
 
-const MPG = 9; // average miles per gallon, used to estimate fuel from mileage
+const MPG = 8.5; // average miles per gallon, used to estimate fuel from mileage
 function milesToGallons(miles) {
   const m = Number(miles)||0;
   if (!m) return '';
@@ -6030,7 +6030,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>
     <div class="fg2">
       <div><label>💰 Site Fee ($)</label><input type="number" id="et-sitefee" placeholder="e.g. 35" min="0" step="0.01" style="width:100%"></div>
-      <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from one-way miles @ 9 mpg" min="0" step="0.1" style="width:100%"></div>
+      <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from one-way miles @ 8.5 mpg" min="0" step="0.1" style="width:100%"></div>
     </div>
     <div class="fl">
       <label>📷 Photo</label>
@@ -6099,7 +6099,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
       <div style="flex:1;">
         <label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">⛽ Fuel (gallons)</label>
-        <input id="dl-fuel" type="number" min="0" step="0.1" placeholder="auto from one-way miles @ 9 mpg" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
+        <input id="dl-fuel" type="number" min="0" step="0.1" placeholder="auto from one-way miles @ 8.5 mpg" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
       </div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
