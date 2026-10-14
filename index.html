@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-10-mpg85';
+  const TRAIL_NOTES_BUILD = '2026-10-14-carrylists';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1918,6 +1918,7 @@ let state = {
   parkMileage: JSON.parse(localStorage.getItem('cd_mileage')   || '{}'),
   mapCoords: JSON.parse(localStorage.getItem('cd_mapcoords') || '{}'),
   trash: JSON.parse(localStorage.getItem('cd_trash') || '[]'),
+  carryLists: JSON.parse(localStorage.getItem('cd_carrylists') || 'null'),
   activeFilter: '',
   homeAddress: localStorage.getItem('cd_home') || '',
   parkViewMode: 'list',
@@ -1941,6 +1942,7 @@ function saveState() {
     localStorage.setItem('cd_mileage',    JSON.stringify(state.parkMileage||{}));
     localStorage.setItem('cd_mapcoords', JSON.stringify(state.mapCoords||{}));
     localStorage.setItem('cd_trash', JSON.stringify(state.trash||[]));
+    localStorage.setItem('cd_carrylists', JSON.stringify(state.carryLists||null));
   } catch(err) {
     showToast('Could not save: ' + err.message);
   }
@@ -2467,6 +2469,12 @@ function todayStr() {
   return `${y}-${m}-${day}`;
 }
 
+// Keep the packing/shopping lists of a finished trip so they carry over to the next trip.
+function rememberTripLists(trip){
+  const pack=Array.isArray(trip.packList)?trip.packList:[], shop=Array.isArray(trip.shopList)?trip.shopList:[];
+  if(!pack.length&&!shop.length)return;
+  state.carryLists={packList:JSON.parse(JSON.stringify(pack)),shopList:JSON.parse(JSON.stringify(shop))};
+}
 function migrateExpired() {
   const today = todayStr();
   const remaining = [];
@@ -2474,6 +2482,7 @@ function migrateExpired() {
   (state.upcoming || []).forEach(trip => {
     const endDate = trip.endDate || trip.startDate;
     if (endDate < today) {
+      rememberTripLists(trip);
       // If this was a new park not yet in the directory, auto-create it
       let parkId = trip.parkId;
       if (!parkId) {
@@ -3584,6 +3593,11 @@ function listPanelHTML(kind){
 function openPackList(tripId){
   _packTripId=tripId;const t=packTrip();if(!t)return;
   tripList(t,'pack');tripList(t,'shop');
+  if(!t.packList.length&&!t.shopList.length&&state.carryLists){
+    t.packList=(state.carryLists.packList||[]).map(i=>({...i,id:Date.now()+Math.floor(Math.random()*1e6)}));
+    t.shopList=(state.carryLists.shopList||[]).map(i=>({...i,id:Date.now()+Math.floor(Math.random()*1e6)}));
+    state.carryLists=null;saveState();
+  }
   document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>Trip Lists</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div><div class="pack-toolbar"><button class="dash-action alt" onclick="printTripLists()">🖨️ Print lists</button><span class="dash-muted">Drag ⠿ to rearrange</span></div><div class="pack-cols">${listPanelHTML('pack')}${listPanelHTML('shop')}</div>`;
   renderList('pack');renderList('shop');
   document.getElementById('packModalBg').classList.remove('hidden');
@@ -4045,6 +4059,7 @@ async function exportData() {
     parkPhotos:  photos,
     parkMileage: state.parkMileage || {},
     trash: state.trash || [],
+    carryLists: state.carryLists || null,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
@@ -4104,6 +4119,7 @@ function importData(e) {
         const merged = new Set([...state.hiddenParks, ...data.hiddenParks]);
         state.hiddenParks = [...merged];
       }
+      if (data.carryLists && !state.carryLists) state.carryLists = data.carryLists;
       if (data.trash) {
         if (!state.trash) state.trash=[];
         const existingTrash = new Set(state.trash.map(x=>x.id));
@@ -4223,6 +4239,7 @@ async function syncToCloud() {
     mapCoords: state.mapCoords||{},
     parkPhotos: state.parkPhotos||{},
     trash: state.trash||[],
+    carryLists: state.carryLists||null,
     homeAddress: state.homeAddress||'',
   };
   try {
@@ -4292,6 +4309,7 @@ async function loadFromCloud() {
       if (d.mapCoords !== undefined) { state.mapCoords = d.mapCoords; try{localStorage.setItem('cd_mapcoords', JSON.stringify(d.mapCoords));}catch(e){} }
       if (d.parkPhotos !== undefined) state.parkPhotos = d.parkPhotos;
       if (d.trash !== undefined) state.trash = d.trash;
+      if (d.carryLists !== undefined) state.carryLists = d.carryLists;
       if (d.homeAddress) { state.homeAddress = d.homeAddress; _homeCoords = null; }
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
