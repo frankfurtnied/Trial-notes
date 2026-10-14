@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-14-carrylists';
+  const TRAIL_NOTES_BUILD = '2026-10-14-standing-pack';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1919,6 +1919,7 @@ let state = {
   mapCoords: JSON.parse(localStorage.getItem('cd_mapcoords') || '{}'),
   trash: JSON.parse(localStorage.getItem('cd_trash') || '[]'),
   carryLists: JSON.parse(localStorage.getItem('cd_carrylists') || 'null'),
+  masterPack: JSON.parse(localStorage.getItem('cd_masterpack') || '[]'),
   activeFilter: '',
   homeAddress: localStorage.getItem('cd_home') || '',
   parkViewMode: 'list',
@@ -1943,6 +1944,7 @@ function saveState() {
     localStorage.setItem('cd_mapcoords', JSON.stringify(state.mapCoords||{}));
     localStorage.setItem('cd_trash', JSON.stringify(state.trash||[]));
     localStorage.setItem('cd_carrylists', JSON.stringify(state.carryLists||null));
+    localStorage.setItem('cd_masterpack', JSON.stringify(state.masterPack||[]));
   } catch(err) {
     showToast('Could not save: ' + err.message);
   }
@@ -2469,11 +2471,14 @@ function todayStr() {
   return `${y}-${m}-${day}`;
 }
 
-// Keep the packing/shopping lists of a finished trip so they carry over to the next trip.
+// When a trip finishes, keep its unbought shopping items for the next trip.
+// (The packing list is a standing list and doesn't belong to any one trip.)
 function rememberTripLists(trip){
-  const pack=Array.isArray(trip.packList)?trip.packList:[], shop=Array.isArray(trip.shopList)?trip.shopList:[];
-  if(!pack.length&&!shop.length)return;
-  state.carryLists={packList:JSON.parse(JSON.stringify(pack)),shopList:JSON.parse(JSON.stringify(shop))};
+  const left=(Array.isArray(trip.shopList)?trip.shopList:[]).filter(i=>i&&!i.done).map(i=>({text:i.text}));
+  if(!left.length)return;
+  const prev=(state.carryLists&&Array.isArray(state.carryLists.shopList))?state.carryLists.shopList:[];
+  const seen=new Set(prev.map(i=>String(i.text).toLowerCase()));
+  state.carryLists={...(state.carryLists||{}),shopList:[...prev,...left.filter(i=>!seen.has(String(i.text).toLowerCase()))]};
 }
 function migrateExpired() {
   const today = todayStr();
@@ -3568,43 +3573,69 @@ function getUpcomingSorted(){
 function daysUntil(d){ if(!d)return null; return Math.ceil((new Date(d+'T00:00:00')-new Date(new Date().toDateString()))/86400000); }
 
 // ═══════════════════════════════════════════════════════
-// TRIP LISTS: packing + shopping (stored on the upcoming trip as
-// trip.packList and trip.shopList). Items: {id,text,done}; array order = display order.
+// TRIP LISTS
+//  • Packing = ONE standing list (state.masterPack: {id,text}) shared by every trip.
+//    Which items are checked is stored per trip (trip.packChecked = [ids]),
+//    so every new trip starts with nothing packed.
+//  • Shopping = per trip (trip.shopList: {id,text,done}). Unbought items carry
+//    forward to the next trip when a trip finishes (state.carryLists.shopList).
 // ═══════════════════════════════════════════════════════
 const TRIP_LISTS={
-  pack:{key:'packList',title:'🎒 Packing List',doneWord:'packed',placeholder:'Add an item…',empty:'Add food, gear and anything else you don\u2019t want to forget. 🌲'},
-  shop:{key:'shopList',title:'🛒 Shopping List',doneWord:'bought',placeholder:'Add something to buy…',empty:'Groceries and supplies to pick up before the trip. 🛒'}
+  pack:{title:'🎒 Packing List',doneWord:'packed',placeholder:'Add an item…',empty:'Add the things you always take. This list stays the same for every trip. 🌲',note:'Your standing list. It stays for every trip, and checkmarks start fresh on each new trip.'},
+  shop:{title:'🛒 Shopping List',doneWord:'bought',placeholder:'Add something to buy…',empty:'Groceries and supplies to pick up before the trip. 🛒',note:'For this trip. Anything you don’t buy carries over to your next trip.'}
 };
-let _packTripId=null;
+let _packTripId=null,_idn=0;
+function newListId(){return Date.now()*1000+(_idn++%1000);}
 function packTrip(){return (state.upcoming||[]).find(t=>t.id===_packTripId)||null;}
-function tripList(t,kind){const k=TRIP_LISTS[kind].key;if(!Array.isArray(t[k]))t[k]=[];return t[k];}
+function masterList(){if(!Array.isArray(state.masterPack))state.masterPack=[];return state.masterPack;}
+function shopArr(t){if(!Array.isArray(t.shopList))t.shopList=[];return t.shopList;}
+function packChecked(t){if(!Array.isArray(t.packChecked))t.packChecked=[];return t.packChecked;}
+// items as {id,text,done} for either list
+function getListItems(kind,t){
+  if(kind==='pack'){const c=new Set(packChecked(t));return masterList().map(i=>({id:i.id,text:i.text,done:c.has(i.id)}));}
+  return shopArr(t);
+}
 function packCountLabel(t){
-  const f=(arr,ic)=>Array.isArray(arr)&&arr.length?`${ic}${arr.filter(i=>i.done).length}/${arr.length}`:'';
-  return [f(t.packList,'🎒'),f(t.shopList,'🛒')].filter(Boolean).join(' · ');
+  const m=masterList(),c=new Set(Array.isArray(t.packChecked)?t.packChecked:[]);
+  const pd=m.filter(i=>c.has(i.id)).length;
+  const sh=Array.isArray(t.shopList)?t.shopList:[];
+  return [m.length?`🎒${pd}/${m.length}`:'',sh.length?`🛒${sh.filter(i=>i.done).length}/${sh.length}`:''].filter(Boolean).join(' · ');
+}
+// One-time move of older per-trip packing lists into the standing list
+function migratePackToMaster(t){
+  if(masterList().length)return;
+  const src=(Array.isArray(t.packList)&&t.packList.length)?t.packList:((state.carryLists&&Array.isArray(state.carryLists.packList))?state.carryLists.packList:[]);
+  if(!src.length)return;
+  state.masterPack=src.map(i=>({id:newListId(),text:i.text}));
+}
+function cleanLegacyPack(t){
+  if(t.packList)delete t.packList;
+  if(state.carryLists&&state.carryLists.packList){delete state.carryLists.packList;if(!(state.carryLists.shopList||[]).length)state.carryLists=null;}
 }
 function listPanelHTML(kind){
   const L=TRIP_LISTS[kind];
-  return `<div class="pack-col"><h3 class="pack-col-title">${L.title}</h3>
+  return `<div class="pack-col"><h3 class="pack-col-title">${L.title}</h3><div class="dash-muted" style="margin:-2px 0 8px;font-size:.74rem">${L.note}</div>
   <div class="pack-progress"><div id="${kind}Bar" style="width:0%"></div></div><div class="pack-count" id="${kind}Count"></div>
   <div class="pack-form"><input id="${kind}Input" type="text" placeholder="${L.placeholder}" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addListItem('${kind}');}"><button class="dash-action" onclick="addListItem('${kind}')">＋ Add</button></div>
   <div id="${kind}List" data-kind="${kind}"></div>
-  <div class="pack-tools"><button class="dash-action alt" onclick="uncheckAllList('${kind}')">Uncheck all</button><button class="dash-action alt" onclick="removeCheckedList('${kind}')">Remove checked</button></div></div>`;
+  <div class="pack-tools"><button class="dash-action alt" onclick="uncheckAllList('${kind}')">Uncheck all</button>${kind==='shop'?`<button class="dash-action alt" onclick="removeCheckedList('shop')">Remove checked</button>`:''}</div></div>`;
 }
 function openPackList(tripId){
   _packTripId=tripId;const t=packTrip();if(!t)return;
-  tripList(t,'pack');tripList(t,'shop');
-  if(!t.packList.length&&!t.shopList.length&&state.carryLists){
-    t.packList=(state.carryLists.packList||[]).map(i=>({...i,id:Date.now()+Math.floor(Math.random()*1e6)}));
-    t.shopList=(state.carryLists.shopList||[]).map(i=>({...i,id:Date.now()+Math.floor(Math.random()*1e6)}));
-    state.carryLists=null;saveState();
+  migratePackToMaster(t);cleanLegacyPack(t);
+  // Bring unbought shopping items over from the previous trip
+  if(!shopArr(t).length&&state.carryLists&&Array.isArray(state.carryLists.shopList)&&state.carryLists.shopList.length){
+    t.shopList=state.carryLists.shopList.map(i=>({id:newListId(),text:i.text,done:false}));
+    state.carryLists=null;
   }
+  saveState();
   document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>Trip Lists</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div><div class="pack-toolbar"><button class="dash-action alt" onclick="printTripLists()">🖨️ Print lists</button><span class="dash-muted">Drag ⠿ to rearrange</span></div><div class="pack-cols">${listPanelHTML('pack')}${listPanelHTML('shop')}</div>`;
   renderList('pack');renderList('shop');
   document.getElementById('packModalBg').classList.remove('hidden');
 }
 function closePackList(){document.getElementById('packModalBg').classList.add('hidden');_packTripId=null;renderDashboard();}
 function renderList(kind){
-  const t=packTrip();if(!t)return;const L=TRIP_LISTS[kind];const list=tripList(t,kind);
+  const t=packTrip();if(!t)return;const L=TRIP_LISTS[kind];const list=getListItems(kind,t);
   const done=list.filter(i=>i.done).length;
   document.getElementById(kind+'Bar').style.width=(list.length?Math.round(done/list.length*100):0)+'%';
   document.getElementById(kind+'Count').textContent=list.length?`${done} of ${list.length} ${L.doneWord}`:'Nothing on the list yet';
@@ -3616,27 +3647,55 @@ function addListItem(kind){
   const t=packTrip();if(!t)return;
   const inp=document.getElementById(kind+'Input');const text=inp.value.trim();
   if(text){
-    const list=tripList(t,kind);
+    const list=getListItems(kind,t);
     if(list.some(i=>i.text.toLowerCase()===text.toLowerCase())){showToast('Already on the list');}
-    else{list.push({id:Date.now()+Math.floor(Math.random()*1000),text,done:false});inp.value='';listSave(kind);}
+    else{
+      if(kind==='pack')masterList().push({id:newListId(),text});
+      else shopArr(t).push({id:newListId(),text,done:false});
+      inp.value='';listSave(kind);
+    }
   }
   inp.focus();
 }
-function toggleListItem(kind,id){const t=packTrip();const it=t&&tripList(t,kind).find(x=>x.id===id);if(it){it.done=!it.done;listSave(kind);}}
-function deleteListItem(kind,id){const t=packTrip();if(!t)return;t[TRIP_LISTS[kind].key]=tripList(t,kind).filter(x=>x.id!==id);listSave(kind);}
-function uncheckAllList(kind){const t=packTrip();if(!t)return;tripList(t,kind).forEach(i=>i.done=false);listSave(kind);}
+function toggleListItem(kind,id){
+  const t=packTrip();if(!t)return;
+  if(kind==='pack'){const c=packChecked(t),k=c.indexOf(id);if(k>=0)c.splice(k,1);else c.push(id);listSave(kind);return;}
+  const it=shopArr(t).find(x=>x.id===id);if(it){it.done=!it.done;listSave(kind);}
+}
+function deleteListItem(kind,id){
+  const t=packTrip();if(!t)return;
+  if(kind==='pack'){
+    if(!confirm('Remove this from your standing packing list? It will be gone from future trips too.'))return;
+    state.masterPack=masterList().filter(x=>x.id!==id);t.packChecked=packChecked(t).filter(x=>x!==id);listSave(kind);return;
+  }
+  t.shopList=shopArr(t).filter(x=>x.id!==id);listSave(kind);
+}
+function uncheckAllList(kind){
+  const t=packTrip();if(!t)return;
+  if(kind==='pack')t.packChecked=[];else shopArr(t).forEach(i=>i.done=false);
+  listSave(kind);
+}
 function removeCheckedList(kind){
-  const t=packTrip();if(!t)return;const list=tripList(t,kind);const n=list.filter(i=>i.done).length;
+  const t=packTrip();if(!t||kind!=='shop')return;const list=shopArr(t);const n=list.filter(i=>i.done).length;
   if(!n){showToast('Nothing checked yet');return;}
   if(!confirm(`Remove ${n} checked item${n>1?'s':''} from the list?`))return;
-  t[TRIP_LISTS[kind].key]=list.filter(i=>!i.done);listSave(kind);
+  t.shopList=list.filter(i=>!i.done);listSave(kind);
+}
+function reorderList(kind,order){
+  const t=packTrip();if(!t)return;
+  const cur=kind==='pack'?masterList():shopArr(t);
+  const byId=new Map(cur.map(i=>[i.id,i]));
+  const next=order.map(id=>byId.get(id)).filter(Boolean);
+  if(next.length!==cur.length)return;
+  if(kind==='pack')state.masterPack=next;else t.shopList=next;
+  saveState();
 }
 // ── Print ──
 function printTripLists(){
   const t=packTrip();if(!t)return;
   const w=window.open('','_blank');if(!w){alert('Please allow pop-ups to print your lists.');return;}
   const col=kind=>{
-    const L=TRIP_LISTS[kind],list=tripList(t,kind);
+    const L=TRIP_LISTS[kind],list=getListItems(kind,t);
     return `<div class="col"><h2>${L.title}</h2>${list.length?list.map(i=>`<div class="it${i.done?' d':''}"><span class="bx">${i.done?'☑':'☐'}</span><span>${esc(i.text)}</span></div>`).join(''):'<div class="none">(empty)</div>'}</div>`;
   };
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trip Lists — ${esc(t.parkName||'Trip')}</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#2c1a0e;margin:28px auto;max-width:850px;padding:0 22px}h1{margin:0 0 2px;font-size:24px}.sub{color:#6b5a4a;margin-bottom:18px;font-size:14px}.cols{display:flex;gap:30px;align-items:flex-start}.col{flex:1;min-width:0}.col h2{font-size:17px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #3d5a2a}.it{display:flex;gap:9px;padding:5px 0;border-bottom:1px dotted #c9b99f;font-size:15px;break-inside:avoid}.bx{font-size:18px;line-height:1.1}.it.d span:last-child{text-decoration:line-through;color:#8a7a6a}.none{color:#8a7a6a;font-size:14px}@media print{body{margin:0;padding:0}}</style></head><body><h1>🌲 ${esc(t.parkName||'Upcoming trip')}</h1><div class="sub">${fmtDateShort(t.startDate)}${t.endDate?' – '+fmtDateShort(t.endDate):''}</div><div class="cols">${col('pack')}${col('shop')}</div></body></html>`);
@@ -3668,12 +3727,7 @@ function printTripLists(){
     const {item,box,kind,g}=drag;drag=null;
     item.classList.remove('dragging');
     try{g.releasePointerCapture(e.pointerId);}catch(_){}
-    const t=packTrip();if(!t){return;}
-    const order=[...box.querySelectorAll('.pack-item')].map(el=>Number(el.dataset.id));
-    const list=tripList(t,kind);
-    const byId=new Map(list.map(i=>[i.id,i]));
-    const next=order.map(id=>byId.get(id)).filter(Boolean);
-    if(next.length===list.length){t[TRIP_LISTS[kind].key]=next;saveState();}
+    reorderList(kind,[...box.querySelectorAll('.pack-item')].map(el=>Number(el.dataset.id)));
     renderList(kind);
   }
   document.addEventListener('pointerup',finish);
@@ -4060,6 +4114,7 @@ async function exportData() {
     parkMileage: state.parkMileage || {},
     trash: state.trash || [],
     carryLists: state.carryLists || null,
+    masterPack: state.masterPack || [],
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
@@ -4120,6 +4175,7 @@ function importData(e) {
         state.hiddenParks = [...merged];
       }
       if (data.carryLists && !state.carryLists) state.carryLists = data.carryLists;
+      if (Array.isArray(data.masterPack) && data.masterPack.length && !(state.masterPack&&state.masterPack.length)) state.masterPack = data.masterPack;
       if (data.trash) {
         if (!state.trash) state.trash=[];
         const existingTrash = new Set(state.trash.map(x=>x.id));
@@ -4240,6 +4296,7 @@ async function syncToCloud() {
     parkPhotos: state.parkPhotos||{},
     trash: state.trash||[],
     carryLists: state.carryLists||null,
+    masterPack: state.masterPack||[],
     homeAddress: state.homeAddress||'',
   };
   try {
@@ -4310,6 +4367,7 @@ async function loadFromCloud() {
       if (d.parkPhotos !== undefined) state.parkPhotos = d.parkPhotos;
       if (d.trash !== undefined) state.trash = d.trash;
       if (d.carryLists !== undefined) state.carryLists = d.carryLists;
+      if (Array.isArray(d.masterPack)) state.masterPack = d.masterPack;
       if (d.homeAddress) { state.homeAddress = d.homeAddress; _homeCoords = null; }
     }
   } catch(e) { console.error('Load failed:', e); throw e; }
