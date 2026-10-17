@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-14-standing-pack';
+  const TRAIL_NOTES_BUILD = '2026-10-17-compact-lists';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1045,13 +1045,13 @@ header p{
 .pack-form select,.pack-form input{font-family:var(--font-body);font-size:16px;padding:10px 12px;border-radius:6px;border:1px solid rgba(107,66,38,.35);background:#fffaf0;color:var(--bark)}
 .pack-form select{flex:0 0 auto}.pack-form input{flex:1 1 180px;min-width:0}
 .pack-form button{flex:0 0 auto}
-.pack-group{margin-top:14px}
+.pack-group{margin-top:8px}
 .pack-group h3{font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(107,66,38,.25)}
-.pack-item{display:flex;align-items:center;gap:10px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.35);margin-bottom:5px}
-.pack-item label{flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;min-height:40px;font-size:.95rem;color:var(--bark);word-break:break-word}
-.pack-item input[type=checkbox]{width:22px;height:22px;accent-color:var(--moss);flex:0 0 auto;cursor:pointer}
+.pack-item{display:flex;align-items:center;gap:6px;padding:0 2px 0 0;border-radius:5px;background:rgba(255,255,255,.35);margin-bottom:3px}
+.pack-item label{flex:1;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:32px;font-size:.8rem;line-height:1.25;color:var(--bark);word-break:break-word}
+.pack-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--moss);flex:0 0 auto;cursor:pointer}
 .pack-item.done label span{text-decoration:line-through;color:var(--fog)}
-.pack-del{background:none;border:0;font-size:1.3rem;line-height:1;color:var(--fog);cursor:pointer;padding:8px 10px;border-radius:6px}
+.pack-del{background:none;border:0;font-size:1.1rem;line-height:1;color:var(--fog);cursor:pointer;padding:6px 9px;border-radius:6px}
 .pack-del:hover{background:rgba(138,63,47,.12);color:#8a3f2f}
 .pack-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .pack-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
@@ -1059,7 +1059,7 @@ header p{
 .pack-col-title{font-family:var(--font-heading);font-size:1.15rem;color:var(--bark);margin:0 0 6px}
 @media(max-width:720px){.pack-cols{grid-template-columns:1fr}}
 .pack-toolbar{display:flex;align-items:center;gap:12px;margin:2px 0 12px;flex-wrap:wrap}
-.pack-grip{flex:0 0 auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:var(--fog);font-size:1.25rem;line-height:1;padding:10px 6px;border-radius:6px}
+.pack-grip{flex:0 0 auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:var(--fog);font-size:1rem;line-height:1;padding:8px 5px;border-radius:6px}
 .pack-grip:hover{background:rgba(107,66,38,.12)}
 .pack-item.dragging{opacity:.8;background:rgba(215,154,53,.28);box-shadow:0 3px 10px rgba(0,0,0,.2)}
 .pack-empty{color:var(--fog);font-size:.88rem;padding:14px 4px;text-align:center}
@@ -3599,7 +3599,7 @@ function packCountLabel(t){
   const m=masterList(),c=new Set(Array.isArray(t.packChecked)?t.packChecked:[]);
   const pd=m.filter(i=>c.has(i.id)).length;
   const sh=Array.isArray(t.shopList)?t.shopList:[];
-  return [m.length?`🎒${pd}/${m.length}`:'',sh.length?`🛒${sh.filter(i=>i.done).length}/${sh.length}`:''].filter(Boolean).join(' · ');
+  return [sh.length?`🛒${sh.filter(i=>i.done).length}/${sh.length}`:'',m.length?`🎒${pd}/${m.length}`:''].filter(Boolean).join(' · ');
 }
 // One-time move of older per-trip packing lists into the standing list
 function migratePackToMaster(t){
@@ -3629,7 +3629,7 @@ function openPackList(tripId){
     state.carryLists=null;
   }
   saveState();
-  document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>Trip Lists</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div><div class="pack-toolbar"><button class="dash-action alt" onclick="printTripLists()">🖨️ Print lists</button><span class="dash-muted">Drag ⠿ to rearrange</span></div><div class="pack-cols">${listPanelHTML('pack')}${listPanelHTML('shop')}</div>`;
+  document.getElementById('packContent').innerHTML=`<div class="pack-head"><h2>Trip Lists</h2><div class="dash-muted">${esc(t.parkName||'Upcoming trip')} · ${fmtDateShort(t.startDate)}</div></div><div class="pack-toolbar"><button class="dash-action alt" onclick="printTripLists()">🖨️ Print lists</button><span class="dash-muted">Drag ⠿ to rearrange</span></div><div class="pack-cols">${listPanelHTML('shop')}${listPanelHTML('pack')}</div>`;
   renderList('pack');renderList('shop');
   document.getElementById('packModalBg').classList.remove('hidden');
 }
@@ -3698,7 +3698,7 @@ function printTripLists(){
     const L=TRIP_LISTS[kind],list=getListItems(kind,t);
     return `<div class="col"><h2>${L.title}</h2>${list.length?list.map(i=>`<div class="it${i.done?' d':''}"><span class="bx">${i.done?'☑':'☐'}</span><span>${esc(i.text)}</span></div>`).join(''):'<div class="none">(empty)</div>'}</div>`;
   };
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trip Lists — ${esc(t.parkName||'Trip')}</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#2c1a0e;margin:28px auto;max-width:850px;padding:0 22px}h1{margin:0 0 2px;font-size:24px}.sub{color:#6b5a4a;margin-bottom:18px;font-size:14px}.cols{display:flex;gap:30px;align-items:flex-start}.col{flex:1;min-width:0}.col h2{font-size:17px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #3d5a2a}.it{display:flex;gap:9px;padding:5px 0;border-bottom:1px dotted #c9b99f;font-size:15px;break-inside:avoid}.bx{font-size:18px;line-height:1.1}.it.d span:last-child{text-decoration:line-through;color:#8a7a6a}.none{color:#8a7a6a;font-size:14px}@media print{body{margin:0;padding:0}}</style></head><body><h1>🌲 ${esc(t.parkName||'Upcoming trip')}</h1><div class="sub">${fmtDateShort(t.startDate)}${t.endDate?' – '+fmtDateShort(t.endDate):''}</div><div class="cols">${col('pack')}${col('shop')}</div></body></html>`);
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trip Lists — ${esc(t.parkName||'Trip')}</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#2c1a0e;margin:28px auto;max-width:850px;padding:0 22px}h1{margin:0 0 2px;font-size:24px}.sub{color:#6b5a4a;margin-bottom:18px;font-size:14px}.cols{display:flex;gap:30px;align-items:flex-start}.col{flex:1;min-width:0}.col h2{font-size:17px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #3d5a2a}.it{display:flex;gap:8px;padding:3px 0;border-bottom:1px dotted #c9b99f;font-size:13px;break-inside:avoid}.bx{font-size:18px;line-height:1.1}.it.d span:last-child{text-decoration:line-through;color:#8a7a6a}.none{color:#8a7a6a;font-size:14px}@media print{body{margin:0;padding:0}}</style></head><body><h1>🌲 ${esc(t.parkName||'Upcoming trip')}</h1><div class="sub">${fmtDateShort(t.startDate)}${t.endDate?' – '+fmtDateShort(t.endDate):''}</div><div class="cols">${col('shop')}${col('pack')}</div></body></html>`);
   w.document.close();w.focus();setTimeout(()=>w.print(),400);
 }
 // ── Drag to rearrange (touch + mouse) ──
@@ -3742,7 +3742,7 @@ function renderDashboard(){
   const next=upcoming[0], nextPark=next?parks.find(p=>p.id===next.parkId):null, recent=trips.slice().reverse().slice(0,5);
   let html='<div class="dashboard-grid">';
   if(next){
-    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.reservation?.number?`<div class="trip-line">🔖 Reservation #${esc(next.reservation.number)}</div>`:''}${next.reservation?.bookedThrough?`<div class="trip-line">🏢 ${esc(next.reservation.bookedThrough)}</div>`:''}${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="openPackList(${next.id})">🎒 Packing & Shopping <span class="pack-btn-count">${packCountLabel(next)}</span></button><button class="dash-action" onclick="switchTab('upcoming')">Upcoming Trips →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
+    html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</h2><div class="trip-big">📅 ${fmtDateShort(next.startDate)}${next.endDate?' → '+fmtDateShort(next.endDate):''}</div><div class="trip-line">🏕 Site ${esc(next.site||'—')}</div><div class="trip-line">${daysUntil(next.startDate)>=0?`⏳ ${daysUntil(next.startDate)} days to go`:'Trip in progress'}</div>${next.reservation?.number?`<div class="trip-line">🔖 Reservation #${esc(next.reservation.number)}</div>`:''}${next.reservation?.bookedThrough?`<div class="trip-line">🏢 ${esc(next.reservation.bookedThrough)}</div>`:''}${next.note?`<div class="trip-line">📝 ${esc(next.note)}</div>`:''}<div class="dash-actions"><button class="dash-action" onclick="openPackList(${next.id})">🛒 Shopping & Packing <span class="pack-btn-count">${packCountLabel(next)}</span></button><button class="dash-action" onclick="switchTab('upcoming')">Upcoming Trips →</button>${nextPark?`<button class="dash-action alt" onclick="openParkDetail(${nextPark.id})">Park Details</button>`:''}</div></div>`;
   } else {
     html+=`<div class="next-trip"><div class="dash-muted">NEXT ADVENTURE</div><h2>No upcoming trip yet</h2><div class="trip-big">🌲 Time to plan the next campout.</div><div class="dash-actions"><button class="dash-action" onclick="switchTab('upcoming')">＋ Plan a Trip</button><button class="dash-action alt" onclick="switchTab('findcamps')">🔍 Explore Campgrounds</button></div></div>`;
   }
