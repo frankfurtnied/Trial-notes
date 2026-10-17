@@ -16,7 +16,7 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-10-17-compact-lists';
+  const TRAIL_NOTES_BUILD = '2026-10-17-compact-lists-v2';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
@@ -1047,11 +1047,11 @@ header p{
 .pack-form button{flex:0 0 auto}
 .pack-group{margin-top:8px}
 .pack-group h3{font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(107,66,38,.25)}
-.pack-item{display:flex;align-items:center;gap:6px;padding:0 2px 0 0;border-radius:5px;background:rgba(255,255,255,.35);margin-bottom:3px}
-.pack-item label{flex:1;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:32px;font-size:.8rem;line-height:1.25;color:var(--bark);word-break:break-word}
-.pack-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--moss);flex:0 0 auto;cursor:pointer}
+.pack-item{display:flex;align-items:center;gap:6px;padding:0 2px 0 0;border-radius:5px;background:rgba(255,255,255,.35);margin-bottom:2px}
+.pack-item label{flex:1;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:28px;font-size:.7rem;line-height:1.2;color:var(--bark);word-break:break-word}
+.pack-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--moss);flex:0 0 auto;cursor:pointer}
 .pack-item.done label span{text-decoration:line-through;color:var(--fog)}
-.pack-del{background:none;border:0;font-size:1.1rem;line-height:1;color:var(--fog);cursor:pointer;padding:6px 9px;border-radius:6px}
+.pack-del{background:none;border:0;font-size:1rem;line-height:1;color:var(--fog);cursor:pointer;padding:5px 8px;border-radius:6px}
 .pack-del:hover{background:rgba(138,63,47,.12);color:#8a3f2f}
 .pack-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .pack-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
@@ -1059,7 +1059,7 @@ header p{
 .pack-col-title{font-family:var(--font-heading);font-size:1.15rem;color:var(--bark);margin:0 0 6px}
 @media(max-width:720px){.pack-cols{grid-template-columns:1fr}}
 .pack-toolbar{display:flex;align-items:center;gap:12px;margin:2px 0 12px;flex-wrap:wrap}
-.pack-grip{flex:0 0 auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:var(--fog);font-size:1rem;line-height:1;padding:8px 5px;border-radius:6px}
+.pack-grip{flex:0 0 auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:var(--fog);font-size:.9rem;line-height:1;padding:6px 5px;border-radius:6px}
 .pack-grip:hover{background:rgba(107,66,38,.12)}
 .pack-item.dragging{opacity:.8;background:rgba(215,154,53,.28);box-shadow:0 3px 10px rgba(0,0,0,.2)}
 .pack-empty{color:var(--fog);font-size:.88rem;padding:14px 4px;text-align:center}
@@ -3698,7 +3698,7 @@ function printTripLists(){
     const L=TRIP_LISTS[kind],list=getListItems(kind,t);
     return `<div class="col"><h2>${L.title}</h2>${list.length?list.map(i=>`<div class="it${i.done?' d':''}"><span class="bx">${i.done?'☑':'☐'}</span><span>${esc(i.text)}</span></div>`).join(''):'<div class="none">(empty)</div>'}</div>`;
   };
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trip Lists — ${esc(t.parkName||'Trip')}</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#2c1a0e;margin:28px auto;max-width:850px;padding:0 22px}h1{margin:0 0 2px;font-size:24px}.sub{color:#6b5a4a;margin-bottom:18px;font-size:14px}.cols{display:flex;gap:30px;align-items:flex-start}.col{flex:1;min-width:0}.col h2{font-size:17px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #3d5a2a}.it{display:flex;gap:8px;padding:3px 0;border-bottom:1px dotted #c9b99f;font-size:13px;break-inside:avoid}.bx{font-size:18px;line-height:1.1}.it.d span:last-child{text-decoration:line-through;color:#8a7a6a}.none{color:#8a7a6a;font-size:14px}@media print{body{margin:0;padding:0}}</style></head><body><h1>🌲 ${esc(t.parkName||'Upcoming trip')}</h1><div class="sub">${fmtDateShort(t.startDate)}${t.endDate?' – '+fmtDateShort(t.endDate):''}</div><div class="cols">${col('shop')}${col('pack')}</div></body></html>`);
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Trip Lists — ${esc(t.parkName||'Trip')}</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#2c1a0e;margin:28px auto;max-width:850px;padding:0 22px}h1{margin:0 0 2px;font-size:24px}.sub{color:#6b5a4a;margin-bottom:18px;font-size:14px}.cols{display:flex;gap:30px;align-items:flex-start}.col{flex:1;min-width:0}.col h2{font-size:17px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #3d5a2a}.it{display:flex;gap:8px;padding:3px 0;border-bottom:1px dotted #c9b99f;font-size:12px;break-inside:avoid}.bx{font-size:18px;line-height:1.1}.it.d span:last-child{text-decoration:line-through;color:#8a7a6a}.none{color:#8a7a6a;font-size:14px}@media print{body{margin:0;padding:0}}</style></head><body><h1>🌲 ${esc(t.parkName||'Upcoming trip')}</h1><div class="sub">${fmtDateShort(t.startDate)}${t.endDate?' – '+fmtDateShort(t.endDate):''}</div><div class="cols">${col('shop')}${col('pack')}</div></body></html>`);
   w.document.close();w.focus();setTimeout(()=>w.print(),400);
 }
 // ── Drag to rearrange (touch + mouse) ──
