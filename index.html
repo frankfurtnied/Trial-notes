@@ -16,21 +16,19 @@
      Safari/iOS can retain an older service-worker app shell even after the
      HTML on GitHub Pages has changed. On a new build, clear only this
      origin's Cache Storage and service workers, then reload once. */
-  const TRAIL_NOTES_BUILD = '2026-11-06-park-edit-v5';
+  const TRAIL_NOTES_BUILD = '2026-11-09-production-safety-candidate-v2';
   if (location.protocol === 'http:' || location.protocol === 'https:') {
     (async function ensureFreshTrailNotesBuild(){
       try {
-        const seen = localStorage.getItem('trailNotesBuild');
+        const seen = localStorage.getItem('tnprod_v2_build');
         if (seen !== TRAIL_NOTES_BUILD) {
-          localStorage.setItem('trailNotesBuild', TRAIL_NOTES_BUILD);
+          localStorage.setItem('tnprod_v2_build', TRAIL_NOTES_BUILD);
           if ('serviceWorker' in navigator) {
             const regs = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(regs.map(r => r.unregister()));
+            const thisScope = new URL('.', location.href).pathname;
+            await Promise.all(regs.filter(r => { try { return new URL(r.scope).pathname === thisScope; } catch(e){ return false; } }).map(r => r.unregister()));
           }
-          if ('caches' in window) {
-            const keys = await caches.keys();
-            await Promise.all(keys.map(k => caches.delete(k)));
-          }
+          // Do not remove shared-origin caches: they may belong to other GitHub Pages projects.
           const u = new URL(location.href);
           u.searchParams.set('tnb', TRAIL_NOTES_BUILD);
           location.replace(u.toString());
@@ -1083,6 +1081,7 @@ header p{
   }
 </script>
 <div class="app">
+
 <header>
   <div class="logo-row"><span style="font-size:1.9rem">🌲</span><h1><em>Trail Notes</em></h1><span style="font-size:1.9rem">🌲</span></div>
   <p>Camping Diary · 2012 – <span id="currentYear">2026</span></p><div class="divider"></div>
@@ -1902,60 +1901,68 @@ function renderReservationBoxList(reservations, collapsed){
 // STATE
 // ═══════════════════════════════════════════════════════
 let state = {
-  customParks: JSON.parse(localStorage.getItem('cd_customs') || '[]'),
-  overrides:   JSON.parse(localStorage.getItem('cd_overrides') || '{}'),
-  tripLogs:    JSON.parse(localStorage.getItem('cd_trips') || '{}'),
-  entries:     JSON.parse(localStorage.getItem('cd_entries') || '[]'),
-  visited:     JSON.parse(localStorage.getItem('cd_visited') || '{}'),
-  tripEdits:   JSON.parse(localStorage.getItem('cd_tripedits') || '{}'),
-  upcoming:    JSON.parse(localStorage.getItem('cd_upcoming') ?? JSON.stringify(BAKED_UPCOMING)),
-  sortOrder:   localStorage.getItem('cd_sortorder') || 'name',
-  ratings:     JSON.parse(localStorage.getItem('cd_ratings')   || '{}'),
-  favorites:   JSON.parse(localStorage.getItem('cd_favorites') || '[]'),
-  hiddenParks: JSON.parse(localStorage.getItem('cd_hidden')    || '[]'),
-  wishlist:    JSON.parse(localStorage.getItem('cd_wishlist')   || '[]'),
-  parkPhotos:  JSON.parse(localStorage.getItem('cd_photos')    || '{}'),
-  parkMileage: JSON.parse(localStorage.getItem('cd_mileage')   || '{}'),
-  mapCoords: JSON.parse(localStorage.getItem('cd_mapcoords') || '{}'),
-  trash: JSON.parse(localStorage.getItem('cd_trash') || '[]'),
-  carryLists: JSON.parse(localStorage.getItem('cd_carrylists') || 'null'),
-  masterPack: JSON.parse(localStorage.getItem('cd_masterpack') || '[]'),
+  customParks: JSON.parse(localStorage.getItem('tnprod_v2_cd_customs') || '[]'),
+  overrides:   JSON.parse(localStorage.getItem('tnprod_v2_cd_overrides') || '{}'),
+  tripLogs:    JSON.parse(localStorage.getItem('tnprod_v2_cd_trips') || '{}'),
+  entries:     JSON.parse(localStorage.getItem('tnprod_v2_cd_entries') || '[]'),
+  visited:     JSON.parse(localStorage.getItem('tnprod_v2_cd_visited') || '{}'),
+  tripEdits:   JSON.parse(localStorage.getItem('tnprod_v2_cd_tripedits') || '{}'),
+  upcoming:    JSON.parse(localStorage.getItem('tnprod_v2_cd_upcoming') ?? JSON.stringify(BAKED_UPCOMING)),
+  sortOrder:   localStorage.getItem('tnprod_v2_cd_sortorder') || 'name',
+  ratings:     JSON.parse(localStorage.getItem('tnprod_v2_cd_ratings')   || '{}'),
+  favorites:   JSON.parse(localStorage.getItem('tnprod_v2_cd_favorites') || '[]'),
+  hiddenParks: JSON.parse(localStorage.getItem('tnprod_v2_cd_hidden')    || '[]'),
+  wishlist:    JSON.parse(localStorage.getItem('tnprod_v2_cd_wishlist')   || '[]'),
+  parkPhotos:  JSON.parse(localStorage.getItem('tnprod_v2_cd_photos')    || '{}'),
+  parkMileage: JSON.parse(localStorage.getItem('tnprod_v2_cd_mileage')   || '{}'),
+  mapCoords: JSON.parse(localStorage.getItem('tnprod_v2_cd_mapcoords') || '{}'),
+  trash: JSON.parse(localStorage.getItem('tnprod_v2_cd_trash') || '[]'),
+  carryLists: JSON.parse(localStorage.getItem('tnprod_v2_cd_carrylists') || 'null'),
+  masterPack: JSON.parse(localStorage.getItem('tnprod_v2_cd_masterpack') || '[]'),
+  legacyReservations: JSON.parse(localStorage.getItem('tnprod_v2_cd_legacy_reservations') || '[]'),
   activeFilter: '',
-  homeAddress: localStorage.getItem('cd_home') || '',
+  homeAddress: localStorage.getItem('tnprod_v2_cd_home') || '',
   parkViewMode: 'list',
 };
 
-function saveState() {
+function saveState(sync = true) {
   try {
-    localStorage.setItem('cd_customs',    JSON.stringify(state.customParks));
-    localStorage.setItem('cd_overrides',  JSON.stringify(state.overrides));
-    localStorage.setItem('cd_trips',      JSON.stringify(state.tripLogs));
-    localStorage.setItem('cd_entries',    JSON.stringify(state.entries));
-    localStorage.setItem('cd_visited',    JSON.stringify(state.visited));
-    localStorage.setItem('cd_tripedits',  JSON.stringify(state.tripEdits));
-    localStorage.setItem('cd_upcoming',   JSON.stringify(state.upcoming));
-    localStorage.setItem('cd_sortorder',  state.sortOrder);
-    localStorage.setItem('cd_ratings',    JSON.stringify(state.ratings));
-    localStorage.setItem('cd_favorites',  JSON.stringify(state.favorites));
-    localStorage.setItem('cd_hidden',     JSON.stringify(state.hiddenParks));
-    localStorage.setItem('cd_wishlist',   JSON.stringify(state.wishlist));
-    localStorage.setItem('cd_home',       state.homeAddress||'');
-    localStorage.setItem('cd_mileage',    JSON.stringify(state.parkMileage||{}));
-    localStorage.setItem('cd_mapcoords', JSON.stringify(state.mapCoords||{}));
-    localStorage.setItem('cd_trash', JSON.stringify(state.trash||[]));
-    localStorage.setItem('cd_carrylists', JSON.stringify(state.carryLists||null));
-    localStorage.setItem('cd_masterpack', JSON.stringify(state.masterPack||[]));
+    localStorage.setItem('tnprod_v2_cd_customs',    JSON.stringify(state.customParks));
+    localStorage.setItem('tnprod_v2_cd_overrides',  JSON.stringify(state.overrides));
+    localStorage.setItem('tnprod_v2_cd_trips',      JSON.stringify(state.tripLogs));
+    localStorage.setItem('tnprod_v2_cd_entries',    JSON.stringify(state.entries));
+    localStorage.setItem('tnprod_v2_cd_visited',    JSON.stringify(state.visited));
+    localStorage.setItem('tnprod_v2_cd_tripedits',  JSON.stringify(state.tripEdits));
+    localStorage.setItem('tnprod_v2_cd_upcoming',   JSON.stringify(state.upcoming));
+    localStorage.setItem('tnprod_v2_cd_sortorder',  state.sortOrder);
+    localStorage.setItem('tnprod_v2_cd_ratings',    JSON.stringify(state.ratings));
+    localStorage.setItem('tnprod_v2_cd_favorites',  JSON.stringify(state.favorites));
+    localStorage.setItem('tnprod_v2_cd_hidden',     JSON.stringify(state.hiddenParks));
+    localStorage.setItem('tnprod_v2_cd_wishlist',   JSON.stringify(state.wishlist));
+    localStorage.setItem('tnprod_v2_cd_home',       state.homeAddress||'');
+    localStorage.setItem('tnprod_v2_cd_mileage',    JSON.stringify(state.parkMileage||{}));
+    localStorage.setItem('tnprod_v2_cd_mapcoords', JSON.stringify(state.mapCoords||{}));
+    localStorage.setItem('tnprod_v2_cd_trash', JSON.stringify(state.trash||[]));
+    localStorage.setItem('tnprod_v2_cd_carrylists', JSON.stringify(state.carryLists||null));
+    localStorage.setItem('tnprod_v2_cd_masterpack', JSON.stringify(state.masterPack||[]));
+    localStorage.setItem('tnprod_v2_cd_legacy_reservations',JSON.stringify(state.legacyReservations||[]));
   } catch(err) {
     showToast('Could not save: ' + err.message);
   }
   // Photos are by far the biggest item and can exceed the browser's storage limit.
   // They are saved on their own so a full-storage error can't stop everything else from saving.
-  try { localStorage.setItem('cd_photos', JSON.stringify(state.parkPhotos||{})); }
+  try { localStorage.setItem('tnprod_v2_cd_photos', JSON.stringify(state.parkPhotos||{})); }
   catch(err) {
     console.warn('Photos not cached on this device:', err.message);
     if (!window._photoQuotaWarned) { window._photoQuotaWarned = true; showToast('Photos are too large to keep offline on this device.'); }
   }
-  scheduleSyncToCloud();
+  if(sync && !_tnApplyingCloud){
+    _tnLocalRevision++;
+    _tnDirty=true;
+    try{localStorage.setItem('tnprod_v2_tn_sync_dirty','1');}catch(e){}
+    setSyncStatus('pending','Local changes waiting to sync');
+    scheduleSyncToCloud();
+  }
 }
 
 function allParks() {
@@ -1965,6 +1972,11 @@ function allParks() {
 
 function getTrips(parkId) {
   const base = (BASE_TRIPS[parkId] || []).map((t,i) => {
+    // Approved historical correction: omit only the unverified Sept 4, 2020
+    // Hillsborough River visit from the display and totals.
+    // Keep the original array index stable for all saved tripEdits.
+    // Display-only correction: the original database and backup are left untouched.
+    if (String(parkId) === '5' && i === 5 && t.date === '2020-09-04' && String(t.site) === '28') return null;
     const ed = state.tripEdits[parkId] && state.tripEdits[parkId][i];
     if (ed && ed._deleted) return null;
     const trip = ed ? Object.assign({}, t, ed) : Object.assign({}, t);
@@ -3830,7 +3842,7 @@ async function geocodePark(p,ignoreCache=false){
       if(d&&d[0]&&d[0].lat&&d[0].lon){
         const coords=[Number(d[0].lat),Number(d[0].lon)];
         state.mapCoords=state.mapCoords||{};state.mapCoords[p.id]=coords;
-        try{localStorage.setItem('cd_mapcoords',JSON.stringify(state.mapCoords));}catch(e){}
+        try{localStorage.setItem('tnprod_v2_cd_mapcoords',JSON.stringify(state.mapCoords));}catch(e){}
         return coords;
       }
     }catch(e){}
@@ -3886,7 +3898,7 @@ function pinParkManually(id){
   if(Math.abs(coords[0])>90||Math.abs(coords[1])>180) return bad();
   state.mapCoords=state.mapCoords||{};
   state.mapCoords[id]=coords;
-  try{localStorage.setItem('cd_mapcoords',JSON.stringify(state.mapCoords));}catch(e){}
+  try{localStorage.setItem('tnprod_v2_cd_mapcoords',JSON.stringify(state.mapCoords));}catch(e){}
   saveState();
   const p=allParks().find(x=>x.id===id);
   if(p&&_campMap){ addParkMarker(_campMap,p,coords); _campMap.setView(coords,11); }
@@ -4222,8 +4234,17 @@ const SUPABASE_URL = 'https://ycsoaagxojcuiavkueto.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_U7lDVjJvpZmQ6x48q-cFIw_HY-7qXQv';
 
 let currentUser = null;
-let accessToken  = localStorage.getItem('sb_access_token') || null;
+let accessToken  = localStorage.getItem('tnprod_v2_sb_access_token') || null;
 let syncTimeout  = null;
+let _tnCloudRevision=localStorage.getItem('tnprod_v2_tn_cloud_revision')||null;
+let _tnLocalRevision=0;
+let _tnDirty=localStorage.getItem('tnprod_v2_tn_sync_dirty')==='1';
+let _tnApplyingCloud=false;
+let _tnSyncInProgress=false;
+let _tnSyncFailed=false;
+// No upload is permitted until we've validated this account's current cloud baseline.
+let _tnCloudReady=false;
+let _tnCloudConflict=false;
 let _homeCoords = null; // cached coordinates of the home address
 let editingUpcomingId = null;
 
@@ -4250,7 +4271,13 @@ function setHomeAddress(){
   showToast(state.homeAddress?'Home address saved 🏠':'Home address cleared');
 }
 
+const TRAIL_NOTES_REVIEW_READ_ONLY = false; // Release candidate: guarded sync enabled
 async function sbFetch(path, options = {}) {
+  const requestMethod = String(options.method || 'GET').toUpperCase();
+  const authLogin = path.startsWith('/auth/v1/token?');
+  if (TRAIL_NOTES_REVIEW_READ_ONLY && !['GET','HEAD'].includes(requestMethod) && !authLogin) {
+    return { ok:false, status: 403, data: { message:'Review build: cloud writes are disabled' } };
+  }
   const headers = {
     'apikey': SUPABASE_KEY,
     'Content-Type': 'application/json',
@@ -4265,126 +4292,171 @@ async function sbFetch(path, options = {}) {
 }
 
 async function manualSync() {
-  if (!currentUser || !accessToken) {
-    showToast('Not signed in — please sign in first.');
+  if (!currentUser || !accessToken) {showToast('Please sign in to sync.');return;}
+  showToast('Checking cloud sync…');
+  if(_tnDirty){
+    const ok=await syncToCloud();
+    if(ok)showToast('Local changes uploaded safely. ☁️');
+    else showToast('Sync blocked — local changes kept. Export a backup before retrying.');
     return;
   }
-  showToast('Syncing… ☁️');
   try {
-    await loadFromCloud();   // pull latest from cloud
-    saveState();             // persist cloud data to localStorage
-    renderAll();
-    showToast('Synced! ✅ All up to date.');
-  } catch(e) {
-    showToast('Sync failed: ' + e.message);
-  }
+    const hadCloud = await loadFromCloud();
+    saveState(false);renderAll();
+    showToast(hadCloud ? 'Latest cloud data loaded. ✓' : 'No cloud data found. Do not import without a verified backup.');
+  } catch(e) {showToast('Cloud download failed; local records were kept.');console.error(e);}
 }
-
+function markExtraDataChanged(){
+  _tnLocalRevision++;_tnDirty=true;
+  try{localStorage.setItem('tnprod_v2_tn_sync_dirty','1');}catch(e){}
+  setSyncStatus('pending','Local changes waiting to sync');
+  scheduleSyncToCloud();
+}
 function scheduleSyncToCloud() {
-  if (!currentUser) return;
+  if(TRAIL_NOTES_REVIEW_READ_ONLY) return;
+  if (!currentUser || _tnApplyingCloud) return;
   clearTimeout(syncTimeout);
-  syncTimeout = setTimeout(syncToCloud, 500);
+  syncTimeout=setTimeout(()=>syncToCloud(),900);
 }
-
-async function syncToCloud() {
-  if (!currentUser || !accessToken) return;
-  const payload = {
-    customParks: state.customParks, overrides: state.overrides,
-    tripLogs: state.tripLogs, entries: state.entries, visited: state.visited,
-    tripEdits: state.tripEdits, upcoming: state.upcoming, sortOrder: state.sortOrder,
-    ratings: state.ratings, favorites: state.favorites,
-    hiddenParks: state.hiddenParks, wishlist: state.wishlist,
-    savedCampgrounds: getSaved(),
-    searchHistory: getHistory(),
-    savedRoutes: getSavedRoutes(),
-    parkMileage: state.parkMileage||{},
-    mapCoords: state.mapCoords||{},
-    parkPhotos: state.parkPhotos||{},
-    trash: state.trash||[],
-    carryLists: state.carryLists||null,
-    masterPack: state.masterPack||[],
-    homeAddress: state.homeAddress||'',
+function cloudPayload(){
+  return {
+    customParks:state.customParks,overrides:state.overrides,tripLogs:state.tripLogs,
+    entries:state.entries,visited:state.visited,tripEdits:state.tripEdits,
+    upcoming:state.upcoming,sortOrder:state.sortOrder,ratings:state.ratings,
+    favorites:state.favorites,hiddenParks:state.hiddenParks,wishlist:state.wishlist,
+    savedCampgrounds:getSaved(),searchHistory:getHistory(),savedRoutes:getSavedRoutes(),
+    parkMileage:state.parkMileage||{},mapCoords:state.mapCoords||{},parkPhotos:state.parkPhotos||{},
+    trash:state.trash||[],carryLists:state.carryLists||null,masterPack:state.masterPack||[],
+    legacyReservations:state.legacyReservations||[],homeAddress:state.homeAddress||''
   };
+}
+async function syncToCloud(){
+  if(TRAIL_NOTES_REVIEW_READ_ONLY){ setSyncStatus('blocked','REVIEW BUILD — uploads disabled'); return false; }
+  if(!currentUser||!accessToken||!_tnDirty)return !_tnDirty;
+  if(!_tnCloudReady || _tnCloudConflict){
+    setSyncStatus('blocked','Sync disabled until the existing cloud and local records are reviewed');
+    return false;
+  }
+  if(_tnSyncInProgress)return false;
+  _tnSyncInProgress=true;
+  const revAtStart=_tnLocalRevision;
+  const ts=new Date().toISOString();
   try {
-    // Check if a row already exists for this user
-    const { ok: chkOk, data: chkData } = await sbFetch('/rest/v1/user_data?user_id=eq.' + currentUser.id + '&select=id');
-    const exists = chkOk && Array.isArray(chkData) && chkData.length > 0;
-    let ok, status, data;
-    if (exists) {
-      // UPDATE existing row
-      ({ ok, status, data } = await sbFetch('/rest/v1/user_data?user_id=eq.' + currentUser.id, {
-        method: 'PATCH',
-        body: JSON.stringify({ data: payload, updated_at: new Date().toISOString() })
-      }));
-    } else {
-      // INSERT new row
-      ({ ok, status, data } = await sbFetch('/rest/v1/user_data', {
-        method: 'POST',
-        body: JSON.stringify({ user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() })
-      }));
+    const check=await sbFetch('/rest/v1/user_data?user_id=eq.'+encodeURIComponent(currentUser.id)+'&select=id,updated_at');
+    if(!check.ok||!Array.isArray(check.data))throw new Error('Could not verify the cloud version');
+    if(check.data.length>1)throw new Error('Multiple rows for this user: automatic sync stopped');
+    const row=check.data[0];
+    if(row && (!_tnCloudRevision || row.updated_at!==_tnCloudRevision)){
+      _tnSyncFailed=true;_tnCloudConflict=true;
+      setSyncStatus('blocked','Cloud changed elsewhere. Export a backup before reconciling.');
+      showToast('Cloud changed on another device. Local changes preserved; export a backup before resolving.');
+      return false;
     }
-    if (!ok) {
-      if (status === 401) {
-        // Token expired — try to refresh silently
-        try {
-          const refreshed = await getStoredSession();
-          if (refreshed) { await syncToCloud(); return; } // retry once with fresh token
-        } catch(re) {}
-        // Refresh failed — show quiet message, don't alarm user
-        console.warn('Sync: session expired, please refresh the page');
-      } else {
-        showToast('Sync error ' + status + ': ' + (data?.message || data?.hint || JSON.stringify(data)).slice(0,60));
-        console.error('Sync error:', data);
-      }
+    const payload=cloudPayload();
+    const options={headers:{Prefer:'return=representation'},body:JSON.stringify({data:payload,updated_at:ts})};
+    let res;
+    if(row){
+      const q='/rest/v1/user_data?user_id=eq.'+encodeURIComponent(currentUser.id)+
+        '&updated_at=eq.'+encodeURIComponent(_tnCloudRevision)+'&select=updated_at';
+      res=await sbFetch(q,{...options,method:'PATCH'});
+    }else{
+      res=await sbFetch('/rest/v1/user_data?select=updated_at',{
+        ...options,method:'POST',body:JSON.stringify({user_id:currentUser.id,data:payload,updated_at:ts})
+      });
     }
-    else showSyncIndicator();
-  } catch(e) { showToast('Sync exception: ' + e.message); console.error(e); }
+    if(!res.ok||!Array.isArray(res.data)||!res.data.length){
+      _tnSyncFailed=true;
+      setSyncStatus('blocked','Cloud did not confirm the write. Local edits are preserved.');
+      showToast('Cloud sync did not save. Your local changes remain available.');
+      console.error('Cloud sync response',res.status,res.data);
+      return false;
+    }
+    _tnCloudRevision=res.data[0].updated_at;
+    try{localStorage.setItem('tnprod_v2_tn_cloud_revision',_tnCloudRevision);}catch(e){}
+    _tnDirty=_tnLocalRevision!==revAtStart;
+    try{localStorage.setItem('tnprod_v2_tn_sync_dirty',_tnDirty?'1':'0');}catch(e){}
+    _tnSyncFailed=false;
+    setSyncStatus(_tnDirty?'pending':'saved',_tnDirty?'More local changes waiting':'Cloud confirmed the latest changes');
+    return true;
+  }catch(e){_tnSyncFailed=true;setSyncStatus('blocked','Cloud request failed; local data is unchanged');showToast('Cloud sync failed; local data is still here.');console.error(e);return false;}
+  finally{_tnSyncInProgress=false;if(_tnDirty&&!_tnSyncFailed)scheduleSyncToCloud();}
+}
+async function loadFromCloud(){
+  if(!currentUser||!accessToken)throw new Error('Sign in required');
+  const r=await sbFetch('/rest/v1/user_data?user_id=eq.'+encodeURIComponent(currentUser.id)+'&select=data,updated_at');
+  if(!r.ok||!Array.isArray(r.data))throw new Error('Unable to load cloud data ('+r.status+')');
+  if(r.data.length>1){
+    _tnCloudConflict=true;
+    setSyncStatus('blocked','More than one cloud row is present. No data was replaced.');
+    throw new Error('Multiple cloud rows require review');
+  }
+  if(_tnDirty){
+    setSyncStatus('blocked','Unsynced local changes exist; cloud download blocked');
+    throw new Error('Local changes are unsynced; refusing to overwrite them');
+  }
+  if(!r.data.length){
+    _tnCloudRevision=null;
+    _tnCloudReady=true;
+    _tnCloudConflict=false;
+    try{localStorage.removeItem('tnprod_v2_tn_cloud_revision');}catch(e){}
+    setSyncStatus('pending','No cloud data yet. This device has not uploaded its records.');
+    return false;
+  }
+  const d=r.data[0].data||{};
+  // Defensive sanity check: missing historical records in the cloud must not
+  // silently replace a larger local diary. Compare numbers, not a hash: the
+  // user can later review/import a complete backup to resolve the difference.
+  const countTrips=logs=>Object.values(logs||{}).reduce((n,items)=>
+    n+(Array.isArray(items)?items.filter(t=>t&&!t._deleted).length:0),0);
+  const localTrips=countTrips(state.tripLogs);
+  const cloudTrips=countTrips(d.tripLogs);
+  const countPictures=photos=>Object.values(photos||{}).reduce((n,items)=>n+(Array.isArray(items)?items.length:0),0);
+  const localPictures=countPictures(state.parkPhotos),cloudPictures=countPictures(d.parkPhotos);
+  const localJournal=(state.entries||[]).length,cloudJournal=(d.entries||[]).length;
+  const signatureSet=logs=>new Set(Object.entries(logs||{}).flatMap(([pid,items])=>
+    (Array.isArray(items)?items:[]).filter(t=>t&&!t._deleted).map(t=>
+      [pid,t.date||'',t.depart||'',t.site||''].join('|'))));
+  const remoteSignatures=signatureSet(d.tripLogs);
+  const missingLocalTrips=[...signatureSet(state.tripLogs)].filter(k=>!remoteSignatures.has(k));
+  if(localTrips>cloudTrips || localPictures>cloudPictures || localJournal>cloudJournal || missingLocalTrips.length){
+    _tnCloudReady=false;
+    _tnCloudConflict=true;
+    setSyncStatus('blocked','Cloud and local records differ. No local trips or photos were replaced.');
+    throw new Error('Cloud differs from local trips, photos, or journal; automatic replacement blocked');
+  }
+  _tnApplyingCloud=true;
+  try{
+    for(const k of ['customParks','overrides','tripLogs','entries','visited','tripEdits',
+      'upcoming','sortOrder','ratings','favorites','hiddenParks','wishlist','parkMileage',
+      'mapCoords','parkPhotos','trash','carryLists','masterPack','homeAddress','legacyReservations']){
+      if(Object.prototype.hasOwnProperty.call(d,k))state[k]=d[k];
+    }
+    for(const [k,key] of [['savedCampgrounds','tnprod_v2_tn_saved_cg'],['searchHistory','tnprod_v2_tn_srch_hist'],['savedRoutes','tnprod_v2_tn_saved_routes']]){
+      if(Object.prototype.hasOwnProperty.call(d,k))localStorage.setItem(key,JSON.stringify(d[k]));
+    }
+    _homeCoords=null;
+    _tnCloudRevision=r.data[0].updated_at;
+    try{localStorage.setItem('tnprod_v2_tn_cloud_revision',_tnCloudRevision);localStorage.setItem('tnprod_v2_tn_sync_dirty','0');}catch(e){}
+    _tnCloudReady=true;
+    _tnCloudConflict=false;
+    setSyncStatus(TRAIL_NOTES_REVIEW_READ_ONLY ? 'blocked' : 'saved', TRAIL_NOTES_REVIEW_READ_ONLY ? 'REVIEW BUILD — reading only' : 'Cloud version checked and loaded');
+    return true;
+  }finally{_tnApplyingCloud=false;}
 }
 
-async function loadFromCloud() {
-  if (!currentUser || !accessToken) return;
-  try {
-    const { ok, data } = await sbFetch('/rest/v1/user_data?user_id=eq.' + currentUser.id + '&select=data');
-    if (ok && Array.isArray(data) && data.length > 0 && data[0].data) {
-      const d = data[0].data;
-      if (d.customParks !== undefined) state.customParks = d.customParks;
-      if (d.overrides   !== undefined) state.overrides   = d.overrides;
-      if (d.tripLogs    !== undefined) state.tripLogs    = d.tripLogs;
-      if (d.entries     !== undefined) state.entries     = d.entries;
-      if (d.visited     !== undefined) state.visited     = d.visited;
-      if (d.tripEdits   !== undefined) state.tripEdits   = d.tripEdits;
-      if (d.upcoming    !== undefined) state.upcoming    = d.upcoming;
-      if (d.sortOrder   !== undefined) state.sortOrder   = d.sortOrder;
-      if (d.ratings     !== undefined) state.ratings     = d.ratings;
-      if (d.favorites   !== undefined) state.favorites   = d.favorites;
-      if (d.hiddenParks !== undefined) state.hiddenParks = d.hiddenParks;
-      if (d.wishlist    !== undefined) state.wishlist    = d.wishlist;
-      if (d.savedCampgrounds !== undefined) {
-        try { localStorage.setItem('tn_saved_cg', JSON.stringify(d.savedCampgrounds)); } catch(e) {}
-      }
-      if (d.searchHistory !== undefined) {
-        try { localStorage.setItem('tn_srch_hist', JSON.stringify(d.searchHistory)); } catch(e) {}
-      }
-      if (d.savedRoutes !== undefined) {
-        try { localStorage.setItem('tn_saved_routes', JSON.stringify(d.savedRoutes)); } catch(e) {}
-      }
-      if (d.parkMileage !== undefined) state.parkMileage = d.parkMileage;
-      if (d.mapCoords !== undefined) { state.mapCoords = d.mapCoords; try{localStorage.setItem('cd_mapcoords', JSON.stringify(d.mapCoords));}catch(e){} }
-      if (d.parkPhotos !== undefined) state.parkPhotos = d.parkPhotos;
-      if (d.trash !== undefined) state.trash = d.trash;
-      if (d.carryLists !== undefined) state.carryLists = d.carryLists;
-      if (Array.isArray(d.masterPack)) state.masterPack = d.masterPack;
-      if (d.homeAddress) { state.homeAddress = d.homeAddress; _homeCoords = null; }
-    }
-  } catch(e) { console.error('Load failed:', e); throw e; }
+// This indicator remains visible; don't claim that a failed cloud upload is saved.
+function setSyncStatus(mode,detail){
+  const el=document.getElementById('syncDot');
+  if(!el)return;
+  const statuses={saved:['☁️ Saved','#b2dfbb'],pending:['⏳ Pending','#f5c779'],blocked:['⚠️ Sync blocked','#ffae8a']};
+  const [label,color]=statuses[mode]||statuses.pending;
+  el.textContent=label;
+  el.style.color=color;
+  el.style.opacity='1';
+  el.title=detail||label;
+  el.setAttribute('role','status');
 }
-
-function showSyncIndicator() {
-  const el = document.getElementById('syncDot');
-  if (!el) return;
-  el.style.opacity = '1';
-  setTimeout(() => { el.style.opacity = '0'; }, 2500);
-}
+function showSyncIndicator(){ setSyncStatus('saved','Cloud confirmed the latest changes'); }
 
 async function doSignIn() {
   const email = document.getElementById('authEmail').value.trim();
@@ -4400,8 +4472,8 @@ async function doSignIn() {
     document.getElementById('authSignInBtn').textContent = '\uD83D\uDD11 Sign In';
     if (!ok) { showAuthMsg(data.error_description || data.msg || 'Sign in failed.', 'error'); return; }
     accessToken = data.access_token;
-    localStorage.setItem('sb_access_token',  accessToken);
-    localStorage.setItem('sb_refresh_token', data.refresh_token || '');
+    localStorage.setItem('tnprod_v2_sb_access_token',  accessToken);
+    localStorage.setItem('tnprod_v2_sb_refresh_token', data.refresh_token || '');
     currentUser = data.user;
     await onSignedIn(currentUser);
   } catch(e) {
@@ -4426,8 +4498,8 @@ async function doSignUp() {
     if (!ok) { showAuthMsg(data.error_description || data.msg || 'Sign up failed.', 'error'); return; }
     if (data.access_token) {
       accessToken = data.access_token;
-      localStorage.setItem('sb_access_token', accessToken);
-      localStorage.setItem('sb_refresh_token', data.refresh_token || '');
+      localStorage.setItem('tnprod_v2_sb_access_token', accessToken);
+      localStorage.setItem('tnprod_v2_sb_refresh_token', data.refresh_token || '');
       currentUser = data.user;
       await onSignedIn(currentUser);
     } else {
@@ -4442,8 +4514,8 @@ async function doSignUp() {
 async function doSignOut() {
   try { await sbFetch('/auth/v1/logout', { method: 'POST' }); } catch(e) {}
   accessToken = null; currentUser = null;
-  localStorage.removeItem('sb_access_token');
-  localStorage.removeItem('sb_refresh_token');
+  localStorage.removeItem('tnprod_v2_sb_access_token');
+  localStorage.removeItem('tnprod_v2_sb_refresh_token');
   window.location.reload();
 }
 
@@ -4453,15 +4525,15 @@ async function getStoredSession() {
     const { ok, data } = await sbFetch('/auth/v1/user');
     if (ok && data.id) return data;
     // Try refresh
-    const rt = localStorage.getItem('sb_refresh_token');
+    const rt = localStorage.getItem('tnprod_v2_sb_refresh_token');
     if (!rt) return null;
     const { ok: rok, data: rdata } = await sbFetch('/auth/v1/token?grant_type=refresh_token', {
       method: 'POST', body: JSON.stringify({ refresh_token: rt })
     });
     if (rok && rdata.access_token) {
       accessToken = rdata.access_token;
-      localStorage.setItem('sb_access_token', accessToken);
-      localStorage.setItem('sb_refresh_token', rdata.refresh_token || rt);
+      localStorage.setItem('tnprod_v2_sb_access_token', accessToken);
+      localStorage.setItem('tnprod_v2_sb_refresh_token', rdata.refresh_token || rt);
       return rdata.user;
     }
     return null;
@@ -4469,13 +4541,31 @@ async function getStoredSession() {
 }
 
 async function onSignedIn(user) {
+  const previousOwner=localStorage.getItem('tnprod_v2_tn_last_user_id');
+  if(previousOwner && previousOwner!==user.id){
+    alert('This browser has local camping data from a different account. To prevent mixing or losing records, please export that account’s backup first and use a separate browser profile for this account.');
+    accessToken=null;currentUser=null;
+    localStorage.removeItem('tnprod_v2_sb_access_token');localStorage.removeItem('tnprod_v2_sb_refresh_token');
+    document.getElementById('authBg').style.display='flex';
+    return;
+  }
   currentUser = user;
+  _tnCloudReady=false; // Must download/validate a cloud baseline after each sign-in.
+  _tnCloudConflict=false;
+  localStorage.setItem('tnprod_v2_tn_last_user_id',user.id);
   document.getElementById('authBg').style.display = 'none';
   document.getElementById('userBar').style.visibility = 'visible';
   document.getElementById('userEmail').textContent = user.email;
   showToast('Loading your data\u2026 \u2601\uFE0F');
-  await loadFromCloud();
-  saveState();          // persist cloud data to localStorage so it survives re-renders
+  setSyncStatus('pending','Loading the cloud baseline; uploads not permitted yet');
+  try {await loadFromCloud();}
+  catch(e){
+    showToast('Cloud download failed — existing local data is unchanged.');
+    console.error('Initial cloud load failed',e);
+    renderAll(); // Keep local records visible and exportable when cloud cannot be trusted.
+    return;
+  }
+  saveState(false); // Downloading data must NEVER schedule a blind upload.
   renderAll();
   showToast('Welcome back! \uD83C\uDF32');
 }
@@ -4503,14 +4593,14 @@ function photoFingerprint(s){
 }
 
 async function refreshAccessToken(){
-  var rt = localStorage.getItem('sb_refresh_token');
+  var rt = localStorage.getItem('tnprod_v2_sb_refresh_token');
   if (!rt) return false;
   try {
     var r = await sbFetch('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: JSON.stringify({ refresh_token: rt }) });
     if (r.ok && r.data && r.data.access_token) {
       accessToken = r.data.access_token;
-      localStorage.setItem('sb_access_token', accessToken);
-      localStorage.setItem('sb_refresh_token', r.data.refresh_token || rt);
+      localStorage.setItem('tnprod_v2_sb_access_token', accessToken);
+      localStorage.setItem('tnprod_v2_sb_refresh_token', r.data.refresh_token || rt);
       return true;
     }
   } catch (e) {}
@@ -4518,6 +4608,7 @@ async function refreshAccessToken(){
 }
 
 async function storageCall(method, route, extra){
+  if(TRAIL_NOTES_REVIEW_READ_ONLY && !['GET','HEAD'].includes(String(method).toUpperCase())) throw new Error('Review build: storage writes disabled');
   if (!accessToken) throw new Error('Not signed in');
   var url = SUPABASE_URL + '/storage/v1/object/' + route;
   var go = function(){
@@ -4552,9 +4643,10 @@ async function fetchPhotoBlob(path){
   return await res.blob();
 }
 async function deletePhotoObject(path){
+  // Safety policy: do not automatically delete original image bytes.
+  // Removing a photo from the diary removes its reference; backup/orphan cleanup is separate.
   _photoUrlCache.delete(path);
-  try { await storageCall('DELETE', PHOTO_BUCKET + '/' + photoPathEnc(path)); }
-  catch (e) { console.warn('Could not delete photo file:', e); }
+  console.info('Trail Notes: image file retained in private storage for recovery.');
 }
 // Upload, then read it straight back and compare sizes, so a path is only ever saved if it really works.
 async function uploadAndVerify(path, blob){
@@ -4721,13 +4813,13 @@ function showAuthMsg(msg, type) {
 const PL = {
   mode: 'quick',
   search: { dest: '', filterState: '', ams: [] },
-  route: { dest: '', start: '', end: '', from: localStorage.getItem('tn_route_from')||'Edgewater, FL', numStops: parseInt(localStorage.getItem('tn_route_stops')||'2') },
+  route: { dest: '', start: '', end: '', from: localStorage.getItem('tnprod_v2_tn_route_from')||'Edgewater, FL', numStops: parseInt(localStorage.getItem('tnprod_v2_tn_route_stops')||'2') },
   results: [], routeData: null,
   loading: false, done: false, err: false, errMsg: '', abortController: null, fromCache: false
 };
 
-function getKey() { try { return localStorage.getItem('tn_ant_key')||''; } catch(e) { return ''; } }
-function setKey(k) { try { const clean=k.replace(/[^\x20-\x7E]/g,'').trim(); localStorage.setItem('tn_ant_key',clean); } catch(e) {} }
+function getKey() { try { return localStorage.getItem('tnprod_v2_tn_ant_key')||''; } catch(e) { return ''; } }
+function setKey(k) { try { const clean=k.replace(/[^\x20-\x7E]/g,'').trim(); localStorage.setItem('tnprod_v2_tn_ant_key',clean); } catch(e) {} }
 function promptForKey() {
   const current = getKey();
   const k = prompt('Paste your Anthropic API key:\n(from console.anthropic.com — stored only in this browser, never in the file)', current ? '(key already set — paste new one to replace)' : '');
@@ -4736,8 +4828,8 @@ function promptForKey() {
     renderFindPanel();
   }
 }
-function getOrsKey(){try{return localStorage.getItem('tn_ors_key')||'';}catch(e){return '';}}
-function setOrsKey(k){try{localStorage.setItem('tn_ors_key',k.replace(/[^\x20-\x7E]/g,'').trim());}catch(e){}}
+function getOrsKey(){try{return localStorage.getItem('tnprod_v2_tn_ors_key')||'';}catch(e){return '';}}
+function setOrsKey(k){try{localStorage.setItem('tnprod_v2_tn_ors_key',k.replace(/[^\x20-\x7E]/g,'').trim());}catch(e){}}
 function promptOrsKey(){
   const k=prompt('Paste your OpenRouteService API key:\n(free from openrouteservice.org — no credit card needed)',getOrsKey()||'');
   if(k&&k.trim()){setOrsKey(k);renderFindPanel();}
@@ -5029,12 +5121,12 @@ async function calcNewParkMileage(parkId){
   if(onewayMiles){state.parkMileage[parkId]=onewayMiles*2;saveState();scheduleSyncToCloud();}
 }
 
-function getHistory() { try { return JSON.parse(localStorage.getItem('tn_srch_hist')||'[]'); } catch(e) { return []; } }
+function getHistory() { try { return JSON.parse(localStorage.getItem('tnprod_v2_tn_srch_hist')||'[]'); } catch(e) { return []; } }
 function addHistory(dest,state,results) {
   const h=getHistory().filter(x=>!(x.dest===dest&&x.state===state));
   h.unshift({dest,state,results:results||[],d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
-  try{localStorage.setItem('tn_srch_hist',JSON.stringify(h.slice(0,8)));}catch(e){}
-  scheduleSyncToCloud(); // push to Supabase so it persists across sessions
+  try{localStorage.setItem('tnprod_v2_tn_srch_hist',JSON.stringify(h.slice(0,8)));}catch(e){}
+  markExtraDataChanged(); // record the extra local state and queue a guarded sync
 }
 function loadHistoryResult(idx){
   const h=getHistory();
@@ -5054,16 +5146,16 @@ function loadHistoryResult(idx){
   PL.fromCache=true;
   renderFindPanel();
 }
-function getSaved() { try{return JSON.parse(localStorage.getItem('tn_saved_cg')||'[]');}catch(e){return [];} }
+function getSaved() { try{return JSON.parse(localStorage.getItem('tnprod_v2_tn_saved_cg')||'[]');}catch(e){return [];} }
 function saveCampground(cg) {
   const s=getSaved();
   if(s.find(x=>x.name===cg.name&&x.location===cg.location))return false;
   s.unshift(cg);
-  try{localStorage.setItem('tn_saved_cg',JSON.stringify(s));}catch(e){}
+  try{localStorage.setItem('tnprod_v2_tn_saved_cg',JSON.stringify(s));markExtraDataChanged();}catch(e){}
   return true;
 }
 function removeSaved(name,loc) {
-  try{localStorage.setItem('tn_saved_cg',JSON.stringify(getSaved().filter(x=>!(x.name===name&&x.location===loc))));}catch(e){}
+  try{localStorage.setItem('tnprod_v2_tn_saved_cg',JSON.stringify(getSaved().filter(x=>!(x.name===name&&x.location===loc))));markExtraDataChanged();}catch(e){}
 }
 function saveAllCampgrounds(campgrounds){
   let count=0;
@@ -5076,16 +5168,14 @@ function saveCampgroundAndRefresh(cg) {
   if(!saveCampground(cg)){alert('Already saved!');return;}
   renderFindPanel();
 }
-function getSavedRoutes(){try{return JSON.parse(localStorage.getItem('tn_saved_routes')||'[]');}catch(e){return[];}}
+function getSavedRoutes(){try{return JSON.parse(localStorage.getItem('tnprod_v2_tn_saved_routes')||'[]');}catch(e){return[];}}
 function saveRoute(route){
   const routes=getSavedRoutes().filter(r=>r.id!==route.id);
   routes.unshift(route);
-  try{localStorage.setItem('tn_saved_routes',JSON.stringify(routes));}catch(e){}
-  scheduleSyncToCloud();
+  try{localStorage.setItem('tnprod_v2_tn_saved_routes',JSON.stringify(routes));markExtraDataChanged();}catch(e){}
 }
 function removeRoute(id){
-  try{localStorage.setItem('tn_saved_routes',JSON.stringify(getSavedRoutes().filter(r=>r.id!==id)));}catch(e){}
-  scheduleSyncToCloud();
+  try{localStorage.setItem('tnprod_v2_tn_saved_routes',JSON.stringify(getSavedRoutes().filter(r=>r.id!==id)));markExtraDataChanged();}catch(e){}
   renderFindPanel();
 }
 function shareRoute(){
@@ -5176,7 +5266,7 @@ function renderFindPanel() {
         <label class="pl-label">Number of overnight stops</label>
         <div style="display:flex;align-items:center;gap:12px;">
           <input type="number" min="1" max="10" value="${PL.route.numStops||2}"
-            oninput="const v=parseInt(this.value)||1;PL.route.numStops=v;localStorage.setItem('tn_route_stops',v);document.getElementById('stops-hint').textContent='Auto-plan will divide the route into '+(v+1)+' equal driving days';"
+            oninput="const v=parseInt(this.value)||1;PL.route.numStops=v;localStorage.setItem('tnprod_v2_tn_route_stops',v);document.getElementById('stops-hint').textContent='Auto-plan will divide the route into '+(v+1)+' equal driving days';"
             style="width:80px;font-size:1.1rem;padding:8px 10px;text-align:center;background:rgba(255,255,255,.15);border:1px solid var(--fog);border-radius:4px;color:var(--bark);font-family:-apple-system,Georgia,serif;">
           <span style="font-size:.85rem;color:var(--smoke);">overnight stop${(PL.route.numStops||2)!==1?'s':''} &rarr; ${(PL.route.numStops||2)+1} driving days</span>
         </div>
@@ -5185,7 +5275,7 @@ function renderFindPanel() {
 
       <div class="pl-section">
         <label class="pl-label">Starting from</label>
-        <input class="pl-input" id="rt-from" value="${esc2(PL.route.from)}" placeholder="Edgewater, FL" oninput="PL.route.from=this.value;localStorage.setItem('tn_route_from',this.value)">
+        <input class="pl-input" id="rt-from" value="${esc2(PL.route.from)}" placeholder="Edgewater, FL" oninput="PL.route.from=this.value;localStorage.setItem('tnprod_v2_tn_route_from',this.value)">
       </div>
 
       <div style="background:rgba(200,135,42,.1);border:1px solid rgba(200,135,42,.25);border-radius:4px;padding:10px 12px;margin-bottom:14px;">
@@ -5225,7 +5315,7 @@ function renderFindPanel() {
     historySection=`<div style="margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">&#128190; Saved Searches</div>
-        <button onclick="localStorage.removeItem('tn_srch_hist');renderFindPanel()" style="padding:3px 8px;font-size:.7rem;border:1px solid rgba(200,50,50,.3);border-radius:10px;cursor:pointer;background:transparent;color:rgba(200,100,100,.7);">clear all</button>
+        <button onclick="localStorage.removeItem('tnprod_v2_tn_srch_hist');renderFindPanel()" style="padding:3px 8px;font-size:.7rem;border:1px solid rgba(200,50,50,.3);border-radius:10px;cursor:pointer;background:transparent;color:rgba(200,100,100,.7);">clear all</button>
       </div>
       ${withResults.map(h=>{
         const idx=history.indexOf(h);
@@ -5276,7 +5366,7 @@ function renderFindPanel() {
     savedSection=`<div style="margin-top:24px;border-top:1px solid var(--fog);padding-top:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);">&#11088; Saved Campgrounds (${saved.length})</div>
-        <button onclick="if(confirm('Clear all saved campgrounds?')){localStorage.removeItem('tn_saved_cg');renderFindPanel();}" style="font-size:.7rem;padding:3px 8px;background:transparent;border:1px solid rgba(200,50,50,.3);border-radius:10px;color:rgba(200,100,100,.7);cursor:pointer;">clear all</button>
+        <button onclick="if(confirm('Clear all saved campgrounds?')){localStorage.removeItem('tnprod_v2_tn_saved_cg');renderFindPanel();}" style="font-size:.7rem;padding:3px 8px;background:transparent;border:1px solid rgba(200,50,50,.3);border-radius:10px;color:rgba(200,100,100,.7);cursor:pointer;">clear all</button>
       </div>
       ${saved.map(cg=>`<div style="background:rgba(255,255,255,.08);border:1px solid var(--fog);border-left:4px solid var(--amber);border-radius:4px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:start;">
         <div>
@@ -6190,4 +6280,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>
   </div>
 </div>
-</div>    <script id="trailNotesAutoSave">(function(){const DRAFT='cd_journal_draft_v2';let timer=null;function $(id){return document.getElementById(id)}function status(msg){const el=$('journalAutoSaveStatus');if(el)el.textContent=msg}function readDraft(){const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return null;return{loc:loc.value,date:date.value,notes:notes.value,hl:hl?hl.value:'',custom:custom?custom.value:'',weather:selW||'',mood:selM||'',savedAt:Date.now()}}function saveDraft(){const d=readDraft();if(!d)return;try{localStorage.setItem(DRAFT,JSON.stringify(d))}catch(e){}status('✓ Saved automatically')}function restoreDraft(){let d=null;try{d=JSON.parse(localStorage.getItem(DRAFT)||'null')}catch(e){}if(!d||(!d.notes&&!d.loc&&!d.hl))return;const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return;loc.value=d.loc||'';if(typeof handleLocChange==='function')handleLocChange();if(custom)custom.value=d.custom||'';date.value=d.date||date.value;notes.value=d.notes||'';if(hl)hl.value=d.hl||'';selW=d.weather||'';selM=d.mood||'';document.querySelectorAll('.weather-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===selW));document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.textContent===selM));status('↩ Restored your unfinished journal entry')}function maybeCommit(){let loc=$('locSelect')?.value||'';if(loc==='__custom__')loc=$('customLoc')?.value.trim()||'';const date=$('jDate')?.value||'';const notes=$('jNotes')?.value.trim()||'';if(!loc||!date||!notes)return;const hlRaw=$('jHL')?.value.trim()||'';const highlights=hlRaw?hlRaw.split(',').map(h=>h.trim()).filter(Boolean):[];state.entries.unshift({id:Date.now(),location:loc,date,notes,weather:selW||'',mood:selM||'',highlights});saveState();renderAll();resetForm();try{localStorage.removeItem(DRAFT)}catch(e){}status('✓ Entry saved automatically');showToast('Journal entry saved automatically 🌲')}function queue(){clearTimeout(timer);timer=setTimeout(saveDraft,180)}function attach(){['locSelect','customLoc','jDate','jNotes','jHL'].forEach(id=>{const el=$(id);if(!el||el.dataset.autoSaveBound)return;el.dataset.autoSaveBound='1';el.addEventListener('input',queue);el.addEventListener('change',queue)});['jNotes','jHL'].forEach(id=>{const el=$(id);if(el&&!el.dataset.autoCommitBound){el.dataset.autoCommitBound='1';el.addEventListener('blur',()=>{saveDraft();maybeCommit()})}});document.querySelectorAll('.weather-btn,.mood-btn').forEach(b=>{if(b.dataset.autoBound)return;b.dataset.autoBound='1';b.addEventListener('click',()=>setTimeout(saveDraft,20))});restoreDraft()}window.addEventListener('load',()=>setTimeout(attach,250))})();</script></body></html>
+</div>    <script id="trailNotesAutoSave">(function(){const DRAFT='tnprod_v2_cd_journal_draft_v2';let timer=null;function $(id){return document.getElementById(id)}function status(msg){const el=$('journalAutoSaveStatus');if(el)el.textContent=msg}function readDraft(){const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return null;return{loc:loc.value,date:date.value,notes:notes.value,hl:hl?hl.value:'',custom:custom?custom.value:'',weather:selW||'',mood:selM||'',savedAt:Date.now()}}function saveDraft(){const d=readDraft();if(!d)return;try{localStorage.setItem(DRAFT,JSON.stringify(d))}catch(e){}status('✓ Saved automatically')}function restoreDraft(){let d=null;try{d=JSON.parse(localStorage.getItem(DRAFT)||'null')}catch(e){}if(!d||(!d.notes&&!d.loc&&!d.hl))return;const loc=$('locSelect'),date=$('jDate'),notes=$('jNotes'),hl=$('jHL'),custom=$('customLoc');if(!loc||!date||!notes)return;loc.value=d.loc||'';if(typeof handleLocChange==='function')handleLocChange();if(custom)custom.value=d.custom||'';date.value=d.date||date.value;notes.value=d.notes||'';if(hl)hl.value=d.hl||'';selW=d.weather||'';selM=d.mood||'';document.querySelectorAll('.weather-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===selW));document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.textContent===selM));status('↩ Restored your unfinished journal entry')}function maybeCommit(){let loc=$('locSelect')?.value||'';if(loc==='__custom__')loc=$('customLoc')?.value.trim()||'';const date=$('jDate')?.value||'';const notes=$('jNotes')?.value.trim()||'';if(!loc||!date||!notes)return;const hlRaw=$('jHL')?.value.trim()||'';const highlights=hlRaw?hlRaw.split(',').map(h=>h.trim()).filter(Boolean):[];state.entries.unshift({id:Date.now(),location:loc,date,notes,weather:selW||'',mood:selM||'',highlights});saveState();renderAll();resetForm();try{localStorage.removeItem(DRAFT)}catch(e){}status('✓ Entry saved automatically');showToast('Journal entry saved automatically 🌲')}function queue(){clearTimeout(timer);timer=setTimeout(saveDraft,180)}function attach(){['locSelect','customLoc','jDate','jNotes','jHL'].forEach(id=>{const el=$(id);if(!el||el.dataset.autoSaveBound)return;el.dataset.autoSaveBound='1';el.addEventListener('input',queue);el.addEventListener('change',queue)});['jNotes','jHL'].forEach(id=>{const el=$(id);if(el&&!el.dataset.autoCommitBound){el.dataset.autoCommitBound='1';el.addEventListener('blur',()=>{saveDraft();maybeCommit()})}});document.querySelectorAll('.weather-btn,.mood-btn').forEach(b=>{if(b.dataset.autoBound)return;b.dataset.autoBound='1';b.addEventListener('click',()=>setTimeout(saveDraft,20))});restoreDraft()}window.addEventListener('load',()=>setTimeout(attach,250))})();</script></body></html>
