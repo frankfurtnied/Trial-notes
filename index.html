@@ -1336,7 +1336,7 @@ header p{
 <div class="modal-bg hidden" id="detailModalBg" onclick="if(event.target===this)closeParkDetail()"><div class="modal" style="max-width:820px;width:100%"><button onclick="closeParkDetail()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="detailModalContent"></div></div></div>
 <div class="modal-bg hidden" id="bookModalBg" onclick="if(event.target===this)this.classList.add('hidden')"><div class="modal" style="max-width:850px;width:100%"><button onclick="document.getElementById('bookModalBg').classList.add('hidden')" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div class="book-actions"><button class="btn-g" onclick="printCampingBook()">🖨️ Print / Save PDF</button><button class="btn-o" onclick="document.getElementById('bookModalBg').classList.add('hidden')">Close</button></div><div id="bookContent"></div></div></div>
 <div class="modal-bg hidden" id="packModalBg" onclick="if(event.target===this)closePackList()"><div class="modal" style="max-width:980px;width:100%"><button onclick="closePackList()" aria-label="Close" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><div id="packContent"></div></div></div>
-<div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1080px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-toolbar"><button class="map-filter active" id="mapFilterAll" onclick="setMapFilter('all')">📍 All Parks</button><button class="map-filter" id="mapFilterVisited" onclick="setMapFilter('visited')">🏕 Visited</button><button class="map-filter" id="mapFilterFavs" onclick="setMapFilter('favs')">❤️ Favorites</button><span class="map-toolbar-spacer"></span><button class="btn-o" onclick="fitCampingMap()">⤢ Fit All</button><button class="btn-o" onclick="openMapExplorer(true)">↻ Refresh</button></div><div id="mapStatus" class="map-status">Preparing map…</div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div><div id="mapFailedBox"></div></div></div>
+<div class="modal-bg hidden" id="mapModalBg" onclick="if(event.target===this)closeMapExplorer()"><div class="modal" style="max-width:1080px;width:100%"><button onclick="closeMapExplorer()" style="float:right;background:none;border:0;font-size:1.5rem;color:var(--fog);cursor:pointer">×</button><h2 style="font-family:var(--font-heading);color:var(--bark);margin-bottom:8px">🗺️ Camping Map</h2><div class="map-toolbar"><button class="map-filter active" id="mapFilterAll" onclick="setMapFilter('all')">📍 All Parks</button><button class="map-filter" id="mapFilterVisited" onclick="setMapFilter('visited')">🏕 Visited</button><button class="map-filter" id="mapFilterUnvisited" onclick="setMapFilter('unvisited')">🌱 Not Yet Visited</button><button class="map-filter" id="mapFilterFavs" onclick="setMapFilter('favs')">❤️ Favorites</button><span class="map-toolbar-spacer"></span><button class="btn-o" onclick="fitCampingMap()">⤢ Fit All</button><button class="btn-o" onclick="openMapExplorer(true)">↻ Refresh</button></div><div style="margin:8px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><label for="mapParkSearch" style="font-weight:600;color:var(--bark);">Find a campground:</label><input id="mapParkSearch" type="search" placeholder="Search park name…" oninput="applyMapFilter()" style="flex:1;min-width:170px;max-width:420px;padding:8px 10px;border-radius:6px;border:1px solid var(--fog);"><button type="button" class="btn-o" onclick="document.getElementById('mapParkSearch').value='';applyMapFilter()">Clear</button></div><div id="mapStatus" class="map-status">Preparing map…</div><div id="mapVisibleCount" class="map-status" aria-live="polite"></div><div class="map-shell"><div id="mapCanvas" class="map-canvas"></div></div><div id="mapFailedBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -3882,14 +3882,35 @@ function clearMapMarkers(){
 function addParkMarker(map,p,coords){
   if(!map||!coords)return;const marker=L.marker(coords).addTo(map),trips=getTrips(p.id),visited=trips.length>0||state.visited[p.id]||!!p.stayedSites,fav=state.favorites.includes(p.id);const sub=(visited?'🏕 Visited':'🌲 Not yet visited')+(fav?' · ❤️ Favorite':'');
   marker.bindPopup(`<div class="map-marker-popup"><strong>${esc(p.name)}</strong><div class="map-pin-state">${sub}</div><div style="margin:5px 0;font-size:.76rem;color:#6b5740">${trips.length} visit${trips.length===1?'':'s'}${p.address?' · '+esc(p.address):''}</div><button class="btn-g map-detail-btn" data-park-id="${p.id}" style="padding:6px 10px;font-size:.76rem">Park Details</button></div>`);
-  marker.on('popupopen',function(e){const btn=e.popup.getElement()?.querySelector('.map-detail-btn');if(btn)btn.onclick=function(ev){ev.preventDefault();ev.stopPropagation();openParkDetail(p.id);};});marker._parkId=p.id;marker._visited=visited;marker._favorite=fav;_campMapMarkers.push(marker);
+  marker.on('popupopen',function(e){const btn=e.popup.getElement()?.querySelector('.map-detail-btn');if(btn)btn.onclick=function(ev){ev.preventDefault();ev.stopPropagation();openParkDetail(p.id);};});marker._parkId=p.id;marker._parkName=String(p.name||'').toLowerCase();marker._visited=visited;marker._favorite=fav;_campMapMarkers.push(marker);
 }
-function setMapFilter(filter){window._mapFilter=filter;['All','Visited','Favs'].forEach(k=>{const b=document.getElementById('mapFilter'+k);if(b)b.classList.toggle('active',(k==='All'&&filter==='all')||(k==='Visited'&&filter==='visited')||(k==='Favs'&&filter==='favs'));});applyMapFilter();}
-function applyMapFilter(){if(!_campMap)return;const f=window._mapFilter||'all';_campMapMarkers.forEach(m=>{const show=f==='all'||(f==='visited'&&m._visited)||(f==='favs'&&m._favorite);if(show){if(!_campMap.hasLayer(m))m.addTo(_campMap);}else if(_campMap.hasLayer(m))_campMap.removeLayer(m);});fitCampingMap();}
+function setMapFilter(filter){
+  window._mapFilter=filter;
+  ['All','Visited','Unvisited','Favs'].forEach(k=>{
+    const b=document.getElementById('mapFilter'+k);
+    if(b)b.classList.toggle('active',(k==='All'&&filter==='all')||(k==='Visited'&&filter==='visited')||(k==='Unvisited'&&filter==='unvisited')||(k==='Favs'&&filter==='favs'));
+  });
+  applyMapFilter();
+}
+function applyMapFilter(){
+  if(!_campMap)return;
+  const f=window._mapFilter||'all';
+  const query=String(document.getElementById('mapParkSearch')?.value||'').trim().toLowerCase();
+  let visible=0;
+  _campMapMarkers.forEach(m=>{
+    const matchesFilter=f==='all'||(f==='visited'&&m._visited)||(f==='unvisited'&&!m._visited)||(f==='favs'&&m._favorite);
+    const show=matchesFilter&&(!query||String(m._parkName||'').includes(query));
+    if(show){if(!_campMap.hasLayer(m))m.addTo(_campMap);visible++;}
+    else if(_campMap.hasLayer(m))_campMap.removeLayer(m);
+  });
+  const count=document.getElementById('mapVisibleCount');
+  if(count)count.textContent=visible+' of '+_campMapMarkers.length+' mapped campgrounds shown';
+  if(visible)fitCampingMap();
+}
 function fitCampingMap(){if(!_campMap)return;const visible=_campMapMarkers.filter(m=>_campMap.hasLayer(m));if(visible.length===1)_campMap.setView(visible[0].getLatLng(),10);else if(visible.length>1)_campMap.fitBounds(L.latLngBounds(visible.map(m=>m.getLatLng())),{padding:[30,30],maxZoom:9});}
 function openMapExplorer(forceRefresh=false){
   const m=document.getElementById('mapModalBg');if(!m)return;m.classList.remove('hidden');const el=document.getElementById('mapCanvas'),status=document.getElementById('mapStatus');if(_mapOpening){setTimeout(()=>_campMap&&_campMap.invalidateSize(),80);return;}_mapOpening=true;
-  (async()=>{try{await loadMapLibrary();if(!_campMap){el.innerHTML='';_campMap=L.map(el,{preferCanvas:true}).setView([28.6,-81.5],7);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(_campMap);}clearMapMarkers();const parks=allParks(),failed=[];let mapped=0,missing=0;const update=()=>{if(status)status.textContent=`${mapped} of ${parks.length} parks mapped${missing?` · ${missing} locating`:''}`;};update();parks.forEach(p=>{const c=state.mapCoords&&state.mapCoords[p.id];if(Array.isArray(c)&&c.length===2){addParkMarker(_campMap,p,c);mapped++;}});if(mapped)fitCampingMap();setTimeout(()=>_campMap.invalidateSize(),80);
+  (async()=>{try{await loadMapLibrary();if(!_campMap){el.innerHTML='';_campMap=L.map(el,{preferCanvas:true}).setView([28.6,-81.5],7);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(_campMap);}clearMapMarkers();const parks=allParks(),failed=[];let mapped=0,missing=0;const update=()=>{if(status)status.textContent=`${mapped} of ${parks.length} parks mapped${missing?` · ${missing} locating`:''}`;};update();parks.forEach(p=>{const c=state.mapCoords&&state.mapCoords[p.id];if(Array.isArray(c)&&c.length===2){addParkMarker(_campMap,p,c);mapped++;}});if(mapped)applyMapFilter();setTimeout(()=>_campMap.invalidateSize(),80);
     for(const p of parks){if(!forceRefresh&&state.mapCoords&&Array.isArray(state.mapCoords[p.id]))continue;missing++;update();const timeout=new Promise(res=>setTimeout(()=>res(null),9000));const c=await Promise.race([geocodePark(p,forceRefresh),timeout]);missing--;if(c){addParkMarker(_campMap,p,c);mapped++;}else if(!(state.mapCoords&&Array.isArray(state.mapCoords[p.id])))failed.push(p);update();await new Promise(r=>setTimeout(r,700));}
     update();setMapFilter(window._mapFilter||'all');renderMapFailedList(failed);setTimeout(()=>_campMap.invalidateSize(),150);
   }catch(e){console.error('Map error:',e);if(status)status.textContent='The map could not be loaded. Please try again.';}finally{_mapOpening=false;}})();
@@ -5907,6 +5928,50 @@ function getParkState(park) {
   return '?';
 }
 
+
+// A read-only comparison of all trips grouped by the year the user left home.
+// Older diary records with no end date use the same one-night fallback as the dashboard.
+function tnYearlyCampingSummary(trips) {
+  const byYear=new Map();
+  (trips||[]).forEach(t=>{
+    const year=String(t.date||'').slice(0,4);
+    if(!/^\d{4}$/.test(year))return;
+    if(!byYear.has(year))byYear.set(year,{year,trips:0,nights:0,parkIds:new Set(),fees:0,miles:0});
+    const row=byYear.get(year);
+    row.trips++;
+    const validEnd=t.depart&&t.depart>t.date;
+    const start=Date.parse(t.date+'T00:00:00Z'),end=validEnd?Date.parse(t.depart+'T00:00:00Z'):NaN;
+    row.nights+=Number.isFinite(start)&&Number.isFinite(end)?Math.max(1,Math.round((end-start)/86400000)):1;
+    row.parkIds.add(String(t._pid));
+    const fee=Number(t.sitefee);
+    if(Number.isFinite(fee)&&fee>0)row.fees+=fee;
+    const miles=Number(getParkOneWayMiles(t._pid));
+    if(Number.isFinite(miles)&&miles>0)row.miles+=miles*2;
+  });
+  return [...byYear.values()].sort((a,b)=>b.year.localeCompare(a.year)).map(r=>({
+    year:r.year,trips:r.trips,nights:r.nights,parks:r.parkIds.size,fees:r.fees,miles:r.miles
+  }));
+}
+function tnYearlyComparisonHtml(trips) {
+  const rows=tnYearlyCampingSummary(trips);
+  if(!rows.length)return '<p>No completed camping history to summarize yet.</p>';
+  const money=n=>'$'+n.toLocaleString(undefined,{maximumFractionDigits:0});
+  const fmt=n=>Math.round(n).toLocaleString();
+  let html='<section style="background:var(--parchment);border-radius:8px;padding:16px;margin-bottom:18px;">'+
+    '<h3 style="font-family:var(--font-heading);font-size:1.1rem;color:var(--bark);margin-bottom:6px;">📅 Year-by-Year Camping Summary</h3>'+
+    '<p style="font-size:.78rem;color:var(--fog);margin-bottom:12px;">Trips count toward the year you left home. Miles are estimated round trips where a park distance is known; fees include only recorded site fees. The latest year is shown first.</p>'+
+    '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:490px;font-size:.83rem;">'+
+    '<thead><tr style="text-align:right;border-bottom:2px solid var(--bark);"><th scope="col" style="text-align:left;padding:8px;">Year</th><th scope="col">Trips</th><th scope="col">Nights</th><th scope="col">Parks</th><th scope="col">Est. Miles</th><th scope="col">Fees</th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{
+    const prev=rows[i+1],difference=prev?' ('+(r.nights-prev.nights>=0?'+':'')+(r.nights-prev.nights)+' vs '+prev.year+')':'';
+    html+='<tr style="text-align:right;border-bottom:1px solid rgba(61,90,42,.14);">'+
+      '<th scope="row" style="text-align:left;padding:8px;">'+r.year+'</th>'+
+      '<td>'+r.trips+'</td><td><strong>'+r.nights+'</strong><span style="display:block;font-size:.65rem;color:var(--fog);">'+(prev?esc(difference):'')+'</span></td>'+
+      '<td>'+r.parks+'</td><td>'+fmt(r.miles)+'</td><td>'+money(r.fees)+'</td></tr>';
+  });
+  return html+'</tbody></table></div></section>';
+}
+
 function renderStatsPanel() {
   var el = document.getElementById('statsContent');
   if (!el) return;
@@ -6009,6 +6074,8 @@ function renderStatsPanel() {
     html += '</div>';
   });
   html += '</div>';
+
+  html += tnYearlyComparisonHtml(allTrips);
 
   // Season breakdown
   var seasons = {Spring:0, Summer:0, Fall:0, Winter:0};
