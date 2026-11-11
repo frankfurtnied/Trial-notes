@@ -1124,7 +1124,9 @@ header p{
     <button class="btn-amber" style="background:rgba(61,90,42,.7)" onclick="printDiary()" title="Print or save your diary as a PDF">🖨️ Print / PDF</button>
     <button class="btn-amber" style="background:rgba(80,100,70,.85)" onclick="openCampingBook()" title="Create a clean chronological camping history">📖 Camping Book</button>
     <button class="btn-amber" style="background:rgba(42,90,90,.8)" onclick="openMapExplorer()" title="See your parks on a map">🗺 Map</button>
-    <button class="btn-amber" style="background:rgba(42,80,90,.7)" onclick="exportData()" title="Save all your diary data (trips, photos, mileage, ratings, journal, wishlist, custom parks) to a file">⬇️ Export Backup</button>
+    <button class="btn-amber" style="background:rgba(42,80,90,.7)" onclick="exportData()" title="Download a comprehensive private backup including full-size photos, routes, map coordinates, and reservations">⬇️ Export Backup</button>
+    <button class="btn-amber" style="background:rgba(61,77,86,.85)" onclick="document.getElementById('inspectBackupFile').click()" title="Check a backup without changing your camping records">🔎 Check Backup</button>
+    <input type="file" id="inspectBackupFile" accept=".json,application/json" style="display:none" onchange="inspectBackup(event)">
     <button class="btn-amber" style="background:rgba(90,70,42,.7)" onclick="document.getElementById('importFile').click()" title="Restore or merge a backup file — your current data is kept, not erased">⬆️ Import Backup</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
@@ -4110,13 +4112,16 @@ async function exportData() {
     try { refs[i].put(await blobToDataUrl(await fetchPhotoBlob(refs[i].path))); }
     catch (e) { missed++; }
   }
-  if (missed && !confirm(missed + ' photo' + (missed > 1 ? 's' : '') + ' could not be downloaded (are you offline?).\n\nSave the backup anyway? Those photos would only have small previews in the file.')) {
-    showToast('Backup cancelled.');
+  if (missed) {
+    alert(missed + ' full-size photograph' + (missed === 1 ? ' could' : 's could') + ' not be downloaded.\n\nBackup stopped rather than producing an incomplete file. Please check your connection and try again. Your diary data has not been changed.');
+    showToast('Backup stopped: photos incomplete.');
     return;
   }
   const payload = {
-    version: 1,
+    version: 2,
+    backupType: 'trail-notes-comprehensive',
     exportedAt: new Date().toISOString(),
+    backupSummary: { parkPhotos: Object.values(photos).reduce((n,v)=>n+(Array.isArray(v)?v.length:0),0), downloadedCloudPhotos: refs.length, missingCloudPhotos: missed, routes: getSavedRoutes().length, mapCoordinates: Object.keys(state.mapCoords||{}).length },
     customParks: state.customParks,
     overrides:   state.overrides,
     tripLogs:    tripLogs,
@@ -4133,13 +4138,66 @@ async function exportData() {
     trash: state.trash || [],
     carryLists: state.carryLists || null,
     masterPack: state.masterPack || [],
+    // These fields were omitted from older exports but are present in the cloud record.
+    sortOrder: state.sortOrder,
+    mapCoords: state.mapCoords || {},
+    homeAddress: state.homeAddress || '',
+    legacyReservations: state.legacyReservations || [],
+    savedCampgrounds: getSaved(),
+    savedRoutes: getSavedRoutes(),
+    searchHistory: getHistory(),
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href = url; a.download = 'trail-notes-backup-' + new Date().toISOString().slice(0,10) + '.json';
-  a.click(); URL.revokeObjectURL(url);
-  showToast('Backup saved! 📦');
+  a.href = url; a.download = 'trail-notes-complete-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click(); setTimeout(()=>URL.revokeObjectURL(url), 30000);
+  showToast('Complete backup downloaded! 📦');
+}
+
+// Read-only file inspection: never touches localStorage, state, or Supabase.
+function backupReport(data) {
+  const count = (x) => Array.isArray(x) ? x.length : 0;
+  const logs = Object.values(data.tripLogs || {}).reduce((n,a) => n + count(a), 0);
+  const photos = Object.values(data.parkPhotos || {}).reduce((n,a) => n + count(a), 0);
+  const has = (key) => Object.prototype.hasOwnProperty.call(data,key);
+  return [
+    'TRAIL NOTES BACKUP CHECK (read-only)',
+    'Format: ' + (data.version === 2 ? 'Comprehensive v2' : 'Older v' + data.version),
+    'Exported: ' + (data.exportedAt || 'Unknown'),
+    '',
+    'Extra trip-log records: ' + logs + ' (not the full timeline total)',
+    'Custom campgrounds: ' + count(data.customParks),
+    'Upcoming trips: ' + count(data.upcoming),
+    'Journal entries: ' + count(data.entries),
+    'Park photograph entries: ' + photos,
+    'Saved routes: ' + (has('savedRoutes') ? count(data.savedRoutes) : 'not included'),
+    'Map coordinates: ' + (has('mapCoords') ? Object.keys(data.mapCoords || {}).length : 'not included'),
+    'Legacy reservations: ' + (has('legacyReservations') ? count(data.legacyReservations) : 'not included'),
+    'Search history: ' + (has('searchHistory') ? count(data.searchHistory) : 'not included'),
+    '',
+    (data.backupSummary && data.backupSummary.missingCloudPhotos ? 'WARNING: Missing full-size photos' :
+     'Note: This report does not independently verify every image or restore operation.'),
+    'This check DOES NOT import or change anything.'
+  ].join('\n');
+}
+function inspectBackup(e) {
+  const input = e.target;
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data || ![1,2].includes(data.version) || !data.tripLogs || !data.parkPhotos) {
+        throw new Error('Not a supported Trail Notes diary backup');
+      }
+      alert(backupReport(data));
+    } catch(err) {alert('Unable to inspect this file: ' + err.message);}
+    input.value='';
+  };
+  reader.onerror = function(){ alert('Unable to read that backup file.');input.value=''; };
+  reader.readAsText(file);
 }
 
 function importData(e) {
@@ -4149,8 +4207,8 @@ function importData(e) {
   reader.onload = function(ev) {
     try {
       const data = JSON.parse(ev.target.result);
-      if (!data.version) { showToast('Invalid backup file ❌'); return; }
-      if (!confirm('Import this backup? It will be MERGED into your current data — nothing you already have will be erased or overwritten.')) return;
+      if (![1,2].includes(data.version) || !data.tripLogs || !data.parkPhotos) { showToast('Invalid backup file ❌'); return; }
+      if (!confirm(backupReport(data) + '\n\nIMPORTANT: Import merges records and MAY REPLACE existing park details and trip edits with values from this backup.\n\nFirst export a fresh backup of your CURRENT diary.\n\nContinue with import?')) return;
       if (data.customParks) {
         const existing = state.customParks.map(p => p.name);
         data.customParks.forEach(p => { if (!existing.includes(p.name)) state.customParks.push(p); });
@@ -4219,6 +4277,34 @@ function importData(e) {
           });
         });
       }
+      // Comprehensive v2 optional fields. Never replace an existing route or
+      // map location merely because an older backup was imported.
+      if(data.mapCoords) {
+        state.mapCoords=state.mapCoords||{};
+        Object.entries(data.mapCoords).forEach(([key,val])=>{
+          if(!Object.prototype.hasOwnProperty.call(state.mapCoords,key))state.mapCoords[key]=val;
+        });
+      }
+      if(data.legacyReservations) {
+        state.legacyReservations=state.legacyReservations||[];
+        const existing=new Set(state.legacyReservations.map(x=>JSON.stringify(x)));
+        data.legacyReservations.forEach(x=>{const k=JSON.stringify(x);if(!existing.has(k)){existing.add(k);state.legacyReservations.push(x);}});
+      }
+      if(data.homeAddress && !state.homeAddress) state.homeAddress=data.homeAddress;
+      if(data.sortOrder && (!state.sortOrder || state.sortOrder==='name'))state.sortOrder=data.sortOrder;
+      // Preserve stored routes and saved campground entries by merging keys.
+      function mergeExtra(key, incoming, identity) {
+        if(!Array.isArray(incoming))return;
+        let original=[];
+        try {original=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){}
+        if(!Array.isArray(original))original=[];
+        const seen=new Set(original.map(identity));
+        incoming.forEach(x=>{const k=identity(x);if(!seen.has(k)){original.push(x);seen.add(k);}});
+        localStorage.setItem(key,JSON.stringify(original));
+      }
+      mergeExtra('tnprod_v2_tn_saved_routes',data.savedRoutes,x=>String(x.id));
+      mergeExtra('tnprod_v2_tn_saved_cg',data.savedCampgrounds,x=>String(x.name)+'|'+String(x.location));
+      mergeExtra('tnprod_v2_tn_srch_hist',data.searchHistory,x=>JSON.stringify(x));
       saveState(); renderAll();
       showToast('Backup merged in! 🌲');
     } catch(err) { showToast('Could not read backup file ❌'); }
