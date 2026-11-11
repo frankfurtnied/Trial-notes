@@ -2434,6 +2434,27 @@ function renderSiteMemories() {
 // ═══════════════════════════════════════════════════════
 // TRIP LOG
 // ═══════════════════════════════════════════════════════
+function tnTripNights(date, depart) {
+  if (!date || !depart) return null;
+  const a = Date.parse(date + 'T00:00:00Z'), b = Date.parse(depart + 'T00:00:00Z');
+  return Number.isFinite(a) && Number.isFinite(b) ? Math.round((b - a) / 86400000) : null;
+}
+function tnShowNights(date, depart, targetId) {
+  const el = document.getElementById(targetId); if (!el) return;
+  const n = tnTripNights(date, depart);
+  el.textContent = !date || !depart ? 'Select both dates to calculate nights.'
+    : n === null || n <= 0 ? '⚠️ Left Campground must be after Left Home.'
+    : '🏕 ' + n + ' night' + (n===1?'':'s') + ' camping';
+  el.style.color = n !== null && n <= 0 ? '#a33c2e' : 'var(--bark)';
+}
+function updateTripNightsPreview(parkId) {
+  tnShowNights(document.getElementById('td-date-'+parkId)?.value,
+    document.getElementById('td-depart-'+parkId)?.value, 'td-nights-'+parkId);
+}
+function updateEditTripNightsPreview() {
+  tnShowNights(document.getElementById('et-date')?.value,
+    document.getElementById('et-depart')?.value, 'et-nights');
+}
 function addTrip(parkId) {
   const dateEl=document.getElementById('td-date-'+parkId);
   const departEl=document.getElementById('td-depart-'+parkId);
@@ -2443,7 +2464,8 @@ function addTrip(parkId) {
   const bt=document.getElementById('td-booked-'+parkId);
   const ci=document.getElementById('td-checkin-'+parkId);
   const co=document.getElementById('td-checkout-'+parkId);
-  if(!dateEl.value){showToast('Please pick an arrival date 📅');return;}
+  if(!dateEl.value){showToast('Please choose Left Home 📅');return;}
+  if(departEl?.value && !(tnTripNights(dateEl.value,departEl.value)>0)){showToast('Left Campground must be after Left Home.');return;}
   if(!state.tripLogs[parkId])state.tripLogs[parkId]=[];
   const entry={date:dateEl.value,site:siteEl.value.trim(),note:noteEl.value.trim()};
   if(departEl&&departEl.value)entry.depart=departEl.value;
@@ -3325,8 +3347,9 @@ function renderParks() {
           </div>
           <div class="trip-entries">${tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;padding:4px 0">No trips logged yet.</div>'}</div>
           <div class="add-trip-row">
-            <div class="field"><label>Arrival Date</label><input type="date" id="td-date-${p.id}"></div>
-            <div class="field"><label>Departure Date</label><input type="date" id="td-depart-${p.id}"></div>
+            <div class="field"><label>Left Home</label><input type="date" id="td-date-${p.id}" oninput="updateTripNightsPreview(${p.id})"></div>
+            <div class="field"><label>Left Campground</label><input type="date" id="td-depart-${p.id}" oninput="updateTripNightsPreview(${p.id})"></div>
+            <div id="td-nights-${p.id}" style="font-size:.78rem;color:var(--bark);align-self:center;">Select both dates to calculate nights.</div>
             <div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-${p.id}" placeholder="e.g. 45"></div>
             <div class="field"><label>Reservation #</label><input type="text" id="td-resnum-${p.id}" placeholder="e.g. 2-17097311"></div>
             <div class="field"><label>Booked Through</label><input type="text" id="td-booked-${p.id}" placeholder="ReserveAmerica"></div>
@@ -3988,6 +4011,7 @@ function openET(parkId, idx) {
   if (_etph) { document.getElementById('et-preview-img').src = _etph; prev.style.display = 'block'; }
   else { prev.style.display = 'none'; }
   document.getElementById('editTripBg').classList.remove('hidden');
+  updateEditTripNightsPreview();
 }
 
 function closeET() {
@@ -4038,8 +4062,9 @@ function saveET() {
   if (_etp === null) return;
   if (_etBusy) { showToast('Photo is still uploading — one moment…'); return; }
   const date = document.getElementById('et-date').value;
-  if (!date) { showToast('Please pick a date 📅'); return; }
+  if (!date) { showToast('Please choose Left Home 📅'); return; }
   const depart = document.getElementById('et-depart').value;
+  if(depart && !(tnTripNights(date,depart)>0)){showToast('Left Campground must be after Left Home.');return;}
   const updated = {
     date: date,
     site: document.getElementById('et-site').value.trim(),
@@ -6036,20 +6061,38 @@ function statCard(icon, big, sub, label) {
 
 
 // ── PHOTOS ───────────────────────────────────────
-function renderPhotoGallery(parkId) {
-  var photos = (state.parkPhotos && state.parkPhotos[parkId]) || [];
-  if (!photos.length) {
-    return '<div style="font-size:.8rem;color:var(--fog);font-style:italic;padding:4px 0;">No photos yet. Add memories from your trips!</div>';
-  }
-  var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
-  photos.forEach(function(photo, idx){
-    html += '<div style="position:relative;width:100px;height:100px;border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.3);">' +
-      '<img src="'+(photo.thumb||photo.data)+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="viewPhoto(\''+parkId+'\','+idx+')">' +
-      '<button onclick="deletePhoto(\''+parkId+'\','+idx+')" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:.8rem;line-height:1;">×</button>' +
-      '</div>';
+// A view-only preference: sorting never changes the photo array or cloud data.
+let tnPhotoSort=(function(){try{return localStorage.getItem('tnprod_v2_photo_sort')==='oldest'?'oldest':'newest';}catch(e){return 'newest';}})();
+function setPhotoSort(order) {
+  tnPhotoSort=order==='oldest'?'oldest':'newest';
+  try{localStorage.setItem('tnprod_v2_photo_sort',tnPhotoSort);}catch(e){}
+  document.querySelectorAll('[id^="photo-gallery-"]').forEach(function(g){
+    g.innerHTML=renderPhotoGallery(g.id.slice('photo-gallery-'.length));
   });
-  html += '</div>';
-  return html;
+}
+function renderPhotoGallery(parkId) {
+  var photos=(state.parkPhotos&&state.parkPhotos[parkId])||[];
+  if(!photos.length)return '<div style="font-size:.8rem;color:var(--fog);font-style:italic;padding:4px 0;">No photos yet. Add memories from your trips!</div>';
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:.76rem;color:var(--bark);">'+
+    '<span>'+photos.length+' photo'+(photos.length===1?'':'s')+'</span>'+
+    '<label>Sort photos: <select aria-label="Sort campground photos" onchange="setPhotoSort(this.value)" style="padding:3px;border-radius:4px;">'+
+    '<option value="newest"'+(tnPhotoSort==='newest'?' selected':'')+'>Recently added first</option>'+
+    '<option value="oldest"'+(tnPhotoSort==='oldest'?' selected':'')+'>Oldest added first</option>'+
+    '</select></label></div><div style="display:flex;flex-wrap:wrap;gap:8px;">';
+  var ordered=photos.map(function(photo,idx){return{photo:photo,idx:idx};});
+  ordered.sort(function(a,b){
+    var diff=String(a.photo.date||'').localeCompare(String(b.photo.date||''));
+    return(tnPhotoSort==='oldest'?1:-1)*(diff||(a.idx-b.idx));
+  });
+  ordered.forEach(function(item){
+    var photo=item.photo,idx=item.idx;
+    var dateLabel=photo.date?'Added '+esc(String(photo.date)):'Campground photo';
+    html+='<div style="position:relative;width:100px;min-height:117px;border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.3);">'+
+      '<img src="'+(photo.thumb||photo.data)+'" alt="'+dateLabel+'" loading="lazy" style="width:100%;height:100px;object-fit:cover;cursor:pointer;" onclick="viewPhoto(\''+parkId+'\','+idx+')">'+
+      '<span style="display:block;padding:2px 4px;font-size:.62rem;background:var(--cream);color:var(--bark);text-align:center;">'+dateLabel+'</span>'+
+      '<button aria-label="Delete photo" onclick="deletePhoto(\''+parkId+'\','+idx+')" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:.8rem;line-height:1;">×</button></div>';
+  });
+  return html+'</div>';
 }
 
 async function handlePhotoUpload(parkId, input) {
@@ -6271,8 +6314,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     <button class="modal-close" onclick="closeET()">✕</button>
     <div class="modal-title">✏️ Edit Trip</div>
     <div class="fg2">
-      <div><label>Arrival Date</label><input type="date" id="et-date"></div>
-      <div><label>Departure Date</label><input type="date" id="et-depart"></div>
+      <div><label>Left Home</label><input type="date" id="et-date" oninput="updateEditTripNightsPreview()"></div>
+      <div><label>Left Campground</label><input type="date" id="et-depart" oninput="updateEditTripNightsPreview()"></div>
+      <div id="et-nights" style="grid-column:1/-1;font-size:.84rem;color:var(--bark);">Select both dates to calculate nights.</div>
     </div>
     <div class="fg2">
       <div><label>Site #</label><input type="text" id="et-site" placeholder="e.g. 45"></div>
