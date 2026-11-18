@@ -969,11 +969,37 @@ header p{
 }
 
 /* --amber used as text directly on a dark surface needs the brighter variant */
-#syncDot,
 #calc-miles-btn,
 .entry-count{
   color:var(--amber-bright) !important;
 }
+
+/* Clear, read-only safety information and touch-friendly trip planning. */
+.safety-card{border:1px solid rgba(203,173,112,.45);border-radius:12px;padding:15px 17px;margin:0 0 18px;background:rgba(255,247,232,.11);color:var(--cream);line-height:1.55}
+.safety-card strong{color:var(--cream)}
+.safety-card .safety-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:11px}
+.safety-card button,.calendar-controls button,.calendar-trip button,.travel-actions button{cursor:pointer;border-radius:8px;border:1px solid rgba(215,184,124,.55);padding:9px 12px;background:var(--moss);color:var(--cream);font:inherit;font-size:.86rem}
+.safety-card button:focus-visible,.calendar-controls button:focus-visible,.calendar-trip button:focus-visible,.travel-actions button:focus-visible{outline:3px solid var(--amber)}
+.calendar-shell{border:1px solid rgba(113,91,56,.3);border-radius:12px;padding:14px;margin-bottom:20px;background:rgba(255,247,232,.75);color:var(--bark)}
+.calendar-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.calendar-controls strong{font-family:var(--font-heading);font-size:1.12rem;text-align:center}
+.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.calendar-weekdays span{text-align:center;font-size:.74rem;font-weight:700;color:var(--soil)}
+.calendar-day{min-height:62px;background:rgba(255,255,255,.7);border:1px solid rgba(75,95,56,.15);border-radius:6px;padding:5px;overflow:hidden}
+.calendar-day.empty{background:transparent;border:0}
+.calendar-day.today{outline:2px solid var(--moss)}
+.calendar-day.has-trip{background:#e1ebd3}
+.calendar-day .day-number{font-weight:700;font-size:.82rem}
+.calendar-day button{display:block;width:100%;border:0;border-radius:4px;padding:3px 2px;margin-top:3px;background:var(--moss);color:white;font-size:.67rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;text-align:left}
+.calendar-trip{margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,.65);line-height:1.55}
+.calendar-trip button{margin-top:6px}
+.travel-card{border-radius:12px;padding:18px;margin:0 0 18px;background:rgba(255,247,232,.92);color:var(--bark);border:1px solid rgba(83,105,64,.4)}
+.travel-card h3{margin:0 0 8px;font-family:var(--font-heading)}
+.travel-card .travel-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin:12px 0}
+.travel-card .travel-details div{background:#f7f1e4;padding:10px;border-radius:8px}
+.travel-card .travel-details small{display:block;color:var(--soil)}
+.travel-actions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:600px){.calendar-day{min-height:49px;padding:3px}.calendar-day button{font-size:.59rem}.calendar-weekdays,.calendar-grid{gap:2px}.calendar-shell{padding:8px}}
 
 /* White/cream text on filled amber or ember buttons and badges: the fill
    itself is plenty saturated, so switch the label to dark ink instead.
@@ -1100,6 +1126,13 @@ header p{
 
 <div class="stats-bar" id="statsBar"></div>
 
+<div class="safety-card" id="safetyCard" aria-live="polite">
+  <strong>🔒 Your Camping Records</strong>
+  <div id="safetySyncText">Checking cloud sync status…</div>
+  <div id="safetyBackupText">A downloaded backup is a separate safety copy of your records.</div>
+  <div class="safety-actions"><button onclick="exportData()">⬇️ Download complete backup</button><button onclick="document.getElementById('inspectBackupFile').click()">🔎 Check backup file</button><button onclick="manualSync()">🔄 Check cloud sync</button></div>
+</div>
+
 <div class="tabs">
   <div class="tab active" data-tab="home" onclick="switchTab('home')">🏕 Home</div>
   <div class="tab" data-tab="parks" onclick="switchTab('parks')">🗺 My Parks</div>
@@ -1147,6 +1180,7 @@ header p{
     <span class="entries-title">Upcoming Trips</span>
     <span class="entry-count" id="upCount"></span>
   </div>
+  <div class="calendar-shell"><div class="calendar-controls"><button onclick="moveCampingCalendar(-1)" aria-label="Previous month">◀</button><strong id="campCalendarTitle">Camping Calendar</strong><button onclick="moveCampingCalendar(1)" aria-label="Next month">▶</button></div><div class="calendar-weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div class="calendar-grid" id="campCalendarGrid"></div><div id="campCalendarDetails" aria-live="polite"></div></div>
   <div id="upcomingList"></div>
   <div class="entry-form" style="margin-top:24px">
     <div style="font-family:-apple-system,Georgia,serif;font-size:1.15rem;color:var(--bark);margin-bottom:14px">📅 Book a Future Trip</div>
@@ -2597,6 +2631,7 @@ function deleteUpcoming(id) {
 }
 
 function renderUpcoming() {
+  renderCampingCalendar();
   const today=todayStr(),list=state.upcoming||[];document.getElementById('upCount').textContent=`${list.length} booked`;const el=document.getElementById('upcomingList');
   if(!list.length){el.innerHTML='<div class="empty-state"><div class="icon">📅</div><p>No upcoming trips yet. Book one below!</p></div>';return;}
   el.innerHTML=list.map(t=>{
@@ -2608,7 +2643,48 @@ function renderUpcoming() {
     const resBox=resItems?`<div class="reservation-box"><div class="reservation-title"><span>🔖 Reservation Details</span>${res.cancelBy?`<span style="font-size:.7rem;color:var(--soil);font-family:var(--font-body)">Cancel by ${esc(fmtDateShort(res.cancelBy))}</span>`:''}</div><div class="reservation-grid">${resItems}</div>${res.url&&safeUrl(res.url)?`<div class="reservation-actions"><a class="btn-sm" href="${esc(safeUrl(res.url))}" target="_blank" rel="noopener">🔗 Open Reservation</a></div>`:''}</div>`:'';
     return `<div class="entry-card"><div class="card-top"><div><div class="card-loc">📍 ${esc(t.parkName)}</div><div class="card-date">${esc(dateLabel)}</div></div><div class="card-badges">${statusBadge}</div></div><div class="card-body">${t.site?`<div style="font-family:var(--font-heading);font-size:1rem;color:var(--bark);margin-bottom:4px"><strong style="color:var(--moss-ink)">Site ${esc(t.site)}</strong></div>`:''}${t.note?`<div class="card-note">${esc(t.note)}</div>`:''}${resBox}</div>${t.driveLog?`<div style="font-size:.78rem;color:var(--moss-ink);margin:4px 14px 8px;padding:6px 10px;background:rgba(61,90,42,.15);border-radius:6px;">🚗 Actual drive: <strong>${t.driveLog.miles} miles</strong>${(t.driveLog.hours||t.driveLog.minutes)?' · '+(t.driveLog.hours?t.driveLog.hours+'h ':'')+(t.driveLog.minutes?t.driveLog.minutes+' min':''):''}${t.driveLog.note?' · '+esc(t.driveLog.note):''}${(t.driveLog.sitefee||0)>0?' · 💰 '+fmtFee(t.driveLog.sitefee):''}${(t.driveLog.fuel||0)>0?' · ⛽ '+Number(t.driveLog.fuel).toFixed(1)+' gal':''}</div>`:''}${daysUntil>=0&&daysUntil<=10?`<div id="wx-${t.id}" style="padding:4px 14px 8px;"></div>`:''}<div class="card-foot"><button class="btn-sm" onclick="startEditUpcoming(${t.id})">✏️ Edit</button><button class="btn-sm" onclick="startLogDrive(${t.id})" style="background:rgba(61,90,42,.2);border-color:var(--moss);color:var(--moss-ink);">🚗 Log drive</button><button class="btn-sm" onclick="deleteUpcoming(${t.id})">Cancel Trip</button></div></div>`;
   }).join('');
+  Array.from(el.querySelectorAll(':scope > .entry-card')).forEach((card,i)=>{if(list[i])card.id='upcoming-booking-'+list[i].id;});
   list.forEach(t=>{const [sy,sm,sd]=t.startDate.split('-').map(Number),[ty,tm,td]=today.split('-').map(Number),d=Math.round((new Date(sy,sm-1,sd)-new Date(ty,tm-1,td))/86400000);if(d>=0&&d<=10)fetchWeatherForTrip(t);});
+}
+
+// Calendar is read-only: it renders existing bookings without changing them.
+let campingCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+let campingCalendarSelected = '';
+function moveCampingCalendar(amount){
+  campingCalendarMonth = new Date(campingCalendarMonth.getFullYear(), campingCalendarMonth.getMonth()+amount, 1);
+  campingCalendarSelected='';
+  renderCampingCalendar();
+}
+function campingDateKey(year,month,day){
+  return year+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+}
+function bookingsOnDate(dateKey){
+  return (state.upcoming||[]).filter(t=>t.startDate && t.startDate<=dateKey && (t.endDate||t.startDate)>=dateKey);
+}
+function selectCampingDay(dateKey){campingCalendarSelected=dateKey;renderCampingCalendar();}
+function showCalendarBooking(tripId){
+  const trip=(state.upcoming||[]).find(t=>String(t.id)===String(tripId));
+  if(!trip)return;
+  campingCalendarSelected=trip.startDate;
+  campingCalendarMonth=new Date(Number(trip.startDate.slice(0,4)),Number(trip.startDate.slice(5,7))-1,1);
+  renderCampingCalendar();
+  const card=document.getElementById('upcoming-booking-'+trip.id);
+  (card||document.getElementById('upcomingList'))?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderCampingCalendar(){
+  const grid=document.getElementById('campCalendarGrid'),label=document.getElementById('campCalendarTitle'),details=document.getElementById('campCalendarDetails');
+  if(!grid||!label||!details)return;
+  const y=campingCalendarMonth.getFullYear(),m=campingCalendarMonth.getMonth();
+  label.textContent=campingCalendarMonth.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const offset=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  let html=Array(offset).fill('<div class="calendar-day empty" aria-hidden="true"></div>').join('');
+  for(let day=1;day<=days;day++){
+    const key=campingDateKey(y,m+1,day),bookings=bookingsOnDate(key);
+    html+=`<div class="calendar-day${key===todayStr()?' today':''}${bookings.length?' has-trip':''}"><span class="day-number">${day}</span>${bookings.length?`<button onclick="selectCampingDay('${key}')" title="${bookings.length} booking(s): ${esc(bookings.map(t=>t.parkName).join(', '))}">🏕 ${esc(bookings[0].parkName||'Trip')}${bookings.length>1?' +'+(bookings.length-1):''}</button>`:''}</div>`;
+  }
+  grid.innerHTML=html;
+  const selected=campingCalendarSelected,bookings=selected?bookingsOnDate(selected):[];
+  details.innerHTML=selected?`<div class="calendar-trip"><strong>📅 ${fmtDateShort(selected)}</strong>${bookings.length?bookings.map(t=>`<div style="margin-top:8px"><strong>${esc(t.parkName||'Upcoming trip')}</strong> · Site ${esc(t.site||'—')}<br><small>${fmtDateShort(t.startDate)} – ${fmtDateShort(t.endDate||t.startDate)}${t.reservation?.checkIn?' · Check-in '+esc(t.reservation.checkIn):''}</small><br><button onclick="showCalendarBooking(${jsAttr(t.id)})">View booking below ↓</button></div>`).join(''):'<div>No reservations on this date.</div>'}</div>`:'';
 }
 
 
@@ -3793,6 +3869,12 @@ function renderDashboard(){
   html+=`<div class="dashboard-grid"><div class="dash-card"><h3>🕰 Recent Memories</h3><div class="quick-list">${recent.length?recent.map(t=>{const p=parks.find(x=>x.id===t._pid);return `<div class="quick-item" onclick="openET(${t._pid},${t._ti})"><div><strong>${esc(p?p.name:'Unknown Park')}</strong><br><small>📅 ${fmtDateShort(t.date)}${t.site?' · Site '+esc(t.site):''}</small></div><span>›</span></div>`}).join(''):'<div class="dash-muted">Your trip history will appear here.</div>'}</div></div>`;
   const favs=parks.filter(p=>state.favorites.includes(p.id)).slice(0,5);
   html+=`<div class="dash-card"><h3>❤️ Favorite Parks</h3><div class="quick-list">${favs.length?favs.map(p=>`<div class="quick-item" onclick="openParkDetail(${p.id})"><div><strong>${esc(p.name)}</strong><br><small>${getTrips(p.id).length} visit${getTrips(p.id).length===1?'':'s'}</small></div><span>›</span></div>`).join(''):'<div class="dash-muted">Mark parks as favorites and they will appear here.</div>'}</div></div></div>`;
+  if(next){
+    const res=next.reservation||{},address=nextPark?.address||next.parkName||nextPark?.name||'';
+    const maps='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(address)+(state.homeAddress?'&origin='+encodeURIComponent(state.homeAddress):'');
+    const distance=next.parkId?getParkOneWayMiles(next.parkId):null;
+    html+=`<section class="travel-card"><h3>🚐 Your Next Travel Day</h3><strong>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</strong><div class="travel-details"><div><small>📅 Arriving</small><strong>${fmtDateShort(next.startDate)}</strong></div><div><small>🏕 Campsite</small><strong>${esc(next.site||'Not entered')}</strong></div><div><small>🕒 Check-in</small><strong>${esc(res.checkIn||'Not entered')}</strong></div><div><small>🚗 One-way distance</small><strong>${distance?Math.round(distance)+' miles':'Not recorded'}</strong></div>${res.number?`<div><small>🔖 Reservation</small><strong>${esc(res.number)}</strong></div>`:''}${res.cancelBy?`<div><small>⚠️ Cancel by</small><strong>${fmtDateShort(res.cancelBy)}</strong></div>`:''}</div><div class="travel-actions"><button onclick="window.open(${jsAttr(maps)},'_blank','noopener')">📍 Driving directions</button><button onclick="switchTab('upcoming')">📅 Reservation details</button><button onclick="openPackList(${JSON.stringify(next.id)})">🧳 Packing list</button></div><small style="display:block;margin-top:8px">Distance shown is your saved estimate, not live traffic. Check directions before leaving.</small></section>`;
+  }
   el.innerHTML=html;
 }
 function openParkDetail(id){
@@ -4198,7 +4280,23 @@ async function exportData() {
   const a    = document.createElement('a');
   a.href = url; a.download = 'trail-notes-complete-backup-' + new Date().toISOString().slice(0,10) + '.json';
   a.click(); setTimeout(()=>URL.revokeObjectURL(url), 30000);
-  showToast('Complete backup downloaded! 📦');
+  try{localStorage.setItem('tnprod_v2_last_backup_prepared',new Date().toISOString());}catch(e){}
+  updateSafetyCard();
+  showToast('Backup file prepared — check your Downloads folder! 📦');
+}
+
+function updateSafetyCard(mode,detail){
+  const sync=document.getElementById('safetySyncText'),backup=document.getElementById('safetyBackupText');
+  if(sync&&mode){
+    const messages={saved:'✅ Cloud sync confirmed. Your latest saved changes were accepted.',pending:'⏳ Changes are waiting for cloud confirmation. Please keep this page open.',blocked:'⚠️ Cloud sync needs attention. Your local records are kept; download a backup before trying to fix it.'};
+    sync.textContent=messages[mode]||'Cloud sync status is not yet known.';
+    if(detail)sync.title=detail;
+  }
+  if(backup){
+    const timestamp=localStorage.getItem('tnprod_v2_last_backup_prepared');
+    const when=timestamp?new Date(timestamp):null;
+    backup.textContent=when&&!isNaN(when.getTime())?'📦 Last backup prepared on this device: '+when.toLocaleString()+'. Please confirm the file is in Downloads.':'📦 No backup download recorded on this device. Download one and keep the file somewhere safe.';
+  }
 }
 
 // Read-only file inspection: never touches localStorage, state, or Supabase.
@@ -4587,6 +4685,7 @@ function setSyncStatus(mode,detail){
   el.style.opacity='1';
   el.title=detail||label;
   el.setAttribute('role','status');
+  updateSafetyCard(mode,detail);
 }
 function showSyncIndicator(){ setSyncStatus('saved','Cloud confirmed the latest changes'); }
 
