@@ -990,7 +990,9 @@ header p{
 .calendar-day.today{outline:2px solid var(--moss)}
 .calendar-day.has-trip{background:#e1ebd3}
 .calendar-day .day-number{font-weight:700;font-size:.82rem}
-.calendar-day button{display:block;width:100%;border:0;border-radius:4px;padding:3px 2px;margin-top:3px;background:var(--moss);color:white;font-size:.67rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;text-align:left}
+.calendar-day button{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;min-height:28px;border:0;border-radius:6px;padding:2px;margin-top:3px;background:transparent;color:var(--moss);font-size:1.15rem;font-weight:800;cursor:pointer}
+.calendar-day button:hover,.calendar-day button:focus-visible{background:rgba(61,90,42,.14)}
+.calendar-day .calendar-overlap{font-size:.7rem;color:var(--moss-ink)}
 .calendar-trip{margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,.65);line-height:1.55}
 .calendar-trip button{margin-top:6px}
 .travel-card{border-radius:12px;padding:18px;margin:0 0 18px;background:rgba(255,247,232,.92);color:var(--bark);border:1px solid rgba(83,105,64,.4)}
@@ -999,7 +1001,7 @@ header p{
 .travel-card .travel-details div{background:#f7f1e4;padding:10px;border-radius:8px}
 .travel-card .travel-details small{display:block;color:var(--soil)}
 .travel-actions{display:flex;gap:8px;flex-wrap:wrap}
-@media(max-width:600px){.calendar-day{min-height:49px;padding:3px}.calendar-day button{font-size:.59rem}.calendar-weekdays,.calendar-grid{gap:2px}.calendar-shell{padding:8px}}
+@media(max-width:600px){.calendar-day{min-height:49px;padding:3px}.calendar-day button{font-size:1rem;min-height:25px}.calendar-weekdays,.calendar-grid{gap:2px}.calendar-shell{padding:8px}}
 
 /* White/cream text on filled amber or ember buttons and badges: the fill
    itself is plenty saturated, so switch the label to dark ink instead.
@@ -2680,7 +2682,7 @@ function renderCampingCalendar(){
   let html=Array(offset).fill('<div class="calendar-day empty" aria-hidden="true"></div>').join('');
   for(let day=1;day<=days;day++){
     const key=campingDateKey(y,m+1,day),bookings=bookingsOnDate(key);
-    html+=`<div class="calendar-day${key===todayStr()?' today':''}${bookings.length?' has-trip':''}"><span class="day-number">${day}</span>${bookings.length?`<button onclick="selectCampingDay('${key}')" title="${bookings.length} booking(s): ${esc(bookings.map(t=>t.parkName).join(', '))}">🏕 ${esc(bookings[0].parkName||'Trip')}${bookings.length>1?' +'+(bookings.length-1):''}</button>`:''}</div>`;
+    html+=`<div class="calendar-day${key===todayStr()?' today':''}${bookings.length?' has-trip':''}"><span class="day-number">${day}</span>${bookings.length?`<button onclick="selectCampingDay('${key}')" aria-label="View ${bookings.length} booking${bookings.length===1?'':'s'} on ${esc(fmtDateShort(key))}: ${esc(bookings.map(t=>t.parkName||'Trip').join(', '))}" title="${esc(bookings.map(t=>t.parkName||'Trip').join(', '))}"><span aria-hidden="true">●</span>${bookings.length>1?`<span class="calendar-overlap" aria-hidden="true">+${bookings.length-1}</span>`:''}</button>`:''}</div>`;
   }
   grid.innerHTML=html;
   const selected=campingCalendarSelected,bookings=selected?bookingsOnDate(selected):[];
