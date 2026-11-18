@@ -1001,6 +1001,28 @@ header p{
 .travel-card .travel-details div{background:#f7f1e4;padding:10px;border-radius:8px}
 .travel-card .travel-details small{display:block;color:var(--soil)}
 .travel-actions{display:flex;gap:8px;flex-wrap:wrap}
+.insights-panel{display:grid;gap:18px}
+.insight-card{background:var(--parchment);color:var(--bark);border:1px solid rgba(83,105,64,.3);border-radius:14px;padding:18px;line-height:1.5}
+.insight-card h2,.insight-card h3{font-family:var(--font-heading);margin:0 0 8px;color:var(--bark)}
+.insight-card p{margin:6px 0 13px}
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.insight-mini{background:#fff9ed;border:1px solid #ded5c5;border-radius:9px;padding:12px;min-width:0}
+.insight-mini strong{display:block;font-size:1.05rem;overflow-wrap:anywhere}
+.insight-mini small{color:var(--soil)}
+.insight-form{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.insight-form label{flex:1;min-width:140px;font-size:.84rem;font-weight:700}
+.insight-form select{width:100%;padding:11px;border:1px solid #9e9079;border-radius:7px;background:white;color:var(--bark);font-size:1rem}
+.insight-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.insight-table th,.insight-table td{padding:9px 6px;border-bottom:1px solid #d5cbb7;text-align:left}
+.insight-table td:not(:first-child),.insight-table th:not(:first-child){text-align:right}
+.insight-table-wrap{overflow-x:auto}
+.insight-note{font-size:.78rem;color:var(--soil)}
+.insight-action{border:1px solid #537344;border-radius:7px;background:var(--moss);color:white;padding:7px 10px;cursor:pointer;font:inherit;font-size:.84rem}
+.insight-action:focus-visible{outline:3px solid var(--amber)}
+.memory-day{display:flex;gap:12px;align-items:flex-start;margin-top:10px;padding:10px;background:#fff9ed;border-radius:9px}
+.memory-day img{width:88px;height:75px;object-fit:cover;border-radius:7px}
+.memory-day .memory-day-text{flex:1;min-width:0}
+.favorite-site-row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid #d9cebc;padding:10px 0}
 @media(max-width:600px){.calendar-day{min-height:49px;padding:3px}.calendar-day button{font-size:1rem;min-height:25px}.calendar-weekdays,.calendar-grid{gap:2px}.calendar-shell{padding:8px}}
 
 /* White/cream text on filled amber or ember buttons and badges: the fill
@@ -1144,6 +1166,7 @@ header p{
   <div class="tab" data-tab="journal" onclick="switchTab('journal')">📓 Journal</div>
   <div class="tab" data-tab="findcamps" onclick="switchTab('findcamps')">🔍 Trip Planner</div>
   <div class="tab" data-tab="stats" onclick="switchTab('stats');renderStatsPanel();">📊 Statistics</div>
+  <div class="tab" data-tab="insights" onclick="switchTab('insights');renderCampingInsights()">✨ Camping Insights</div>
   <div class="tab" data-tab="wishlist" onclick="switchTab('wishlist')">🌟 Wish List</div>
   <div class="tab" data-tab="trash" onclick="switchTab('trash')">🗑 Trash <span id="trashTabCount" style="margin-left:4px;opacity:.8"></span></div>
 </div>
@@ -1366,6 +1389,8 @@ header p{
 <div class="panel" id="panel-stats">
   <div id="statsContent" style="padding:4px;"></div>
 </div>
+
+<div class="panel" id="panel-insights"><div class="insights-panel"><div class="insight-card"><h2>🏕 Compare Campgrounds</h2><p>Compare parks you've stayed at, using your own trip history and notes.</p><div class="insight-form"><label for="compareParkA">First campground<select id="compareParkA" onchange="renderParkComparison()"></select></label><label for="compareParkB">Second campground<select id="compareParkB" onchange="renderParkComparison()"></select></label></div><div id="parkComparison"></div></div><div class="insight-card"><h2>💰 Camping Expenses by Year</h2><p>Totals from the camping fees and fuel costs you've actually entered.</p><div id="campingYearExpenses"></div></div><div class="insight-card"><h2>⭐ Favorite Campsites</h2><p>Save individual site numbers you would like to book again.</p><div class="insight-form"><label for="favoriteSiteParkSelect">Choose a campground<select id="favoriteSiteParkSelect" onchange="renderFavoriteSites()"></select></label></div><div id="favoriteCampsites"></div></div></div></div>
 
 <div class="panel" id="panel-findcamps"></div>
 
@@ -2690,8 +2715,8 @@ function renderCampingCalendar(){
 }
 
 
-async function fetchWeatherForTrip(t) {
-  const el = document.getElementById('wx-' + t.id);
+async function fetchWeatherForTrip(t, targetId) {
+  const el = document.getElementById(targetId || ('wx-' + t.id));
   if (!el) return;
   el.innerHTML = '<span style="color:var(--fog);font-size:.75rem;">⏳ Loading forecast…</span>';
 
@@ -2701,6 +2726,8 @@ async function fetchWeatherForTrip(t) {
   if (state.parkCoords && state.parkCoords[t.parkId]) {
     lat = state.parkCoords[t.parkId].lat;
     lon = state.parkCoords[t.parkId].lon;
+  } else if (state.mapCoords && Array.isArray(state.mapCoords[t.parkId])) {
+    lat = state.mapCoords[t.parkId][0]; lon = state.mapCoords[t.parkId][1];
   } else if (park && park.address) {
     try {
       const geo = await fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(park.address) + '&format=json&limit=1');
@@ -2793,6 +2820,7 @@ function startLogDrive(id) {
     document.getElementById('dl-note').value = existing.note||'';
     document.getElementById('dl-sitefee').value = existing.sitefee != null ? existing.sitefee : '';
     document.getElementById('dl-fuel').value = existing.fuel != null ? existing.fuel : (existing.miles ? milesToGallons(existing.miles) : '');
+    document.getElementById('dl-fuelcost').value = existing.fuelCost != null ? existing.fuelCost : '';
     bg.style.display = 'flex';
     document.getElementById('dl-miles').focus();
     document.getElementById('dl-miles').oninput = function(){
@@ -2814,12 +2842,14 @@ function saveDriveLog() {
   const note = document.getElementById('dl-note').value.trim();
   const sitefee = parseFloat(document.getElementById('dl-sitefee').value);
   const fuel    = parseFloat(document.getElementById('dl-fuel').value);
+  const fuelCost = parseFloat(document.getElementById('dl-fuelcost').value);
   if(!miles) { showToast('Please enter the actual miles.'); return; }
   const idx = (state.upcoming||[]).findIndex(x=>x.id===id);
   if(idx >= 0) {
     const driveLog = {miles, hours, minutes, note};
     if (!isNaN(sitefee) && sitefee >= 0) driveLog.sitefee = sitefee;
     if (!isNaN(fuel)    && fuel    >= 0) driveLog.fuel    = fuel;
+    if (!isNaN(fuelCost) && fuelCost >= 0) driveLog.fuelCost = fuelCost;
     state.upcoming[idx].driveLog = driveLog;
     const parkId = state.upcoming[idx].parkId;
     if(parkId) {
@@ -3855,6 +3885,114 @@ function printTripLists(){
   document.addEventListener('pointercancel',finish);
 })();
 
+// New insights are derived from existing trip data. Favorite site selections are
+// stored inside the already-backed-up park overrides; no new database tables.
+function favoriteSiteNumbers(parkId){
+  const stored=state.overrides?.[parkId]?.favoriteSites;
+  return Array.isArray(stored)?stored.map(String):[];
+}
+function toggleFavoriteSite(parkId,siteNumber){
+  const site=String(siteNumber||'').trim();if(!site)return;
+  const current=favoriteSiteNumbers(parkId);
+  const next=current.includes(site)?current.filter(x=>x!==site):current.concat(site);
+  state.overrides[parkId]={...(state.overrides[parkId]||{}),favoriteSites:next};
+  saveState();renderFavoriteSites();renderParkComparison();
+  showToast(next.includes(site)?'Campsite added to favorites ⭐':'Campsite removed from favorites');
+}
+function visitedParksForInsights(){return allParks().filter(p=>getTrips(p.id).length>0);}
+function populateInsightSelect(id,parks,preferred){
+  const el=document.getElementById(id);if(!el)return;
+  const old=el.value;
+  el.innerHTML=parks.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  if(parks.some(p=>String(p.id)===old))el.value=old;
+  else if(preferred&&parks.some(p=>String(p.id)===String(preferred)))el.value=String(preferred);
+}
+function renderCampingInsights(){
+  const parks=visitedParksForInsights();
+  populateInsightSelect('compareParkA',parks,parks[0]?.id);
+  populateInsightSelect('compareParkB',parks,parks[1]?.id||parks[0]?.id);
+  populateInsightSelect('favoriteSiteParkSelect',parks,parks[0]?.id);
+  renderParkComparison();renderCampingYearExpenses();renderFavoriteSites();
+}
+function parkInsightSummary(park){
+  const trips=getTrips(park.id),fees=trips.map(t=>Number(t.sitefee)||0).filter(v=>v>0),sites=[...new Set(trips.map(t=>String(t.site||'').trim()).filter(Boolean))];
+  const paidNights=trips.filter(t=>Number(t.sitefee)>0).reduce((sum,t)=>sum+(t.depart&&t.depart>t.date?Math.max(1,Math.round((new Date(t.depart+'T00:00:00')-new Date(t.date+'T00:00:00'))/86400000)):1),0);
+  const nights=trips.reduce((sum,t)=>sum+(t.depart&&t.depart>t.date?Math.max(1,Math.round((new Date(t.depart+'T00:00:00')-new Date(t.date+'T00:00:00'))/86400000)):1),0);
+  return {trips:trips.length,nights,fees:fees.reduce((a,b)=>a+b,0),feeCount:fees.length,paidNights,sites};
+}
+function renderParkComparison(){
+  const box=document.getElementById('parkComparison');if(!box)return;
+  const parks=visitedParksForInsights();
+  const ids=[document.getElementById('compareParkA')?.value,document.getElementById('compareParkB')?.value];
+  const selected=ids.map(id=>parks.find(p=>String(p.id)===id)).filter(Boolean);
+  if(!selected.length){box.innerHTML='<p>No past campground visits found yet.</p>';return;}
+  box.innerHTML='<div class="insight-grid">'+selected.map(p=>{
+    const s=parkInsightSummary(p),rating=state.ratings?.[p.id],fav=favoriteSiteNumbers(p.id);
+    return `<div class="insight-mini"><strong>🌲 ${esc(p.name)}</strong><div>🏕 ${s.trips} visits · 🌙 ${s.nights} nights</div><div>💰 ${s.feeCount?fmtFee(s.fees)+' recorded fees':'Fees not recorded'}</div><div>💵 ${s.paidNights?fmtFee(s.fees/s.paidNights)+' average per recorded night':'Nightly price unavailable'}</div><div>⭐ ${rating?esc(rating)+'/5':'Not rated'}</div><div>📍 Sites stayed: ${s.sites.length?esc(s.sites.join(', ')):'Not recorded'}</div><div>❤️ Favorite sites: ${fav.length?esc(fav.join(', ')):'None marked'}</div><small>✅ Good sites: ${esc(p.goodSites||'Not recorded')}</small><br><small>🚫 Avoid: ${esc(p.avoidSites||'Not recorded')}</small>${p.notes?`<p>${esc(p.notes)}</p>`:''}</div>`;
+  }).join('')+'</div><p class="insight-note">Totals use recorded stays and fees only. Missing amounts are not estimated.</p>';
+}
+function yearExpenseRows(trips){
+  const byYear={};
+  trips.forEach(t=>{
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(t.date||''))return;
+    const y=t.date.slice(0,4),r=byYear[y]||(byYear[y]={year:y,trips:0,fees:0,feeCount:0,fuelCost:0,fuelCount:0,gallons:0});
+    r.trips++;
+    const fee=Number(t.sitefee)>0?Number(t.sitefee):Number(t.driveLog?.sitefee)||0;
+    if(fee>0){r.fees+=fee;r.feeCount++;}
+    const cost=Number(t.fuelCost)>0?Number(t.fuelCost):Number(t.driveLog?.fuelCost)||0;
+    if(cost>0){r.fuelCost+=cost;r.fuelCount++;}
+    r.gallons+=Number(t.fuel)||Number(t.driveLog?.fuel)||0;
+  });
+  return Object.values(byYear).sort((a,b)=>b.year.localeCompare(a.year));
+}
+function renderCampingYearExpenses(){
+  const el=document.getElementById('campingYearExpenses');if(!el)return;
+  const rows=yearExpenseRows(getAllTripsSorted());
+  if(!rows.length){el.innerHTML='<p>Annual totals will appear when you have trip history.</p>';return;}
+  el.innerHTML=`<div class="insight-table-wrap"><table class="insight-table"><thead><tr><th>Year</th><th>Trips</th><th>Site fees</th><th>Fuel $</th><th>Total $</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.year}</td><td>${r.trips}</td><td>${r.feeCount?fmtFee(r.fees):'—'}</td><td>${r.fuelCount?fmtFee(r.fuelCost):'—'}</td><td>${r.feeCount||r.fuelCount?fmtFee(r.fees+r.fuelCost):'—'}</td></tr>`).join('')}</tbody></table></div><p class="insight-note">— means no amount recorded, not $0 spent. Add an optional actual fuel cost when editing a trip or logging a drive. Fuel gallons are not converted into dollars automatically.</p>`;
+}
+function renderFavoriteSites(){
+  const el=document.getElementById('favoriteCampsites');if(!el)return;
+  const selected=document.getElementById('favoriteSiteParkSelect')?.value;
+  const park=visitedParksForInsights().find(p=>String(p.id)===selected);
+  if(!park){el.innerHTML='<p>No recorded campsite numbers yet.</p>';return;}
+  const stays=getTrips(park.id),sites=[...new Set(stays.map(t=>String(t.site||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  const fav=favoriteSiteNumbers(park.id);
+  el.innerHTML=sites.length?sites.map(site=>{
+    const count=stays.filter(t=>String(t.site||'').trim()===site).length,isFav=fav.includes(site);
+    return `<div class="favorite-site-row"><div><strong>🏕 Site ${esc(site)}</strong><div class="insight-note">Stayed ${count} time${count===1?'':'s'}</div></div><button class="insight-action" aria-pressed="${isFav}" onclick="toggleFavoriteSite(${jsAttr(park.id)},${jsAttr(site)})">${isFav?'⭐ Saved favorite':'☆ Mark favorite'}</button></div>`;
+  }).join(''):'<p>No site numbers recorded for this campground. You can add them when editing your past trips.</p>';
+  const all=visitedParksForInsights().flatMap(p=>favoriteSiteNumbers(p.id).map(site=>({park:p,site})));
+  el.innerHTML+=`<p class="insight-note" style="margin-top:12px">⭐ ${all.length} favorite campsite${all.length===1?'':'s'} saved across your campgrounds.</p>${all.length?`<div class="insight-mini"><strong>All saved favorites</strong>${all.map(x=>`<div style="margin-top:6px">⭐ ${esc(x.park.name)} · Site ${esc(x.site)}</div>`).join('')}</div>`:''}`;
+}
+function campingAnniversaryMatches(trips,date=new Date()){
+  const today=String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+  const year=date.getFullYear();
+  const past=trips.filter(t=>t.date&&Number(t.date.slice(0,4))<year);
+  const active=t=>{
+    const start=String(t.date||'').slice(5,10),end=String(t.depart||'').slice(5,10);
+    if(!end||end===start)return start===today;
+    return end>start?today>=start&&today<end:today>=start||today<end;
+  };
+  const exact=past.filter(active).sort((a,b)=>b.date.localeCompare(a.date));
+  if(exact.length)return {exact:true,trips:exact.slice(0,3)};
+  // A nearby memory is a fallback, clearly labeled as not the exact day.
+  const ordinal=md=>{const [m,d]=md.split('-').map(Number);return Math.round((Date.UTC(2024,m-1,d)-Date.UTC(2024,0,1))/86400000);};
+  const todayOrd=ordinal(today);
+  const nearby=past.map(t=>{const n=ordinal(t.date.slice(5,10)),delta=Math.min(Math.abs(n-todayOrd),366-Math.abs(n-todayOrd));return {...t,_anniversaryGap:delta};}).filter(t=>t._anniversaryGap<=7).sort((a,b)=>a._anniversaryGap-b._anniversaryGap||b.date.localeCompare(a.date));
+  return {exact:false,trips:nearby.slice(0,2)};
+}
+function renderOnThisDay(){
+  const parks=allParks(),found=campingAnniversaryMatches(getAllTripsSorted());
+  const title=found.exact?'📸 On This Day in Camping History':'📸 Around This Time in Camping History';
+  const rows=found.trips.map(t=>{
+    const p=parks.find(p=>String(p.id)===String(t._pid)),photo=(state.parkPhotos?.[t._pid]||[]).find(x=>x&&(x.thumb||x.data));
+    const src=t.photo||photo?.thumb||photo?.data||'';
+    return `<div class="memory-day">${src?`<img src="${esc(src)}" alt="Memory from ${esc(p?.name||'campground')}">`:'<span style="font-size:2rem">🏕️</span>'}<div class="memory-day-text"><strong>${esc(p?.name||'Campground')}</strong><div>${fmtDateShort(t.date)}${t.depart?' – '+fmtDateShort(t.depart):''}</div>${t.site?`<div>Site ${esc(t.site)}</div>`:''}${t.note?`<div>${esc(t.note)}</div>`:''}</div></div>`;
+  }).join('');
+  return `<section class="insight-card" style="margin-bottom:18px"><h3>${title}</h3>${rows||'<p>No trip recorded near today’s date in previous years. Your memories are always available in the Timeline.</p>'}<button class="insight-action" style="margin-top:9px" onclick="switchTab('timeline')">🧭 Explore your Timeline</button></section>`;
+}
+
 function renderDashboard(){
   const el=document.getElementById('dashboardContent'); if(!el)return;
   const parks=allParks(), trips=getAllTripsSorted(), upcoming=getUpcomingSorted();
@@ -3875,9 +4013,10 @@ function renderDashboard(){
     const res=next.reservation||{},address=nextPark?.address||next.parkName||nextPark?.name||'';
     const maps='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(address)+(state.homeAddress?'&origin='+encodeURIComponent(state.homeAddress):'');
     const distance=next.parkId?getParkOneWayMiles(next.parkId):null;
-    html+=`<section class="travel-card"><h3>🚐 Your Next Travel Day</h3><strong>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</strong><div class="travel-details"><div><small>📅 Arriving</small><strong>${fmtDateShort(next.startDate)}</strong></div><div><small>🏕 Campsite</small><strong>${esc(next.site||'Not entered')}</strong></div><div><small>🕒 Check-in</small><strong>${esc(res.checkIn||'Not entered')}</strong></div><div><small>🚗 One-way distance</small><strong>${distance?Math.round(distance)+' miles':'Not recorded'}</strong></div>${res.number?`<div><small>🔖 Reservation</small><strong>${esc(res.number)}</strong></div>`:''}${res.cancelBy?`<div><small>⚠️ Cancel by</small><strong>${fmtDateShort(res.cancelBy)}</strong></div>`:''}</div><div class="travel-actions"><button onclick="window.open(${jsAttr(maps)},'_blank','noopener')">📍 Driving directions</button><button onclick="switchTab('upcoming')">📅 Reservation details</button><button onclick="openPackList(${JSON.stringify(next.id)})">🧳 Packing list</button></div><small style="display:block;margin-top:8px">Distance shown is your saved estimate, not live traffic. Check directions before leaving.</small></section>`;
+    html+=`<section class="travel-card"><h3>🚐 Your Next Travel Day</h3><strong>${esc(next.parkName||nextPark?.name||'Upcoming trip')}</strong><div class="travel-details"><div><small>📅 Arriving</small><strong>${fmtDateShort(next.startDate)}</strong></div><div><small>🏕 Campsite</small><strong>${esc(next.site||'Not entered')}</strong></div><div><small>🕒 Check-in</small><strong>${esc(res.checkIn||'Not entered')}</strong></div><div><small>🚗 One-way distance</small><strong>${distance?Math.round(distance)+' miles':'Not recorded'}</strong></div>${res.number?`<div><small>🔖 Reservation</small><strong>${esc(res.number)}</strong></div>`:''}${res.cancelBy?`<div><small>⚠️ Cancel by</small><strong>${fmtDateShort(res.cancelBy)}</strong></div>`:''}</div><div class="travel-actions"><button onclick="window.open(${jsAttr(maps)},'_blank','noopener')">📍 Driving directions</button><button onclick="switchTab('upcoming')">📅 Reservation details</button><button onclick="openPackList(${JSON.stringify(next.id)})">🧳 Packing list</button></div><div style="margin-top:12px"><strong>🌦️ Campground Weather</strong><div id="travel-wx-${esc(next.id)}" style="margin-top:6px">${daysUntil(next.startDate)>=0&&daysUntil(next.startDate)<=10?'Checking forecast…':'Forecast appears about 10 days before your trip.'}</div></div><small style="display:block;margin-top:8px">Distance shown is your saved estimate, not live traffic. Check directions before leaving.</small></section>`;
   }
-  el.innerHTML=html;
+  el.innerHTML=renderOnThisDay()+html;
+  if(next&&daysUntil(next.startDate)>=0&&daysUntil(next.startDate)<=10)fetchWeatherForTrip(next,'travel-wx-'+next.id);
 }
 function openParkDetail(id){
   const p=allParks().find(x=>x.id===id);if(!p)return;const trips=getTrips(id),rating=state.ratings[id];const nights=trips.reduce((n,t)=>n+((t.depart&&t.date&&t.depart>t.date)?Math.max(1,Math.round((new Date(t.depart)-new Date(t.date))/86400000)):1),0);const fee=trips.reduce((n,t)=>n+(Number(t.sitefee)||0),0);const website=safeUrl(p.website),maps='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.address||p.name);const modal=document.getElementById('detailModalBg');if(!modal)return;const mapModal=document.getElementById('mapModalBg');window._returnToMap=!!(mapModal&&!mapModal.classList.contains('hidden'));if(window._returnToMap)mapModal.classList.add('hidden');
@@ -4041,7 +4180,7 @@ function pinParkManually(id){
 
 
 function renderAll() {
-  try { migrateExpired(); renderStats(); renderDashboard(); renderParks(); refreshDropdown(); refreshUpcomingDropdown(); renderUpcoming(); renderEntries(); renderTripLog(); renderTimeline(); renderSiteMemories(); renderTrash(); updatePhotoMigrateButton(); }
+  try { migrateExpired(); renderStats(); renderDashboard(); renderParks(); refreshDropdown(); refreshUpcomingDropdown(); renderUpcoming(); renderEntries(); renderTripLog(); renderTimeline(); renderSiteMemories(); renderTrash(); renderCampingInsights(); updatePhotoMigrateButton(); }
   catch(e) { console.error('renderAll error:', e); }
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
@@ -4107,6 +4246,7 @@ function openET(parkId, idx) {
   document.getElementById('et-note').value   = t.note   || '';
   document.getElementById('et-sitefee').value = t.sitefee != null ? t.sitefee : '';
   document.getElementById('et-fuel').value    = t.fuel    != null ? t.fuel    : (getParkOneWayMiles(parkId) ? milesToGallons(getParkOneWayMiles(parkId)) : '');
+  document.getElementById('et-fuelcost').value = t.fuelCost != null ? t.fuelCost : (t.driveLog?.fuelCost != null ? t.driveLog.fuelCost : '');
   document.getElementById('et-fuel').dataset.userEdited = '0';
   renderEditTripReservations(Array.isArray(t.reservations)?t.reservations:(t.reservation?[t.reservation]:[]));
   document.getElementById('et-fuel').oninput = function(){ this.dataset.userEdited = '1'; };
@@ -4177,8 +4317,10 @@ function saveET() {
   };
   const sitefee = parseFloat(document.getElementById('et-sitefee').value);
   const fuel    = parseFloat(document.getElementById('et-fuel').value);
+  const fuelCost = parseFloat(document.getElementById('et-fuelcost').value);
   if (!isNaN(sitefee) && sitefee >= 0) updated.sitefee = sitefee;
   if (!isNaN(fuel)    && fuel    >= 0) updated.fuel    = fuel;
+  if (!isNaN(fuelCost) && fuelCost >= 0) updated.fuelCost = fuelCost;
   if (depart) updated.depart = depart;
   const _editReservations = collectEditTripReservations();
   if (_editReservations.length) { updated.reservations = _editReservations; updated.reservation = _editReservations[0]; }
@@ -6501,6 +6643,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="fg2">
       <div><label>💰 Site Fee ($)</label><input type="number" id="et-sitefee" placeholder="e.g. 35" min="0" step="0.01" style="width:100%"></div>
       <div><label>⛽ Fuel (gallons)</label><input type="number" id="et-fuel" placeholder="auto from one-way miles @ 8.5 mpg" min="0" step="0.1" style="width:100%"></div>
+      <div><label>⛽ Actual Fuel Cost ($), optional</label><input type="number" id="et-fuelcost" placeholder="e.g. 64.50" min="0" step="0.01" style="width:100%"></div>
     </div>
     <div class="fl">
       <label>📷 Photo</label>
@@ -6572,6 +6715,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <input id="dl-fuel" type="number" min="0" step="0.1" placeholder="auto from one-way miles @ 8.5 mpg" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;font-family:-apple-system,Georgia,serif;background:white;">
       </div>
     </div>
+    <div style="margin-bottom:14px;"><label style="display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#6b5740;margin-bottom:4px;">⛽ Actual Fuel Cost ($), optional</label><input id="dl-fuelcost" type="number" min="0" step="0.01" placeholder="e.g. 64.50" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--fog);border-radius:4px;font-size:.9rem;background:white;"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button onclick="closeDriveLog()" style="padding:8px 16px;background:transparent;border:1px solid var(--fog);border-radius:4px;cursor:pointer;font-family:-apple-system,Georgia,serif;">Cancel</button>
       <button onclick="saveDriveLog()" style="padding:8px 20px;background:var(--moss);color:var(--cream);border:none;border-radius:4px;cursor:pointer;font-family:-apple-system,Georgia,serif;font-weight:500;">💾 Save</button>
