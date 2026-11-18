@@ -1009,6 +1009,10 @@ header p{
 .insight-mini{background:#fff9ed;border:1px solid #ded5c5;border-radius:9px;padding:12px;min-width:0}
 .insight-mini strong{display:block;font-size:1.05rem;overflow-wrap:anywhere}
 .insight-mini small{color:var(--soil)}
+.insight-notes{margin-top:10px;border-top:1px solid #ded5c5;padding-top:9px}
+.insight-notes summary{color:var(--pine);font-weight:700;cursor:pointer;touch-action:manipulation;padding:6px 0}
+.insight-notes[open] summary{margin-bottom:8px}
+.insight-notes p{overflow-wrap:anywhere;white-space:pre-wrap;margin:8px 0 0}
 .insight-form{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
 .insight-form label{flex:1;min-width:140px;font-size:.84rem;font-weight:700}
 .insight-form select{width:100%;padding:11px;border:1px solid #9e9079;border-radius:7px;background:white;color:var(--bark);font-size:1rem}
@@ -3928,7 +3932,7 @@ function renderParkComparison(){
   if(!selected.length){box.innerHTML='<p>No past campground visits found yet.</p>';return;}
   box.innerHTML='<div class="insight-grid">'+selected.map(p=>{
     const s=parkInsightSummary(p),rating=state.ratings?.[p.id],fav=favoriteSiteNumbers(p.id);
-    return `<div class="insight-mini"><strong>🌲 ${esc(p.name)}</strong><div>🏕 ${s.trips} visits · 🌙 ${s.nights} nights</div><div>💰 ${s.feeCount?fmtFee(s.fees)+' recorded fees':'Fees not recorded'}</div><div>💵 ${s.paidNights?fmtFee(s.fees/s.paidNights)+' average per recorded night':'Nightly price unavailable'}</div><div>⭐ ${rating?esc(rating)+'/5':'Not rated'}</div><div>📍 Sites stayed: ${s.sites.length?esc(s.sites.join(', ')):'Not recorded'}</div><div>❤️ Favorite sites: ${fav.length?esc(fav.join(', ')):'None marked'}</div><small>✅ Good sites: ${esc(p.goodSites||'Not recorded')}</small><br><small>🚫 Avoid: ${esc(p.avoidSites||'Not recorded')}</small>${p.notes?`<p>${esc(p.notes)}</p>`:''}</div>`;
+    return `<div class="insight-mini"><strong>🌲 ${esc(p.name)}</strong><div>🏕 ${s.trips} visits · 🌙 ${s.nights} nights</div><div>💰 ${s.feeCount?fmtFee(s.fees)+' recorded fees':'Fees not recorded'}</div><div>💵 ${s.paidNights?fmtFee(s.fees/s.paidNights)+' average per recorded night':'Nightly price unavailable'}</div><div>⭐ ${rating?esc(rating)+'/5':'Not rated'}</div><div>📍 Sites stayed: ${s.sites.length?esc(s.sites.join(', ')):'Not recorded'}</div><div>❤️ Favorite sites: ${fav.length?esc(fav.join(', ')):'None marked'}</div><details class="insight-notes"><summary>Show All Notes</summary><small>✅ Good sites: ${esc(p.goodSites||'Not recorded')}</small><br><small>🚫 Avoid: ${esc(p.avoidSites||'Not recorded')}</small>${p.notes?`<p>${esc(p.notes)}</p>`:''}</details></div>`;
   }).join('')+'</div><p class="insight-note">Totals use recorded stays and fees only. Missing amounts are not estimated.</p>';
 }
 function yearExpenseRows(trips){
