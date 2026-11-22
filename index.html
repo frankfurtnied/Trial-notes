@@ -3471,18 +3471,6 @@ function renderParks() {
             ${parkFeeSummaryBadge(p.id)}
           </div>
           <div class="trip-entries">${tripRows||'<div style="font-size:.83rem;color:var(--fog);font-style:italic;padding:4px 0">No trips logged yet.</div>'}</div>
-          <div class="add-trip-row">
-            <div class="field"><label>Left Home</label><input type="date" id="td-date-${p.id}" oninput="updateTripNightsPreview(${p.id})"></div>
-            <div class="field"><label>Left Campground</label><input type="date" id="td-depart-${p.id}" oninput="updateTripNightsPreview(${p.id})"></div>
-            <div id="td-nights-${p.id}" style="font-size:.78rem;color:var(--bark);align-self:center;">Select both dates to calculate nights.</div>
-            <div class="field"><label>Site #</label><input type="text" class="site-in" id="td-site-${p.id}" placeholder="e.g. 45"></div>
-            <div class="field"><label>Reservation #</label><input type="text" id="td-resnum-${p.id}" placeholder="e.g. 2-17097311"></div>
-            <div class="field"><label>Booked Through</label><input type="text" id="td-booked-${p.id}" placeholder="ReserveAmerica"></div>
-            <div class="field"><label>Check-in</label><input type="text" id="td-checkin-${p.id}" placeholder="3:00 PM"></div>
-            <div class="field"><label>Check-out</label><input type="text" id="td-checkout-${p.id}" placeholder="1:00 PM"></div>
-            <div class="field" style="flex:1"><label>Notes</label><input type="text" class="note-in" id="td-note-${p.id}" placeholder="e.g. great weather, very quiet"></div>
-            <button class="btn-add-trip" onclick="addTrip(${p.id})">＋ Add Trip</button>
-          </div>
         </div>
 
         <div class="park-photos" style="margin-top:14px;">
